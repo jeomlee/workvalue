@@ -161,6 +161,13 @@
     import { calcSalaryNet } from "/assets/app.js";
     document.getElementById("y").textContent = new Date().getFullYear();
     document.getElementById("btnCalcS").addEventListener("click", calcSalaryNet);
+    const ids = ["grossS","depS","presetS","includeTaxS"];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", calcSalaryNet);
+      el.addEventListener("change", calcSalaryNet);
+    });
     calcSalaryNet();
   </script>
 </body>

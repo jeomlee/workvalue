@@ -313,7 +313,7 @@ export function calcLaborCost(opts = {}) {
   );
 
   // 7) ① BEP 링크 자동 채우기(강화)
-  const bepUrl = new URL("/business/bep", location.origin);
+  const bepUrl = new URL("/business/bep.html", location.origin);
   bepUrl.searchParams.set("fixedCost", String(Math.round(ownerTotal)));
   bepUrl.searchParams.set("variableRate", String(varRatePct));
   bepUrl.searchParams.set("openDays", String(openDays));

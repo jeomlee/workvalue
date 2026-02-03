@@ -164,6 +164,13 @@
     import { calcHourly } from "/assets/app.js";
     document.getElementById("y").textContent = new Date().getFullYear();
     document.getElementById("btnCalcH").addEventListener("click", calcHourly);
+    const ids = ["hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","includeHolidayH"];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", calcHourly);
+      el.addEventListener("change", calcHourly);
+    });
     calcHourly();
   </script>
 </body>

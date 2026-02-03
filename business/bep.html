@@ -195,7 +195,7 @@
   </div>
 
   <script type="module">
-    import { calcBEP } from "/assets/app.js";
+    import { applyBEPQueryIfAny, calcBEP } from "/assets/app.js";
     document.getElementById("y").textContent = new Date().getFullYear();
 
     document.getElementById("btnExample").addEventListener("click", () => {
@@ -207,7 +207,16 @@
       calcBEP();
     });
 
+    const ids = ["fixedCost","variableRate","openDays","hoursPerDay","targetSales"];
+    ids.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", calcBEP);
+      el.addEventListener("change", calcBEP);
+    });
+
     document.getElementById("btnCalc").addEventListener("click", calcBEP);
+    applyBEPQueryIfAny();
     calcBEP();
   </script>
 </body>

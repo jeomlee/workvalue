@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>자영업 손익분기점(BEP) 계산기 | 사장 시급까지 확인</title>
+  <meta name="description" content="고정비·변동비율·영업일수·근무시간을 입력하시면 손익분기점(BEP)과 하루 최소 매출, 목표 매출 기준 순이익 및 사장 시급을 확인하실 수 있습니다." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="__SITE_URL__/business/bep.html" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>자영업 손익분기점(BEP) 계산기</strong>
+          <span>매출이 아니라 “순이익”과 “사장 시급”을 확인하세요</span>
+        </div>
+      </div>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/employee/salary-net.html">연봉 실수령</a>
+        <a href="/employee/hourly.html">실수령 시급</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <div class="cardHead">
+        <div>
+          <h2>입력</h2>
+          <p class="sub">고정비(임대료/인건비/기타)와 변동비율(재료비 등)을 기준으로 계산합니다.</p>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="cols">
+          <div>
+            <div class="row">
+              <div>
+                <label>월 고정비 합계(원)</label>
+                <input id="fixedCost" type="number" value="4500000" min="0" step="10000" />
+              </div>
+              <div>
+                <label>변동비율(매출 대비 %, 예: 재료비 35%)</label>
+                <input id="variableRate" type="number" value="35" min="0" step="0.1" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label>월 영업일수(일)</label>
+                <input id="openDays" type="number" value="26" min="1" step="1" />
+              </div>
+              <div>
+                <label>1일 근무시간(시간)</label>
+                <input id="hoursPerDay" type="number" value="10" min="1" step="0.5" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label>목표 월 매출(원)</label>
+                <input id="targetSales" type="number" value="15000000" min="0" step="100000" />
+              </div>
+              <div></div>
+            </div>
+
+            <div class="btnrow">
+              <button class="primary" id="btnCalc">계산하기</button>
+            </div>
+
+            <div class="content">
+              <h3>계산 방식(요약)</h3>
+              <ul>
+                <li>BEP(월) = 고정비 ÷ (1 - 변동비율)</li>
+                <li>순이익(월) = 매출 - (매출×변동비율) - 고정비</li>
+                <li>사장 시급 = 순이익 ÷ (영업일수×1일 근무시간)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="kpi">
+              <div class="box">
+                <p class="t">월 손익분기점(BEP)</p>
+                <p class="v" id="kpiBEP">-</p>
+                <p class="h">이 매출을 넘으면 흑자 구간입니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">하루 최소 매출(평균)</p>
+                <p class="v" id="kpiBEPDaily">-</p>
+                <p class="h">영업일수 기준 단순 환산입니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">목표 매출 기준 순이익</p>
+                <p class="v" id="kpiProfit">-</p>
+                <p class="h">고정비/변동비를 반영합니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">사장 시급(순이익 기준)</p>
+                <p class="v" id="kpiOwnerHourly">-</p>
+                <p class="h">근무시간을 입력하시면 계산됩니다.</p>
+              </div>
+            </div>
+
+            <div class="content">
+              <h3>매출 구간별 순이익/시급(예시)</h3>
+              <table>
+                <thead>
+                  <tr><th>월 매출</th><th>월 순이익</th><th>사장 시급</th></tr>
+                </thead>
+                <tbody id="bepTableBody"></tbody>
+              </table>
+              <p class="small">표는 현재 입력값을 기준으로 손익분기점 전후 구간을 자동 생성합니다.</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="/about.html">About</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+      <p class="small">© <span id="y"></span></p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { calcBEP } from "/assets/app.js";
+    document.getElementById("y").textContent = new Date().getFullYear();
+    document.getElementById("btnCalc").addEventListener("click", calcBEP);
+    calcBEP();
+  </script>
+</body>
+</html>

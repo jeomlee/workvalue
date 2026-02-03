@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>연봉 실수령액 계산기(추정) | 2026 공제 비중 확인</title>
+  <meta name="description" content="연봉(세전)과 비과세를 입력하시면 월·연 실수령액을 추정합니다. 적용 요율(국민연금/건강보험/장기요양/고용보험)은 화면에서 직접 확인·수정하실 수 있습니다." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="__SITE_URL__/employee/salary-net.html" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>연봉 실수령액 계산기(추정)</strong>
+          <span>적용 요율을 확인하고, 필요 시 직접 수정하실 수 있습니다</span>
+        </div>
+      </div>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/employee/hourly.html">실수령 시급</a>
+        <a href="/business/bep.html">자영업 BEP</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <div class="cardHead">
+        <div>
+          <h2>입력</h2>
+          <p class="sub">비과세 항목은 회사 급여 기준에 따라 과세대상에서 제외될 수 있습니다.</p>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="cols">
+          <div>
+            <div class="row">
+              <div>
+                <label>연봉(세전, 원)</label>
+                <input id="salaryAnnual" type="number" value="50000000" min="0" step="100000" />
+              </div>
+              <div>
+                <label>월 비과세(원)</label>
+                <input id="nontaxMonthly" type="number" value="0" min="0" step="10000" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label>기본공제 인원(본인 포함)</label>
+                <input id="dependents" type="number" value="1" min="1" step="1" />
+              </div>
+              <div></div>
+            </div>
+
+            <div class="content">
+              <h3>적용 요율(확인/수정)</h3>
+              <p class="small">아래 값은 운영자가 최신 기준으로 갱신합니다. 사용자는 필요 시 값을 수정하여 시뮬레이션하실 수 있습니다.</p>
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label>국민연금(근로자 부담, 소수)</label>
+                  <input id="pensionRate" type="number" value="0.0475" step="0.0001" />
+                </div>
+                <div>
+                  <label>건강보험(근로자 부담, 소수)</label>
+                  <input id="healthRate" type="number" value="0.03595" step="0.0001" />
+                </div>
+              </div>
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label>장기요양(건강보험료×비율, 소수)</label>
+                  <input id="ltcRate" type="number" value="0.1314" step="0.0001" />
+                </div>
+                <div>
+                  <label>고용보험(근로자 부담, 소수)</label>
+                  <input id="employRate" type="number" value="0.009" step="0.0001" />
+                </div>
+              </div>
+            </div>
+
+            <div class="btnrow">
+              <button class="primary" id="btnCalc">계산하기</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="kpi">
+              <div class="box">
+                <p class="t">월 실수령액(추정)</p>
+                <p class="v" id="kpiNetMonthly">-</p>
+                <p class="h">회사/개인 공제에 따라 달라질 수 있습니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">연 실수령액(추정)</p>
+                <p class="v" id="kpiNetAnnual">-</p>
+                <p class="h">참고용 추정치입니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">월 공제 합계(보험+세금)</p>
+                <p class="v" id="kpiDedMonthly">-</p>
+                <p class="h">보험료/세액은 근사 모델입니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">연 소득세(추정)</p>
+                <p class="v" id="kpiIncomeTax">-</p>
+                <p class="h">지방소득세는 별도 반영됩니다.</p>
+              </div>
+            </div>
+
+            <div class="content">
+              <h3>계산 방식(요약)</h3>
+              <ul>
+                <li>4대보험은 과세대상 급여를 기준으로 근사 계산합니다.</li>
+                <li>소득세/지방소득세는 간편 모델(근로소득공제/기본공제/세액공제 근사)을 사용합니다.</li>
+                <li>정확한 원천징수/연말정산 결과와는 차이가 있을 수 있습니다.</li>
+              </ul>
+            </div>
+
+            <div class="content">
+              <h3>자주 확인하시는 포인트</h3>
+              <table>
+                <thead>
+                  <tr><th>항목</th><th>설명</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>비과세</td><td>회사 급여 기준에 따라 과세대상에서 제외될 수 있습니다.</td></tr>
+                  <tr><td>요율</td><td>연도/정책에 따라 변경될 수 있어, 페이지에서 직접 확인 및 수정이 가능합니다.</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="/about.html">About</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+      <p class="small">© <span id="y"></span> 참고용 정보이며 자문이 아닙니다.</p>
+    </footer>
+  </div>
+
+  <script type="module">
+    import { calcSalaryNet } from "/assets/app.js";
+    const y=document.getElementById("y"); if(y) y.textContent = new Date().getFullYear();
+    document.getElementById("btnCalc").addEventListener("click", calcSalaryNet);
+    calcSalaryNet();
+  </script>
+</body>
+</html>

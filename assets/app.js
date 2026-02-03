@@ -2,13 +2,13 @@
   WorkValue 계산기 모음 (전체)
   - 자영업 BEP 계산기: calcBEP
   - 실수령 시급 계산기(단순): calcHourly
-  - 월급 실수령액(추정): calcSalaryNet
+  - 월급 실수령액 계산기(추정): calcSalaryNet
   - 알바/근로자 인건비(킬러): calcLaborCost
-  - 공통: initWorkValue() -> 페이지별 자동 바인딩 + 공통 헤더 렌더
+  + 공통 초기화: initWorkValue (헤더 active + 각 페이지 자동 바인딩)
 ============================================================================ */
 
 function $(id) {
-  return typeof document !== "undefined" ? document.getElementById(id) : null;
+  return document.getElementById(id);
 }
 function num(v, fallback = 0) {
   const n = Number(v);
@@ -47,73 +47,47 @@ function readSelect(id) {
 }
 function parseQuery() {
   const q = {};
-  try {
-    const usp = new URLSearchParams(location.search);
-    for (const [k, v] of usp.entries()) q[k] = v;
-  } catch (_) {}
+  const usp = new URLSearchParams(location.search);
+  for (const [k, v] of usp.entries()) q[k] = v;
   return q;
 }
 
 /* ============================================================================
-  ✅ 공통 헤더 (모든 페이지 동일)
-  - HTML에 <header id="wvHeader"></header> 만 두면 동일한 헤더 렌더
+  공통: 네비 active 표시 (모든 페이지 헤더 동일 UX)
 ============================================================================ */
-const NAV_ITEMS = [
-  { key: "home", label: "홈", href: "/" },
-  { key: "bep", label: "자영업 BEP", href: "/business/bep.html" },
-  { key: "labor", label: "인건비 계산", href: "/business/labor-cost.html" },
-  { key: "hourly", label: "실수령 시급", href: "/employee/hourly.html" },
-  { key: "salary", label: "월급 실수령(추정)", href: "/employee/salary-net.html" },
-];
-
-function detectActiveKey() {
-  const p = (location.pathname || "").toLowerCase();
-  if (p === "/" || p.endsWith("/index.html")) return "home";
-  if (p.includes("/business/bep")) return "bep";
-  if (p.includes("/business/labor-cost")) return "labor";
-  if (p.includes("/employee/hourly")) return "hourly";
-  if (p.includes("/employee/salary-net")) return "salary";
-  return "home";
+function normalizePath(p) {
+  // /business/bep , /business/bep.html 둘 다 대응
+  if (!p) return "/";
+  if (p.endsWith("/")) p = p.slice(0, -1);
+  return p;
 }
+function setActiveNav() {
+  const header = document.querySelector("header");
+  if (!header) return;
 
-function renderCommonHeader() {
-  const host = $("wvHeader");
-  if (!host) return;
+  const nav = header.querySelector("nav");
+  if (!nav) return;
 
-  const active = detectActiveKey();
-  const title =
-    active === "bep"
-      ? "자영업 손익분기점(BEP) 계산기"
-      : active === "labor"
-      ? "알바·근로자 인건비 계산기"
-      : active === "hourly"
-      ? "실수령 시급 계산기"
-      : active === "salary"
-      ? "월급 실수령액 계산기(추정)"
-      : "WorkValue";
+  const current = normalizePath(location.pathname);
 
-  const subtitle =
-    active === "home"
-      ? "급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다"
-      : "입력값을 바꾸면 즉시 계산됩니다";
+  const links = Array.from(nav.querySelectorAll("a"));
+  links.forEach((a) => a.classList.remove("active"));
 
-  const navHtml = NAV_ITEMS.map((it) => {
-    const cls = it.key === active ? 'class="active"' : "";
-    return `<a ${cls} href="${it.href}">${it.label}</a>`;
-  }).join("");
+  // 링크도 normalize해서 매칭
+  const match = links.find((a) => {
+    try {
+      const u = new URL(a.getAttribute("href") || "", location.origin);
+      const hp = normalizePath(u.pathname);
+      // /business/bep 와 /business/bep.html을 동일 취급
+      const hp2 = hp.endsWith(".html") ? hp.slice(0, -5) : hp;
+      const cur2 = current.endsWith(".html") ? current.slice(0, -5) : current;
+      return hp === current || hp2 === cur2;
+    } catch {
+      return false;
+    }
+  });
 
-  host.innerHTML = `
-    <div class="brand">
-      <div class="dot"></div>
-      <div class="t">
-        <strong>${title}</strong>
-        <span>${subtitle}</span>
-      </div>
-    </div>
-    <nav aria-label="이동">
-      ${navHtml}
-    </nav>
-  `;
+  if (match) match.classList.add("active");
 }
 
 /* ============================================================================
@@ -259,8 +233,10 @@ export function calcSalaryNet() {
 /* ============================================================================
   4) 알바/근로자 인건비 계산기 (킬러)
 ============================================================================ */
+
+// 산재 업종 프리셋(입력 편의용 예시)
 const INDUSTRIAL_PRESETS = {
-  direct: { label: "직접 입력하시기", rate: null },
+  direct: { label: "직접 입력하기", rate: null },
   cafe: { label: "카페/음료(예시)", rate: 1.0 },
   restaurant: { label: "일반 음식점(예시)", rate: 1.2 },
   office: { label: "사무/일반(예시)", rate: 0.7 },
@@ -270,10 +246,25 @@ const INDUSTRIAL_PRESETS = {
 export function calcLaborCost() {
   if (!$("lcHourly") || !$("lcHours")) return;
 
+  // ✅ 프리셋 로직: 사용자가 산재요율 직접 수정하면 이후 자동 덮어쓰기 방지
+  const presetEl = $("lcIndustrialPreset");
+  const rateEl = $("lcIndustrialRate");
+
   const presetKey = readSelect("lcIndustrialPreset") || "direct";
   const presetRate = INDUSTRIAL_PRESETS[presetKey]?.rate ?? null;
-  if (presetRate != null) setValue("lcIndustrialRate", String(presetRate));
 
+  // preset 변경 이벤트에서만 userEdited를 리셋하고 덮어쓰기 허용
+  const presetChanged = presetEl && presetEl.dataset.lastPreset !== presetKey;
+  if (presetEl) presetEl.dataset.lastPreset = presetKey;
+
+  if (presetChanged && rateEl) rateEl.dataset.userEdited = "0";
+
+  if (presetRate != null && rateEl) {
+    const userEdited = rateEl.dataset.userEdited === "1";
+    if (!userEdited) rateEl.value = String(presetRate);
+  }
+
+  // 1) 입력값
   const hourly = Math.max(0, num($("lcHourly")?.value, 0));
   const monthlyHours = Math.max(0, num($("lcHours")?.value, 0));
   const weeklyDays = clamp(Math.floor(num($("lcDays")?.value, 5)), 1, 7);
@@ -288,25 +279,30 @@ export function calcLaborCost() {
   const industrialRate = clamp(num($("lcIndustrialRate")?.value, 0), 0, 99) / 100;
   const ownerDevRate = clamp(num($("lcOwnerDevRate")?.value, 0), 0, 99) / 100;
 
+  // BEP 연동 입력
   const varRatePct = clamp(num($("lcVarRate")?.value, 35), 0, 100);
   const varRate = varRatePct / 100;
   const openDays = Math.max(1, Math.floor(num($("lcOpenDays")?.value, 26)));
   const hoursPerDay = Math.max(1, num($("lcHoursPerDay")?.value, 10));
   const targetSales = Math.max(0, num($("lcTargetSales")?.value, 15000000));
 
+  // 2) 요율(단순 추정치)
   const RATE = {
     worker: { nps: 0.0475, hi: 0.03595, ei: 0.009 },
     owner: { nps: 0.0475, hi: 0.03595, ei: 0.009 },
   };
 
+  // 3) 1인 기준 계산
   const basePay = hourly * monthlyHours;
 
+  // 주휴(월 환산): 주근로시간 = 월근로시간 / 4.345
   const weeklyHours = monthlyHours / 4.345;
   const holidayPayMonthly =
     holidayOn && weeklyHours >= 15
       ? (weeklyHours / weeklyDays) * hourly * 4.345
       : 0;
 
+  // 가산수당(단순): 입력한 “연장·야간·휴일근로 시간(월)”에 대해 50% 가산분만 반영
   const premiumPay = extraHoursMonthly * hourly * 0.5;
 
   const workerGross1 = basePay + holidayPayMonthly + premiumPay;
@@ -323,6 +319,7 @@ export function calcLaborCost() {
   const dev1 = workerGross1 * ownerDevRate;
   const severance1 = severanceOn ? workerGross1 / 12 : 0;
 
+  // 4) N명 합계
   const workerGross = workerGross1 * count;
   const workerIns = workerIns1 * count;
   const workerNet = workerGross - workerIns;
@@ -330,11 +327,13 @@ export function calcLaborCost() {
   const ownerTotal = workerGross + (ownerIns1 + industrial1 + dev1 + severance1) * count;
   const ownerHourly = monthlyHours > 0 ? ownerTotal / (monthlyHours * count) : 0;
 
+  // 5) KPI 출력
   setText("kpiWorkerGross", won(workerGross));
   setText("kpiWorkerNet", won(workerNet));
   setText("kpiOwnerTotal", won(ownerTotal));
   setText("kpiOwnerHourly", won(ownerHourly));
 
+  // 6) 상세 내역
   const li = (k, v) => `<li>${k}: <b>${won(v)}</b></li>`;
 
   setHTML(
@@ -365,6 +364,7 @@ export function calcLaborCost() {
       .join("")
   );
 
+  // 7) BEP 링크 자동 채우기
   const bepUrl = new URL("/business/bep.html", location.origin);
   bepUrl.searchParams.set("fixedCost", String(Math.round(ownerTotal)));
   bepUrl.searchParams.set("variableRate", String(varRatePct));
@@ -375,6 +375,7 @@ export function calcLaborCost() {
   const toBep = $("lcToBEP");
   if (toBep) toBep.setAttribute("href", bepUrl.toString());
 
+  // 8) 직원 1명 추가 시 필요한 추가 매출(월/일)
   const perWorkerOwnerTotal = workerGross1 + ownerIns1 + industrial1 + dev1 + severance1;
   const margin = 1 - varRate;
 
@@ -384,6 +385,7 @@ export function calcLaborCost() {
   setText("kpiPlusOneSales", Number.isFinite(needSalesMonthly) ? won(needSalesMonthly) : "계산이 불가능합니다");
   setText("kpiPlusOneSalesDaily", Number.isFinite(needSalesDaily) ? won(needSalesDaily) : "계산이 불가능합니다");
 
+  // 9) 근무시간 시뮬레이션 표
   const tb = $("lcTableBody");
   if (tb) {
     const mults = [0.8, 1.0, 1.2, 1.5];
@@ -418,91 +420,86 @@ export function calcLaborCost() {
 }
 
 /* ============================================================================
-  ✅ 페이지별 자동 바인딩
+  공통 바인딩: 요소가 있으면 자동 계산 + input/change 연결
 ============================================================================ */
-function bind(ids, fn) {
+function bindRun(ids, run) {
   ids.forEach((id) => {
     const el = $(id);
     if (!el) return;
-    el.addEventListener("input", fn);
-    el.addEventListener("change", fn);
+    el.addEventListener("input", run);
+    el.addEventListener("change", run);
   });
 }
-function safeRun(fn) {
-  try {
-    fn();
-  } catch (e) {
-    console.error("[WorkValue] calc error:", e);
-  }
+
+function bindButtons(btnId, run) {
+  const b = $(btnId);
+  if (b) b.addEventListener("click", run);
 }
 
+/* ============================================================================
+  initWorkValue: 모든 페이지에서 이것만 호출하면 됨
+============================================================================ */
 export function initWorkValue() {
-  renderCommonHeader();
-
+  // footer year
   const y = $("y");
   if (y) y.textContent = new Date().getFullYear();
 
+  // nav active
+  setActiveNav();
+
+  // ---- 페이지별 자동 연결 ----
+
   // BEP
   if ($("fixedCost") && $("variableRate")) {
-    const run = () => safeRun(calcBEP);
-
-    const btnCalc = $("btnCalc");
-    if (btnCalc) btnCalc.addEventListener("click", run);
-
-    const btnExample = $("btnExample");
-    if (btnExample) {
-      btnExample.addEventListener("click", () => {
-        setValue("fixedCost", 5200000);
-        setValue("variableRate", 38);
-        setValue("openDays", 25);
-        setValue("hoursPerDay", 10);
-        setValue("targetSales", 18000000);
-        run();
-      });
-    }
-
-    bind(["fixedCost","variableRate","openDays","hoursPerDay","targetSales"], run);
-    safeRun(applyBEPQueryIfAny);
-    run();
-  }
-
-  // Labor cost
-  if ($("lcHourly") && $("lcHours")) {
-    const run = () => safeRun(calcLaborCost);
-
-    const btn = $("btnCalcLC");
-    if (btn) btn.addEventListener("click", run);
-
-    bind(
-      [
-        "lcHourly","lcHours","lcDays","lcCount","lcHoliday","lcExtraHours","lcInsurance",
-        "lcIndustrialRate","lcIndustrialPreset","lcOwnerDevRate","lcSeverance",
-        "lcVarRate","lcOpenDays","lcHoursPerDay","lcTargetSales",
-      ],
-      run
-    );
-    run();
+    applyBEPQueryIfAny();
+    bindButtons("btnCalc", calcBEP);
+    bindButtons("btnExample", () => {
+      setValue("fixedCost", 5200000);
+      setValue("variableRate", 38);
+      setValue("openDays", 25);
+      setValue("hoursPerDay", 10);
+      setValue("targetSales", 18000000);
+      calcBEP();
+    });
+    bindRun(["fixedCost","variableRate","openDays","hoursPerDay","targetSales"], calcBEP);
+    calcBEP();
   }
 
   // Hourly
   if ($("hourlyWage") && $("hoursPerDayH")) {
-    const run = () => safeRun(calcHourly);
-
-    const btn = $("btnCalcH");
-    if (btn) btn.addEventListener("click", run);
-
-    bind(["hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","includeHolidayH"], run);
-    run();
+    bindButtons("btnCalcH", calcHourly);
+    bindRun(["hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","includeHolidayH"], calcHourly);
+    calcHourly();
   }
 
-  // Salary net
+  // SalaryNet
   if ($("grossS") && $("depS")) {
-    const run = () => safeRun(calcSalaryNet);
+    bindButtons("btnCalcS", calcSalaryNet);
+    bindRun(["grossS","depS","presetS","includeTaxS"], calcSalaryNet);
+    calcSalaryNet();
+  }
 
-    const btn = $("btnCalcS");
-    if (btn) btn.addEventListener("click", run);
+  // LaborCost
+  if ($("lcHourly") && $("lcHours")) {
+    const run = () => calcLaborCost();
 
-    bind(["grossS","depS","presetS","includeTaxS"], run);
+    // 산업요율 직접 수정 감지 → 이후 preset이 자동 덮어쓰기 안 하도록
+    const rateEl = $("lcIndustrialRate");
+    if (rateEl) {
+      rateEl.addEventListener("input", () => (rateEl.dataset.userEdited = "1"));
+      rateEl.addEventListener("change", () => (rateEl.dataset.userEdited = "1"));
+    }
+
+    bindButtons("btnCalcLC", run);
+    bindRun(
+      [
+        "lcHourly","lcHours","lcDays","lcCount","lcHoliday","lcExtraHours","lcInsurance",
+        "lcIndustrialRate","lcIndustrialPreset","lcOwnerDevRate","lcSeverance",
+        "lcVarRate","lcOpenDays","lcHoursPerDay","lcTargetSales"
+      ],
+      run
+    );
+
     run();
   }
 }

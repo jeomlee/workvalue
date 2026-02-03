@@ -13,12 +13,29 @@
 
 <body>
   <div class="container">
-    <header id="wvHeader"></header>
+
+    <!-- ✅ fallback header -->
+    <header id="wvHeader">
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>WorkValue</strong>
+          <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
+        </div>
+      </div>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/business/bep.html">자영업 BEP</a>
+        <a href="/business/labor-cost.html">인건비 계산</a>
+        <a href="/employee/hourly.html">실수령 시급</a>
+        <a href="/employee/salary-net.html">월급 실수령(추정)</a>
+      </nav>
+    </header>
 
     <section class="card">
       <div class="cardHead">
         <div>
-          <h2>입력</h2>
+          <h2>월급 실수령액 계산기(추정)</h2>
           <p class="sub">공제 항목을 단순 비율로 반영하여 실수령액을 추정합니다.</p>
         </div>
       </div>
@@ -32,7 +49,7 @@
                 <input id="grossS" type="number" value="3000000" min="0" step="10000" />
               </div>
               <div>
-                <label>부양가족 수(본인 포함, 선택)</label>
+                <label>부양가족 수(본인 포함)</label>
                 <input id="depS" type="number" value="1" min="1" step="1" />
               </div>
             </div>
@@ -41,16 +58,16 @@
               <div>
                 <label>공제 프리셋(선택)</label>
                 <select id="presetS">
-                  <option value="standard" selected>일반적인 직장가입자 기준으로 계산합니다</option>
-                  <option value="light">공제 부담이 다소 낮은 경우로 계산합니다</option>
-                  <option value="heavy">공제 부담이 다소 높은 경우로 계산합니다</option>
+                  <option value="standard" selected>일반적인 직장가입자 기준</option>
+                  <option value="light">공제 부담이 다소 낮은 경우</option>
+                  <option value="heavy">공제 부담이 다소 높은 경우</option>
                 </select>
               </div>
               <div>
                 <label>소득세 추정 포함</label>
                 <div style="display:flex; gap:10px; align-items:center; height:42px;">
                   <input id="includeTaxS" type="checkbox" checked />
-                  <span class="small">체크하시면 소득세/지방소득세를 단순 추정에 포함합니다.</span>
+                  <span class="small">체크 해제 시 보험료 중심 추정치만 계산합니다.</span>
                 </div>
               </div>
             </div>
@@ -61,9 +78,9 @@
 
             <div class="content">
               <h3>안내</h3>
-              <p>
+              <p class="small">
                 본 결과는 공제 구조를 빠르게 확인하시도록 제공되는 추정치입니다.
-                수당/상여 포함 여부, 보험료 기준, 세액 적용 방식에 따라 실제 급여명세서와 차이가 발생할 수 있습니다.
+                수당/상여 포함 여부, 보험료 기준, 세액 적용 방식에 따라 실제와 차이가 발생할 수 있습니다.
               </p>
             </div>
           </div>
@@ -83,19 +100,19 @@
               <div class="box">
                 <p class="t">공제율(추정)</p>
                 <p class="v" id="kpiRateS">-</p>
-                <p class="h">총 공제액 ÷ 세전 월급으로 계산합니다.</p>
+                <p class="h">총 공제액 ÷ 세전 월급</p>
               </div>
               <div class="box">
                 <p class="t">공제 항목</p>
                 <p class="v">항목별</p>
-                <p class="h">아래에서 항목별 추정치를 확인하실 수 있습니다.</p>
+                <p class="h">아래에서 항목별 추정치를 확인합니다.</p>
               </div>
             </div>
 
             <div class="content">
               <h3>공제 항목(추정)</h3>
               <ul id="deductListS"></ul>
-              <p class="small">실제 공제 항목 및 금액은 급여명세서 기준으로 확인을 권장드립니다.</p>
+              <p class="small">실제 공제 항목/금액은 급여명세서 기준 확인을 권장드립니다.</p>
             </div>
 
             <div class="content">
@@ -106,8 +123,8 @@
                 <li><a href="/business/labor-cost.html"><b>인건비 계산기</b></a></li>
               </ul>
             </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </section>
@@ -124,7 +141,7 @@
   </div>
 
   <script type="module">
-    import { initWorkValue } from "/assets/app.js";
+    import { initWorkValue } from "/assets/app.js?v=20260203";
     initWorkValue();
   </script>
 </body>

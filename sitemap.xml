@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>__SITE_URL__/</loc></url>
-  <url><loc>__SITE_URL__/employee/salary-net.html</loc></url>
-  <url><loc>__SITE_URL__/employee/hourly.html</loc></url>
-  <url><loc>__SITE_URL__/business/bep.html</loc></url>
-  <url><loc>__SITE_URL__/about.html</loc></url>
-  <url><loc>__SITE_URL__/privacy.html</loc></url>
-  <url><loc>__SITE_URL__/terms.html</loc></url>
-  <url><loc>__SITE_URL__/contact.html</loc></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://workvalue.kr/</loc></url>
+  <url><loc>https://workvalue.kr/business/bep.html</loc></url>
+  <url><loc>https://workvalue.kr/employee/hourly.html</loc></url>
+  <url><loc>https://workvalue.kr/employee/salary-net.html</loc></url>
+  <url><loc>https://workvalue.kr/about.html</loc></url>
+  <url><loc>https://workvalue.kr/contact.html</loc></url>
+  <url><loc>https://workvalue.kr/privacy.html</loc></url>
+  <url><loc>https://workvalue.kr/terms.html</loc></url>
 </urlset>

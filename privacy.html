@@ -1,18 +1,75 @@
-<!-- privacy.html -->
-<!doctype html><html lang="ko"><head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Privacy Policy | 내 노동의 가치 계산기</title>
-<meta name="robots" content="index,follow"/>
-<link rel="stylesheet" href="/assets/styles.css"/>
-</head><body><div class="container">
-<header><div class="brand"><div class="dot"></div><div class="t"><strong>Privacy Policy</strong><span>개인정보 처리방침</span></div></div><nav><a href="/">홈</a></nav></header>
-<section class="card"><div class="cardBody"><div class="content">
-<h3>요약</h3>
-<ul>
-<li>본 사이트는 계산을 위해 사용자가 입력한 값(연봉, 비용 등)을 서버로 전송하지 않는 방식(브라우저 내 계산)을 지향합니다.</li>
-<li>광고/통계 도구가 적용되는 경우 쿠키 또는 유사 기술이 사용될 수 있습니다.</li>
-</ul>
-<p class="small">운영자는 서비스 운영을 위해 필요한 범위에서만 정보를 처리하며, 관련 문의는 Contact 페이지를 통해 접수하실 수 있습니다.</p>
-</div></div></section>
-<footer><div class="links"><a href="/terms.html">Terms</a><a href="/contact.html">Contact</a></div></footer>
-</div></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>개인정보처리방침 | WorkValue</title>
+  <meta name="description" content="WorkValue 개인정보처리방침 안내 페이지입니다." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://workvalue.kr/privacy.html" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>개인정보처리방침</strong>
+          <span>서비스 이용 중 개인정보 처리에 대해 안내드립니다</span>
+        </div>
+      </div>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/about.html">소개</a>
+        <a href="/contact.html">문의</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      <div class="cardHead">
+        <div>
+          <h2>개요</h2>
+          <p class="sub">본 방침은 서비스 운영 방식에 따라 업데이트될 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="cardBody">
+        <div class="content" style="margin-top:0;">
+          <h3>1. 수집 항목</h3>
+          <p>
+            계산기 기능 제공을 위해 사용자가 입력한 값은 기본적으로 브라우저에서 처리되며,
+            별도의 회원 가입이나 필수 개인정보 수집을 전제로 하지 않습니다.
+          </p>
+
+          <h3>2. 이용 목적</h3>
+          <p>
+            서비스 품질 개선, 오류 분석, 문의 대응 등 운영 목적 범위 내에서만 개인정보가 처리될 수 있습니다.
+          </p>
+
+          <h3>3. 쿠키 및 로그</h3>
+          <p>
+            서비스 안정성 및 통계 목적의 제한적인 로그가 생성될 수 있습니다.
+            광고 서비스가 적용되는 경우, 해당 서비스의 정책에 따른 쿠키가 사용될 수 있습니다.
+          </p>
+
+          <h3>4. 문의</h3>
+          <p>
+            개인정보 관련 문의는 문의 페이지를 통해 안내드릴 수 있습니다.
+          </p>
+
+          <p class="small">본 방침은 필요 시 변경될 수 있으며, 변경 사항은 본 페이지를 통해 안내될 수 있습니다.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="/terms.html">이용약관</a>
+        <a href="/contact.html">문의</a>
+      </div>
+      <p class="small">© <span id="y"></span> WorkValue</p>
+    </footer>
+  </div>
+  <script>document.getElementById("y").textContent=new Date().getFullYear();</script>
+</body>
+</html>

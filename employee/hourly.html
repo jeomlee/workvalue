@@ -1,220 +1,169 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>시급 계산기 - 주급/월급 추정 및 근로시간 기준 안내 | WorkValue</title>
-  <meta name="description" content="시급을 입력하시면 주급/월급을 추정해 드립니다. 휴게시간, 초과근로, 주휴 개념 등 계산 기준과 예시, FAQ를 함께 안내드립니다." />
-  <link rel="canonical" href="https://workvalue.kr/employee/hourly.html" />
+  <title>실수령 시급 계산기 | 주급·월급 단순 추정 | WorkValue</title>
+  <meta name="description" content="시급, 근무시간, 휴게시간, 주 근무일수, 초과근로를 입력하시면 주급·월급을 단순 추정해 드립니다. 계산 기준과 예시, FAQ도 함께 확인하실 수 있습니다." />
   <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://workvalue.kr/employee/hourly.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
-  <script defer src="/assets/app.js"></script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"BreadcrumbList",
-    "itemListElement":[
-      {"@type":"ListItem","position":1,"name":"홈","item":"https://workvalue.kr/"},
-      {"@type":"ListItem","position":2,"name":"직원/급여","item":"https://workvalue.kr/employee/hourly.html"},
-      {"@type":"ListItem","position":3,"name":"시급 계산기","item":"https://workvalue.kr/employee/hourly.html"}
-    ]
-  }
-  </script>
-
-  <script type="application/ld+json">
-  {
-    "@context":"https://schema.org",
-    "@type":"WebPage",
-    "name":"시급 계산기",
-    "url":"https://workvalue.kr/employee/hourly.html",
-    "description":"시급 기준으로 주급/월급을 추정하며, 휴게시간·초과근로·주휴 개념을 함께 안내드립니다."
-  }
-  </script>
 </head>
 
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a class="brand" href="/">
-        <span class="brand-mark">WV</span>
-        <span class="brand-name">WorkValue</span>
-      </a>
-
-      <nav class="nav">
-        <a href="/employee/hourly.html">시급 계산기</a>
-        <a href="/employee/salary-net.html">월급 실수령액</a>
-        <a href="/business/bep.html">손익분기점(BEP)</a>
-        <a href="/about.html">소개</a>
-        <a href="/contact.html">문의</a>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>실수령 시급 계산기</strong>
+          <span>근무 패턴을 입력하시면 주급·월급을 단순 추정해 드립니다</span>
+        </div>
+      </div>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/employee/salary-net.html">월급 실수령(추정)</a>
+        <a href="/business/bep.html">자영업 BEP</a>
       </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <div class="breadcrumb">
-      <a href="/">홈</a> &nbsp;›&nbsp; <span>시급 계산기</span>
-    </div>
+    </header>
 
     <section class="card">
-      <h1 style="margin:0 0 8px; font-size:32px; line-height:1.15;">시급 계산기</h1>
-      <p class="lead" style="margin:0;">
-        시급과 근무 패턴을 입력하시면 주급 및 월급을 추정해 드립니다. 또한 계산 기준과 예시, 자주 묻는 질문을 함께 안내드립니다.
-      </p>
-
-      <h2 class="section-title">계산기를 이용해 주세요</h2>
-
-      <form class="form-grid" data-hourly-form>
-        <div class="field">
-          <label for="hourly_wage">시급(원)</label>
-          <input class="input" id="hourly_wage" name="hourly_wage" type="number" inputmode="numeric" placeholder="예: 10000" value="10000" />
-        </div>
-
-        <div class="field">
-          <label for="hours_per_day">하루 근무시간(시간)</label>
-          <input class="input" id="hours_per_day" name="hours_per_day" type="number" step="0.5" placeholder="예: 8" value="8" />
-        </div>
-
-        <div class="field">
-          <label for="days_per_week">주 근무일수(일)</label>
-          <input class="input" id="days_per_week" name="days_per_week" type="number" placeholder="예: 5" value="5" />
-        </div>
-
-        <div class="field">
-          <label for="break_minutes">하루 휴게시간(분)</label>
-          <input class="input" id="break_minutes" name="break_minutes" type="number" placeholder="예: 60" value="60" />
-        </div>
-
-        <div class="field">
-          <label for="overtime_hours_week">주 초과근로(시간, 선택)</label>
-          <input class="input" id="overtime_hours_week" name="overtime_hours_week" type="number" step="0.5" placeholder="예: 2" value="0" />
-        </div>
-
-        <div class="field">
-          <label for="include_holiday">주휴 추정 포함</label>
-          <div style="display:flex; gap:10px; align-items:center; height:42px;">
-            <input id="include_holiday" name="include_holiday" type="checkbox" checked />
-            <span class="small">체크하시면 주휴 시간을 단순 추정에 포함합니다.</span>
-          </div>
-        </div>
-
-        <div class="row" style="grid-column:1 / -1;">
-          <button class="btn primary" type="submit">계산 결과를 확인하시기</button>
-          <span class="small">입력값이 변경되면 결과가 자동으로 갱신됩니다.</span>
-        </div>
-      </form>
-
-      <div class="result" aria-live="polite">
-        <div class="kpi">
-          <div class="kpi-box">
-            <div class="k">주급(추정)</div>
-            <div class="v" data-out="weekly">-</div>
-          </div>
-          <div class="kpi-box">
-            <div class="k">월급(추정)</div>
-            <div class="v" data-out="monthly">-</div>
-          </div>
-          <div class="kpi-box">
-            <div class="k">주 유급시간(추정)</div>
-            <div class="v" data-out="hours">-</div>
-          </div>
-        </div>
-        <div class="note" style="margin-top:10px;" data-out="assumptions"></div>
-      </div>
-    </section>
-
-    <section class="card" style="margin-top:14px;">
-      <h2>계산 기준을 안내드립니다</h2>
-      <p>
-        본 페이지는 이해를 돕기 위해 일반적인 기준을 기반으로 단순 추정을 제공합니다.
-        실제 지급 기준은 사업장 규정 및 계약 조건에 따라 달라질 수 있습니다.
-      </p>
-      <ul class="bullets">
-        <li><b>유급시간</b>: “근무시간 - 휴게시간”을 유급시간으로 단순 반영합니다.</li>
-        <li><b>주휴(체크 시)</b>: 주휴 요건은 상황에 따라 다를 수 있어, 본 도구에서는 “1일 평균 유급시간”을 주휴 시간으로 단순 추정합니다.</li>
-        <li><b>초과근로(입력 시)</b>: 본 도구에서는 초과근로 가산을 단순히 50%로 반영하여 추정합니다.</li>
-        <li><b>월 환산</b>: 주급을 평균 4.345주(연간 기준의 월 평균 주수)로 환산하여 월급을 추정합니다.</li>
-      </ul>
-      <p class="note">
-        참고: 정확한 산정이 필요하신 경우, 회사의 급여명세서 기준(수당 항목/휴게 처리/포괄임금 여부 등)을 우선 확인해 주시기 바랍니다.
-      </p>
-    </section>
-
-    <section class="card" style="margin-top:14px;">
-      <h2>입력 예시를 안내드립니다</h2>
-      <div class="grid" style="margin:0;">
-        <article class="card" style="box-shadow:none;">
-          <h3>예시 1) 주 5일, 하루 8시간, 휴게 1시간</h3>
-          <p class="small">시급 10,000원 / 하루 8시간 / 휴게 60분 / 주 5일 / 초과근로 0시간 / 주휴 포함</p>
-          <p>기본 패턴에서 주급과 월급 추정치를 확인하실 수 있습니다.</p>
-        </article>
-        <article class="card" style="box-shadow:none;">
-          <h3>예시 2) 주 6일, 휴게가 짧은 근무</h3>
-          <p class="small">시급 11,000원 / 하루 7.5시간 / 휴게 30분 / 주 6일 / 초과근로 0시간</p>
-          <p>휴게시간에 따라 유급시간이 줄어들 수 있음을 확인하실 수 있습니다.</p>
-        </article>
-      </div>
-      <div class="card" style="margin-top:12px; box-shadow:none;">
-        <h3>예시 3) 초과근로가 있는 경우</h3>
-        <p class="small">시급 12,000원 / 하루 8시간 / 휴게 60분 / 주 5일 / 초과근로 4시간</p>
-        <p>초과근로 입력 시, 가산을 반영한 추정치가 증가하는 것을 확인하실 수 있습니다.</p>
-      </div>
-    </section>
-
-    <section class="card" style="margin-top:14px;">
-      <h2>자주 묻는 질문</h2>
-      <div class="faq" data-faq>
-        <button class="faq-q" type="button">휴게시간은 모두 무급으로 처리되나요?</button>
-        <div class="faq-a">
-          일반적으로 휴게시간은 근로시간에서 제외되는 경우가 많으나, 사업장 규정과 실제 운영 방식에 따라 달라질 수 있습니다.
-          본 도구는 “근무시간 - 휴게시간”을 유급시간으로 단순 반영합니다.
-        </div>
-
-        <button class="faq-q" type="button">주휴는 누구나 받을 수 있나요?</button>
-        <div class="faq-a">
-          주휴는 일정 요건 충족 여부에 따라 달라질 수 있습니다. 본 도구에서는 이해를 돕기 위해 체크 시 주휴 시간을 단순 추정에 포함합니다.
-          정확한 적용 여부는 계약 조건 및 사업장 기준을 확인해 주시기 바랍니다.
-        </div>
-
-        <button class="faq-q" type="button">월급 환산이 왜 정확히 4주가 아닌가요?</button>
-        <div class="faq-a">
-          본 도구에서는 월 평균 주수(약 4.345주)를 사용하여 월 환산을 추정합니다.
-          월별 근무일수 및 급여 산정 방식에 따라 실제 월급과 차이가 발생할 수 있습니다.
-        </div>
-      </div>
-    </section>
-
-    <section class="card" style="margin-top:14px;">
-      <h2>관련 도구를 안내드립니다</h2>
-      <ul class="link-list">
-        <li>
-          <a href="/employee/salary-net.html">월급 실수령액 계산기</a>
-          <span>공제 구조를 이해하실 수 있도록 정리해 드립니다.</span>
-        </li>
-        <li>
-          <a href="/business/bep.html">손익분기점(BEP) 계산기</a>
-          <span>사업 운영 기준(고정비/변동비/마진)을 함께 안내드립니다.</span>
-        </li>
-      </ul>
-    </section>
-
-    <footer class="site-footer">
-      <div class="container footer-inner">
+      <div class="cardHead">
         <div>
-          <div class="brand small">
-            <span class="brand-mark">WV</span>
-            <span class="brand-name">WorkValue</span>
-          </div>
-          <p class="small">본 페이지는 일반 정보 제공 목적이며, 세무·노무·법률 자문이 아닙니다.</p>
-        </div>
-        <div class="footer-links">
-          <a href="/about.html">소개</a>
-          <a href="/contact.html">문의</a>
-          <a href="/privacy.html">개인정보처리방침</a>
-          <a href="/terms.html">이용약관</a>
+          <h2>입력</h2>
+          <p class="sub">휴게시간과 초과근로를 반영하여 주급·월급을 단순 계산합니다.</p>
         </div>
       </div>
+
+      <div class="cardBody">
+        <div class="cols">
+          <div>
+            <div class="row">
+              <div>
+                <label>시급(원)</label>
+                <input id="hourlyWage" type="number" value="10000" min="0" step="10" />
+              </div>
+              <div>
+                <label>1일 근무시간(시간)</label>
+                <input id="hoursPerDayH" type="number" value="8" min="0" step="0.5" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label>주 근무일수(일)</label>
+                <input id="daysPerWeekH" type="number" value="5" min="0" max="7" step="1" />
+              </div>
+              <div>
+                <label>1일 휴게시간(분)</label>
+                <input id="breakMinH" type="number" value="60" min="0" step="10" />
+              </div>
+            </div>
+
+            <div class="row" style="margin-top:10px;">
+              <div>
+                <label>주 초과근로(시간, 선택)</label>
+                <input id="overtimeWeekH" type="number" value="0" min="0" step="0.5" />
+              </div>
+              <div>
+                <label>주휴 포함(선택)</label>
+                <div style="display:flex; gap:10px; align-items:center; height:42px;">
+                  <input id="includeHolidayH" type="checkbox" checked />
+                  <span class="small">체크하시면 주휴 시간을 단순 계산에 포함합니다.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="btnrow">
+              <button class="primary" id="btnCalcH">계산하시기</button>
+            </div>
+
+            <div class="content">
+              <h3>계산 기준</h3>
+              <ul>
+                <li>유급시간(일) = 근무시간 - 휴게시간</li>
+                <li>주급(단순) = (주 유급시간 + 주휴시간)×시급 + 초과근로 가산(단순 50%)</li>
+                <li>월급(단순) = 주급×4.345(월 평균 주수)로 환산</li>
+              </ul>
+              <p class="small">안내: 실제 지급 기준은 사업장 규정 및 계약 조건에 따라 달라질 수 있습니다.</p>
+            </div>
+
+            <div class="content">
+              <h3>입력 예시</h3>
+              <ul>
+                <li>예시 1) 시급 10,000원 / 1일 8시간 / 휴게 60분 / 주 5일</li>
+                <li>예시 2) 시급 11,000원 / 1일 7.5시간 / 휴게 30분 / 주 6일</li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <div class="kpi">
+              <div class="box">
+                <p class="t">주급(단순)</p>
+                <p class="v" id="kpiWeeklyH">-</p>
+                <p class="h">입력값을 기준으로 단순 계산합니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">월급(단순)</p>
+                <p class="v" id="kpiMonthlyH">-</p>
+                <p class="h">월 평균 주수로 환산한 값입니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">주 총 시간(단순)</p>
+                <p class="v" id="kpiHoursH">-</p>
+                <p class="h">주휴 및 초과근로 입력값을 반영합니다.</p>
+              </div>
+              <div class="box">
+                <p class="t">참고 안내</p>
+                <p class="v">추정치</p>
+                <p class="h">정확한 금액은 급여명세서 또는 사업장 산정 기준을 확인해 주시기를 권장드립니다.</p>
+              </div>
+            </div>
+
+            <div class="content">
+              <h3>자주 묻는 질문</h3>
+              <div class="faq">
+                <details>
+                  <summary>주휴는 누구나 적용되나요?</summary>
+                  <p>주휴는 요건 충족 여부에 따라 달라질 수 있습니다. 본 계산기는 체크 여부에 따라 단순 계산에 포함합니다.</p>
+                </details>
+                <details>
+                  <summary>초과근로 가산은 어떻게 반영되나요?</summary>
+                  <p>본 페이지에서는 이해를 돕기 위해 초과근로 가산을 단순 50%로 반영합니다.</p>
+                </details>
+              </div>
+            </div>
+
+            <div class="content">
+              <h3>관련 도구</h3>
+              <ul>
+                <li><a href="/employee/salary-net.html"><b>월급 실수령액 계산기(추정)</b></a> — 공제 구조를 항목별로 확인하실 수 있습니다.</li>
+                <li><a href="/business/bep.html"><b>자영업 손익분기점(BEP) 계산기</b></a> — 목표 매출 기준 순이익과 사장 시급을 확인하실 수 있습니다.</li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="links">
+        <a href="/about.html">소개</a>
+        <a href="/privacy.html">개인정보처리방침</a>
+        <a href="/terms.html">이용약관</a>
+        <a href="/contact.html">문의</a>
+      </div>
+      <p class="small">© <span id="y"></span> WorkValue</p>
     </footer>
-  </main>
+  </div>
+
+  <script type="module">
+    import { calcHourly } from "/assets/app.js";
+    document.getElementById("y").textContent = new Date().getFullYear();
+    document.getElementById("btnCalcH").addEventListener("click", calcHourly);
+    calcHourly();
+  </script>
 </body>
 </html>

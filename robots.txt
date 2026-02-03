@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
-Sitemap: __SITE_URL__/sitemap.xml
+
+Sitemap: https://workvalue.kr/sitemap.xml

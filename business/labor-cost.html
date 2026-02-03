@@ -3,282 +3,517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>알바·근로자 인건비 계산기 | 사장님 총부담 & 실수령 | WorkValue</title>
-  <meta name="description" content="시급, 근무시간, 주휴수당, 4대보험, 산재보험, 퇴직금을 반영하여 근로자 실수령액과 사장님 총 인건비 부담을 함께 계산하실 수 있습니다." />
+  <title>WorkValue | 알바·근로자 인건비 계산기</title>
+  <meta name="description" content="시급/근무시간/근무일수 입력으로 근로자 실수령(추정)과 사장님 총부담(추정)을 함께 계산합니다. 4대보험/주휴수당/퇴직금 가정값도 확인하세요." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://workvalue.kr/business/labor-cost.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
-  <meta name="google-site-verification" content="2j0qNv5hU7oaXeGm5eFOfF0MPQueETQQGz-Ue2rr0cQ" />
+
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"WorkValue 인건비 계산기",
+    "url":"https://workvalue.kr/business/labor-cost.html",
+    "description":"알바·근로자 인건비 계산기: 근로자 실수령과 사장님 총부담을 함께 계산"
+  }
+  </script>
 </head>
 
 <body>
-<div class="container">
+  <div class="container">
 
-  <!-- ✅ fallback header -->
-  <header id="wvHeader">
-    <div class="brand">
-      <div class="dot"></div>
-      <div class="t">
-        <strong>WorkValue</strong>
-        <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
-      </div>
-    </div>
-    <nav aria-label="이동">
-      <a href="/">홈</a>
-      <a href="/business/bep.html">자영업 BEP</a>
-      <a href="/business/labor-cost.html">인건비 계산</a>
-      <a href="/employee/hourly.html">실수령 시급</a>
-      <a href="/employee/salary-net.html">월급 실수령(추정)</a>
-    </nav>
-  </header>
+    <!-- ✅ fallback header -->
+    <header id="wvHeader">
+      <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
+        <div class="dot"></div>
+        <div class="t">
+          <strong>WorkValue</strong>
+          <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
+        </div>
+      </a>
+      <nav aria-label="이동">
+        <a href="/">홈</a>
+        <a href="/business/bep.html">자영업 BEP</a>
+        <a class="active" href="/business/labor-cost.html">인건비 계산</a>
+        <a href="/employee/hourly.html">실수령 시급</a>
+        <a href="/employee/salary-net.html">월급 실수령(추정)</a>
+      </nav>
+    </header>
 
-  <section class="card">
-    <div class="cardHead">
-      <div>
-        <h2>알바·근로자 인건비 계산기</h2>
-        <p class="sub">
-          실제 적용 여부와 요율은 근로시간/고용형태/업종 고시 등에 따라 달라질 수 있으며, 본 계산기는 일반적인 기준으로 단순 계산합니다.
-        </p>
-      </div>
-    </div>
-
-    <div class="cardBody">
-      <div class="cols">
-
+    <section class="card">
+      <div class="cardHead hero">
         <div>
-          <div class="row">
-            <div>
-              <label>시급(원)</label>
-              <input id="lcHourly" type="number" value="10320" min="0" step="10" />
-            </div>
-            <div>
-              <label>월 근무시간(시간)</label>
-              <input id="lcHours" type="number" value="160" min="0" step="1" />
-            </div>
-          </div>
+          <h1 class="heroTitle">알바·근로자 인건비 계산기</h1>
+          <p class="sub heroSub">근로자 실수령(추정)과 사장님 총부담(추정)을 한 번에 확인합니다. (주휴·4대보험·퇴직금 가정 포함)</p>
+        </div>
+      </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>주 근무일수(주휴 계산용)</label>
-              <input id="lcDays" type="number" value="5" min="1" max="7" />
+      <div class="cardBody">
+        <div class="cols">
+          <!-- 입력 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <h3>입력</h3>
+              <span class="pill">월 기준</span>
             </div>
-            <div>
-              <label>인원 수(명)</label>
-              <input id="lcCount" type="number" value="1" min="1" />
-            </div>
-          </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>주휴수당 적용</label>
-              <div style="display:flex; gap:10px; align-items:center; height:42px;">
-                <input id="lcHoliday" type="checkbox" checked />
-                <span class="small">주 15시간 이상 근무 시 일반적으로 적용됩니다.</span>
+            <div class="row">
+              <div>
+                <label for="hourlyWage">시급(원)</label>
+                <input id="hourlyWage" inputmode="numeric" placeholder="예: 10,000" />
+              </div>
+              <div>
+                <label for="dailyHours">하루 근무시간(시간)</label>
+                <input id="dailyHours" inputmode="decimal" placeholder="예: 8" />
               </div>
             </div>
-            <div>
-              <label>연장·야간·휴일근로 시간(월)</label>
-              <input id="lcExtraHours" type="number" value="0" min="0" />
-            </div>
-          </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>4대보험 적용</label>
-              <div style="display:flex; gap:10px; align-items:center; height:42px;">
-                <input id="lcInsurance" type="checkbox" checked />
-                <span class="small">근로시간·고용 형태에 따라 달라질 수 있습니다.</span>
+            <div class="row">
+              <div>
+                <label for="workDays">월 근무일수(일)</label>
+                <input id="workDays" inputmode="numeric" placeholder="예: 22" />
+              </div>
+              <div>
+                <label for="weeklyDays">주 근무일수(일)</label>
+                <input id="weeklyDays" inputmode="numeric" placeholder="예: 5" />
+                <div class="small">주휴수당 계산에 사용됩니다.</div>
               </div>
             </div>
-            <div>
-              <label>퇴직금 적립 포함</label>
-              <div style="display:flex; gap:10px; align-items:center; height:42px;">
-                <input id="lcSeverance" type="checkbox" />
-                <span class="small">1년 이상 근무 가정 월 환산 기준입니다.</span>
+
+            <div class="row">
+              <div>
+                <label for="includeWeeklyHoliday">주휴수당 포함</label>
+                <select id="includeWeeklyHoliday">
+                  <option value="yes" selected>포함(기본)</option>
+                  <option value="no">미포함</option>
+                </select>
+              </div>
+              <div>
+                <label for="includeSeverance">퇴직금 적립(월 할당) 포함</label>
+                <select id="includeSeverance">
+                  <option value="yes" selected>포함(기본)</option>
+                  <option value="no">미포함</option>
+                </select>
               </div>
             </div>
-          </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>산재 요율 프리셋(선택)</label>
-              <select id="lcIndustrialPreset">
-                <option value="direct" selected>직접 입력하기</option>
-                <option value="cafe">카페/음료(예시)</option>
-                <option value="restaurant">일반 음식점(예시)</option>
-                <option value="office">사무/일반(예시)</option>
-                <option value="delivery">배달/라이더(예시)</option>
-              </select>
-              <p class="small">프리셋은 예시이며 실제 업종 요율은 고시에 따라 확인을 권장드립니다.</p>
+            <div class="row">
+              <div>
+                <label for="insuranceMode">4대보험 적용</label>
+                <select id="insuranceMode">
+                  <option value="none">미적용(알바/단기 등)</option>
+                  <option value="employee" selected>근로자 부담만(실수령 추정)</option>
+                  <option value="both">근로자+사업주 부담(총부담 추정)</option>
+                </select>
+                <div class="small">정확한 적용 여부/요율은 근로형태·사업장·가입요건에 따라 달라질 수 있습니다.</div>
+              </div>
+              <div>
+                <label for="incomeTaxRate">원천징수/소득세(단순, %)</label>
+                <input id="incomeTaxRate" inputmode="decimal" placeholder="예: 3.3" />
+                <div class="small">프리랜서 3.3% 같은 단순 공제율이 필요할 때 사용(선택).</div>
+              </div>
             </div>
-            <div>
-              <label>산재보험 요율(%, 사업주)</label>
-              <input id="lcIndustrialRate" type="number" value="1.0" step="0.1" />
+
+            <div class="btnrow">
+              <button class="primary" id="btnCalc">계산하기</button>
+              <button class="ghost" id="btnReset">초기화</button>
+            </div>
+
+            <div class="content" style="margin-top:14px;">
+              <h3>계산 구조(요약)</h3>
+              <ul>
+                <li>월 기본급(추정) = <b>시급 × 하루시간 × 월 근무일수</b></li>
+                <li>주휴수당(추정) = <b>(주 15시간 이상 & 주휴 포함 시) 시급 × 1일치 시간 × (월 기준 주수)</b></li>
+                <li>총지급(추정) = <b>기본급 + 주휴수당</b></li>
+                <li>실수령(추정) = <b>총지급 − (근로자 공제)</b></li>
+                <li>사업주 총부담(추정) = <b>총지급 + (사업주 보험 부담) + (퇴직금 월 할당)</b></li>
+              </ul>
+              <p class="small">주의: 실제 급여/세금/보험은 계약 형태, 가입 요건, 과세 기준에 따라 크게 달라질 수 있습니다.</p>
             </div>
           </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>고용안정·직업능력개발(사업주, %, 선택)</label>
-              <input id="lcOwnerDevRate" type="number" value="0" step="0.01" min="0" />
-              <p class="small">사업 규모 등에 따라 달라질 수 있어 선택 입력 항목입니다.</p>
+          <!-- 결과 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <h3>결과</h3>
+              <span class="pill">한눈에 보기</span>
             </div>
-            <div></div>
-          </div>
 
-          <div class="btnrow">
-            <button class="primary" id="btnCalcLC" type="button">계산하기</button>
-          </div>
+            <div class="kpi">
+              <div class="box">
+                <p class="t">월 기본급(추정)</p>
+                <p class="v" id="outBasePay">-</p>
+                <p class="h" id="outBasePayHint">시급 × 시간 × 일수</p>
+              </div>
+              <div class="box">
+                <p class="t">주휴수당(추정)</p>
+                <p class="v" id="outWeeklyPay">-</p>
+                <p class="h" id="outWeeklyPayHint">조건 충족 시</p>
+              </div>
 
-          <div class="content">
-            <h3>계산 기준</h3>
-            <ul>
-              <li>주휴수당은 주 15시간 이상 근무 시 단순 계산합니다.</li>
-              <li>연장·야간·휴일근로는 통상임금의 50% 가산분만 반영합니다.</li>
-              <li>4대보험은 근로자 부담과 사업주 부담을 구분합니다.</li>
-              <li>산재보험은 업종별 요율이 달라 직접 입력/프리셋을 사용할 수 있습니다.</li>
-            </ul>
+              <div class="box">
+                <p class="t">총지급(추정)</p>
+                <p class="v" id="outGrossPay">-</p>
+                <p class="h" id="outGrossPayHint">기본급 + 주휴</p>
+              </div>
+              <div class="box">
+                <p class="t">근로자 실수령(추정)</p>
+                <p class="v" id="outNetPay">-</p>
+                <p class="h" id="outNetPayHint">총지급 − 공제</p>
+              </div>
+            </div>
+
+            <div class="kpi" style="margin-top:10px;">
+              <div class="box">
+                <p class="t">근로자 공제(추정)</p>
+                <p class="v" id="outEmpDeduct">-</p>
+                <p class="h" id="outEmpDeductHint">보험/원천징수</p>
+              </div>
+              <div class="box">
+                <p class="t">사장님 총부담(추정)</p>
+                <p class="v" id="outOwnerTotal">-</p>
+                <p class="h" id="outOwnerTotalHint">총지급 + 사업주부담 + 퇴직금</p>
+              </div>
+            </div>
+
+            <!-- 상세 breakdown -->
+            <div class="content" style="margin-top:14px;">
+              <h3>세부 내역(추정)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>구분</th>
+                    <th>금액</th>
+                    <th>설명</th>
+                  </tr>
+                </thead>
+                <tbody id="breakdownBody">
+                  <tr><td>기본급</td><td>-</td><td>시급×시간×일수</td></tr>
+                  <tr><td>주휴수당</td><td>-</td><td>조건 충족 시</td></tr>
+                  <tr><td>총지급</td><td>-</td><td>기본급+주휴</td></tr>
+                  <tr><td>근로자 공제</td><td>-</td><td>보험/원천징수</td></tr>
+                  <tr><td>실수령</td><td>-</td><td>총지급-공제</td></tr>
+                  <tr><td>사업주 보험 부담</td><td>-</td><td>선택 시 반영</td></tr>
+                  <tr><td>퇴직금 월 할당</td><td>-</td><td>선택 시 반영</td></tr>
+                  <tr><td><b>사장님 총부담</b></td><td><b>-</b></td><td>총지급+사업주부담+퇴직금</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- 가정값 -->
+            <div class="content" style="margin-top:14px;">
+              <h3>계산에 사용된 값(가정/파라미터)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>항목</th>
+                    <th>값</th>
+                    <th>설명</th>
+                  </tr>
+                </thead>
+                <tbody id="assumptionsBody">
+                  <tr><td>주휴 조건</td><td>-</td><td>주 15시간 이상 시 지급 가정</td></tr>
+                  <tr><td>월 기준 주수</td><td>-</td><td>월 근무일수/주 근무일수 기반 근사</td></tr>
+                  <tr><td>퇴직금 월 할당</td><td>-</td><td>(총지급 ÷ 12) 근사</td></tr>
+                  <tr><td>원천징수율</td><td>-</td><td>선택 입력(기본 0%)</td></tr>
+                  <tr><td>4대보험 요율</td><td>-</td><td>단순 예시 요율(페이지 하단 안내)</td></tr>
+                </tbody>
+              </table>
+
+              <div class="small" style="margin-top:10px;">
+                <b>요율 안내(단순 가정)</b><br/>
+                • 이 계산기는 “대략 감”을 보기 위한 단순 모델입니다.<br/>
+                • 4대보험 요율은 실제 연도/사업장/가입 구분에 따라 달라집니다. 여기서는 <b>대략치</b>로 계산합니다.<br/>
+                • 필요하면 너 사이트 기준으로 “연도별 요율”을 고정 값으로 업데이트해줄게.
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <div>
-          <div class="kpi">
-            <div class="box">
-              <p class="t">근로자 실수령(세전 기준)</p>
-              <p class="v" id="kpiWorkerGross">-</p>
-              <p class="h">기본급, 주휴수당, 가산수당 합산입니다.</p>
-            </div>
-            <div class="box">
-              <p class="t">근로자 실수령(공제 후)</p>
-              <p class="v" id="kpiWorkerNet">-</p>
-              <p class="h">근로자 부담 4대보험을 차감한 추정 금액입니다.</p>
-            </div>
-            <div class="box">
-              <p class="t">사장님 총 인건비 부담</p>
-              <p class="v" id="kpiOwnerTotal">-</p>
-              <p class="h">급여와 사업주 부담 비용을 모두 포함합니다.</p>
-            </div>
-            <div class="box">
-              <p class="t">시간당 총비용(사장님 기준)</p>
-              <p class="v" id="kpiOwnerHourly">-</p>
-              <p class="h">총 인건비 ÷ 총 근무시간 기준입니다.</p>
-            </div>
-          </div>
-
-          <div class="content">
-            <h3>근로자 내역 요약</h3>
-            <ul id="lcWorkerBreakdown"></ul>
-          </div>
-
-          <div class="content">
-            <h3>사장님 내역 요약</h3>
-            <ul id="lcOwnerBreakdown"></ul>
+        <!-- FAQ -->
+        <div class="content" style="margin-top:14px;">
+          <h3>자주 묻는 질문</h3>
+          <div class="faq">
+            <details>
+              <summary>주휴수당은 언제 발생하나요?</summary>
+              <p>일반적으로 주 15시간 이상 근무하고, 소정근로일을 개근한 경우 주휴수당이 발생할 수 있습니다. (본 계산기는 주 15시간 이상이면 지급 가정)</p>
+            </details>
+            <details>
+              <summary>퇴직금은 왜 월 할당으로 계산하나요?</summary>
+              <p>실제 퇴직금은 근속기간/평균임금 등으로 계산됩니다. 여기서는 “월 비용 관점”에서 (총지급 ÷ 12)로 단순 근사합니다.</p>
+            </details>
+            <details>
+              <summary>4대보험이 정확하지 않을 수 있나요?</summary>
+              <p>네. 가입 요건과 요율은 해마다 바뀌고, 사업장/근로형태에 따라 다릅니다. 이 페이지는 빠른 추정 목적입니다.</p>
+            </details>
           </div>
         </div>
 
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="card">
-    <div class="cardHead">
-      <div>
-        <h2>손익분기점(BEP) 자동 연동</h2>
-        <p class="sub">아래 값까지 입력하시면, 현재 인건비를 기준으로 BEP 페이지가 자동으로 채워집니다.</p>
+    <footer>
+      <div class="links">
+        <a href="/about.html">소개</a>
+        <a href="/privacy.html">개인정보처리방침</a>
+        <a href="/terms.html">이용약관</a>
+        <a href="/contact.html">문의</a>
       </div>
-    </div>
+      <p class="small">© <span id="y"></span> WorkValue</p>
+    </footer>
 
-    <div class="cardBody">
-      <div class="cols">
-        <div>
-          <div class="row">
-            <div>
-              <label>변동비율(매출 대비 %, 예: 35)</label>
-              <input id="lcVarRate" type="number" value="35" min="0" step="0.1" />
-            </div>
-            <div>
-              <label>월 영업일수(일)</label>
-              <input id="lcOpenDays" type="number" value="26" min="1" step="1" />
-            </div>
-          </div>
+  </div>
 
-          <div class="row" style="margin-top:10px;">
-            <div>
-              <label>1일 근무시간(시간)</label>
-              <input id="lcHoursPerDay" type="number" value="10" min="1" step="0.5" />
-            </div>
-            <div>
-              <label>목표 월 매출(원, 선택)</label>
-              <input id="lcTargetSales" type="number" value="15000000" min="0" step="100000" />
-            </div>
-          </div>
+  <script type="module">
+    // 공통 init(있으면 실행)
+    try {
+      const mod = await import("/assets/app.js?v=20260203");
+      if (mod?.initWorkValue) mod.initWorkValue();
+    } catch (_) {}
 
-          <div class="btnrow">
-            <a id="lcToBEP" class="primary" href="/business/bep.html">이 인건비를 기준으로 BEP를 계산하기</a>
-          </div>
+    // ===== Helpers =====
+    const $ = (id) => document.getElementById(id);
 
-          <p class="small">안내: 본 연동은 “인건비를 월 고정비로 가정”하여 보수적으로 계산합니다.</p>
-        </div>
+    const num = (v, fallback = 0) => {
+      const s = String(v ?? "").replace(/,/g, "").trim();
+      const n = Number(s);
+      return Number.isFinite(n) ? n : fallback;
+    };
 
-        <div>
-          <div class="kpi">
-            <div class="box">
-              <p class="t">직원 1명 추가 시 필요한 추가 매출(월)</p>
-              <p class="v" id="kpiPlusOneSales">-</p>
-              <p class="h">변동비율을 반영한 최소 필요 매출입니다.</p>
-            </div>
-            <div class="box">
-              <p class="t">직원 1명 추가 시 필요한 추가 매출(일)</p>
-              <p class="v" id="kpiPlusOneSalesDaily">-</p>
-              <p class="h">월 영업일수 기준 단순 환산입니다.</p>
-            </div>
-          </div>
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
 
-          <p class="small">안내: “직원 1명의 총부담 ÷ (1-변동비율)”로 단순 환산합니다.</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    const won = (n) => {
+      const x = Math.round(num(n, 0));
+      return x.toLocaleString("ko-KR") + "원";
+    };
 
-  <section class="card">
-    <div class="cardHead">
-      <div>
-        <h2>근무시간 변화 시뮬레이션</h2>
-        <p class="sub">현재 입력값을 기준으로 근무시간 구간을 자동 생성합니다.</p>
-      </div>
-    </div>
-    <div class="cardBody">
-      <div class="content" style="margin-top:0;">
-        <table>
-          <thead>
-            <tr>
-              <th>월 근무시간</th>
-              <th>근로자 공제 후(합계)</th>
-              <th>사장님 총부담(합계)</th>
-            </tr>
-          </thead>
-          <tbody id="lcTableBody"></tbody>
-        </table>
-        <p class="small">표는 비교 이해를 돕기 위한 단순 추정 값입니다.</p>
-      </div>
-    </div>
-  </section>
+    const pct = (r) => (Math.round(r * 10000) / 100).toLocaleString("ko-KR") + "%";
 
-  <footer>
-    <div class="links">
-      <a href="/about.html">소개</a>
-      <a href="/privacy.html">개인정보처리방침</a>
-      <a href="/terms.html">이용약관</a>
-      <a href="/contact.html">문의</a>
-    </div>
-    <p class="small">© <span id="y"></span> WorkValue</p>
-  </footer>
+    // ===== 단순 요율(가정) =====
+    // ⚠️ 정확 요율 고정이 필요하면, “적용연도” 기준으로 업데이트해줄게.
+    const INS = {
+      // 근로자 부담(대략치)
+      emp: {
+        pension: 0.045,   // 국민연금(근로자)
+        health: 0.035,    // 건강보험(근로자) - 대략치
+        care: 0.004,      // 장기요양(근로자) - 대략치(health에 부가되는 구조 단순화)
+        employ: 0.009     // 고용보험(근로자) - 대략치
+      },
+      // 사업주 부담(대략치)
+      owner: {
+        pension: 0.045,
+        health: 0.035,
+        care: 0.004,
+        employ: 0.010     // 사업주는 업종/요율 다름 → 단순 1.0% 근사
+      }
+    };
 
-</div>
+    function calcInsurance(amount, side /* 'emp'|'owner' */) {
+      const r = INS[side];
+      const pension = amount * r.pension;
+      const health  = amount * r.health;
+      const care    = amount * r.care;
+      const employ  = amount * r.employ;
+      const total = pension + health + care + employ;
+      return { pension, health, care, employ, total };
+    }
 
-<script type="module">
-  import { initWorkValue } from "/assets/app.js?v=20260203";
-  initWorkValue();
-</script>
+    function estimateWeeksInMonth(workDays, weeklyDays) {
+      // 월 근무일수 / 주 근무일수 = 월에 해당하는 주수(근사)
+      if (!(weeklyDays > 0)) return 0;
+      return workDays / weeklyDays;
+    }
+
+    // ===== Preset =====
+    function preset() {
+      $("hourlyWage").value = "10,000";
+      $("dailyHours").value = "8";
+      $("workDays").value = "22";
+      $("weeklyDays").value = "5";
+      $("includeWeeklyHoliday").value = "yes";
+      $("includeSeverance").value = "yes";
+      $("insuranceMode").value = "employee";
+      $("incomeTaxRate").value = "0";
+    }
+
+    // ===== Assumptions table =====
+    function updateAssumptions({ weeklyEligible, weeks, severance, taxRate, insuranceMode }) {
+      const weeklyCond = weeklyEligible
+        ? "주 15시간 이상(가정) → 지급"
+        : "주 15시간 미만(가정) → 미지급";
+
+      const insText =
+        insuranceMode === "none" ? "미적용"
+        : insuranceMode === "employee" ? "근로자 부담만 반영"
+        : "근로자+사업주 부담 반영";
+
+      const rateText = `근로자(연금 ${pct(INS.emp.pension)} / 건강 ${pct(INS.emp.health)} / 요양 ${pct(INS.emp.care)} / 고용 ${pct(INS.emp.employ)}) · 사업주(연금 ${pct(INS.owner.pension)} / 건강 ${pct(INS.owner.health)} / 요양 ${pct(INS.owner.care)} / 고용 ${pct(INS.owner.employ)})`;
+
+      $("assumptionsBody").innerHTML = `
+        <tr>
+          <td>주휴 조건</td>
+          <td><b>${weeklyCond}</b></td>
+          <td>주 15시간 이상 시 지급 가정</td>
+        </tr>
+        <tr>
+          <td>월 기준 주수</td>
+          <td><b>${weeks.toFixed(2)}주</b></td>
+          <td>월근무일수 ÷ 주근무일수</td>
+        </tr>
+        <tr>
+          <td>퇴직금 월 할당</td>
+          <td><b>${severance > 0 ? won(severance) : "-"}</b></td>
+          <td>(총지급 ÷ 12) 단순 근사</td>
+        </tr>
+        <tr>
+          <td>원천징수율</td>
+          <td><b>${pct(taxRate)}</b></td>
+          <td>선택 입력(프리랜서 3.3% 등 단순 공제)</td>
+        </tr>
+        <tr>
+          <td>4대보험 요율</td>
+          <td><b>${insText}</b></td>
+          <td style="line-height:1.5;">${rateText}</td>
+        </tr>
+      `;
+    }
+
+    // ===== Breakdown =====
+    function updateBreakdown({
+      basePay, weeklyPay, grossPay,
+      empDeduct, netPay,
+      ownerIns, severance,
+      ownerTotal
+    }) {
+      $("breakdownBody").innerHTML = `
+        <tr><td>기본급</td><td><b>${won(basePay)}</b></td><td>시급×시간×일수</td></tr>
+        <tr><td>주휴수당</td><td><b>${weeklyPay > 0 ? won(weeklyPay) : "-"}</b></td><td>조건 충족 + 포함 선택 시</td></tr>
+        <tr><td>총지급</td><td><b>${won(grossPay)}</b></td><td>기본급+주휴</td></tr>
+        <tr><td>근로자 공제</td><td><b>${empDeduct > 0 ? won(empDeduct) : "-"}</b></td><td>보험/원천징수(선택)</td></tr>
+        <tr><td>실수령</td><td><b>${won(netPay)}</b></td><td>총지급-공제</td></tr>
+        <tr><td>사업주 보험 부담</td><td><b>${ownerIns > 0 ? won(ownerIns) : "-"}</b></td><td>보험 모드 both 선택 시</td></tr>
+        <tr><td>퇴직금 월 할당</td><td><b>${severance > 0 ? won(severance) : "-"}</b></td><td>포함 선택 시</td></tr>
+        <tr><td><b>사장님 총부담</b></td><td><b>${won(ownerTotal)}</b></td><td>총지급+사업주부담+퇴직금</td></tr>
+      `;
+    }
+
+    // ===== Main calc =====
+    function calc() {
+      const hourly = Math.max(num($("hourlyWage").value, 0), 0);
+      const dailyHours = clamp(num($("dailyHours").value, 0), 0, 24);
+      const workDays = clamp(num($("workDays").value, 0), 0, 31);
+      const weeklyDays = clamp(num($("weeklyDays").value, 0), 0, 7);
+
+      const includeWeekly = $("includeWeeklyHoliday").value === "yes";
+      const includeSeverance = $("includeSeverance").value === "yes";
+      const insuranceMode = $("insuranceMode").value; // none | employee | both
+
+      const taxRate = clamp(num($("incomeTaxRate").value, 0) / 100, 0, 0.5);
+
+      // 기본급
+      const basePay = hourly * dailyHours * workDays;
+
+      // 월 주수(근사)
+      const weeks = estimateWeeksInMonth(workDays, weeklyDays);
+
+      // 주 근무시간(근사)
+      const weeklyHours = dailyHours * weeklyDays;
+
+      // 주휴 조건(단순 가정: 주 15시간 이상)
+      const weeklyEligible = weeklyHours >= 15;
+
+      // 주휴수당(단순): "주 1일치 임금" × 월 주수
+      // 1일치 시간은 dailyHours로 가정
+      const weeklyPay = (includeWeekly && weeklyEligible && weeks > 0)
+        ? hourly * dailyHours * weeks
+        : 0;
+
+      // 총지급(추정)
+      const grossPay = basePay + weeklyPay;
+
+      // 근로자 보험 공제(선택)
+      let empIns = { total: 0 };
+      if (insuranceMode === "employee" || insuranceMode === "both") {
+        empIns = calcInsurance(grossPay, "emp");
+      }
+
+      // 원천징수(단순)
+      const withholding = grossPay * taxRate;
+
+      // 근로자 공제
+      const empDeduct = empIns.total + withholding;
+
+      // 실수령
+      const netPay = Math.max(grossPay - empDeduct, 0);
+
+      // 사업주 보험(선택)
+      let ownerIns = 0;
+      if (insuranceMode === "both") {
+        ownerIns = calcInsurance(grossPay, "owner").total;
+      }
+
+      // 퇴직금 월 할당(단순: 총지급/12)
+      const severance = includeSeverance ? (grossPay / 12) : 0;
+
+      // 사장 총부담
+      const ownerTotal = grossPay + ownerIns + severance;
+
+      // KPI 출력
+      $("outBasePay").textContent = won(basePay);
+      $("outWeeklyPay").textContent = weeklyPay > 0 ? won(weeklyPay) : "-";
+      $("outGrossPay").textContent = won(grossPay);
+      $("outNetPay").textContent = won(netPay);
+
+      $("outEmpDeduct").textContent = empDeduct > 0 ? won(empDeduct) : "-";
+      $("outOwnerTotal").textContent = won(ownerTotal);
+
+      $("outWeeklyPayHint").textContent = (includeWeekly && weeklyEligible) ? "주휴 반영됨" : "조건/선택에 따라 미반영";
+      $("outGrossPayHint").textContent = weeklyPay > 0 ? "기본급 + 주휴" : "기본급(주휴 미포함)";
+      $("outNetPayHint").textContent = (insuranceMode !== "none" || taxRate > 0) ? "공제 반영됨" : "공제 0% 가정";
+      $("outEmpDeductHint").textContent = `${insuranceMode === "none" ? "보험 미적용" : "보험 공제"} · 원천징수 ${pct(taxRate)}`;
+      $("outOwnerTotalHint").textContent = `보험(${insuranceMode === "both" ? "사업주 포함" : "미포함"}) · 퇴직금(${includeSeverance ? "포함" : "미포함"})`;
+
+      updateBreakdown({
+        basePay, weeklyPay, grossPay,
+        empDeduct, netPay,
+        ownerIns, severance,
+        ownerTotal
+      });
+
+      updateAssumptions({
+        weeklyEligible,
+        weeks: (weeks || 0),
+        severance,
+        taxRate,
+        insuranceMode
+      });
+    }
+
+    // ===== Events =====
+    $("btnCalc").addEventListener("click", calc);
+    $("btnReset").addEventListener("click", () => {
+      preset();
+      calc();
+    });
+
+    // Enter로 계산
+    ["hourlyWage","dailyHours","workDays","weeklyDays","incomeTaxRate"].forEach(id=>{
+      $(id).addEventListener("keydown", (e) => {
+        if (e.key === "Enter") calc();
+      });
+    });
+    ["includeWeeklyHoliday","includeSeverance","insuranceMode"].forEach(id=>{
+      $(id).addEventListener("change", calc);
+    });
+
+    // footer year fallback
+    const y = document.getElementById("y");
+    if (y) y.textContent = String(new Date().getFullYear());
+
+    preset();
+    calc();
+  </script>
 </body>
 </html>

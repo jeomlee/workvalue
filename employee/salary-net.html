@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>월급 실수령액 계산기(추정) | 공제 항목 확인 | WorkValue</title>
-  <meta name="description" content="월급(세전), 부양가족 수, 공제 프리셋을 입력하시면 실수령액을 단순 추정해 드립니다." />
+  <title>월급 실수령액 계산기(추정) | 공제 항목 한눈에 | WorkValue</title>
+  <meta name="description" content="월급(세전)과 4대보험/세금 입력(또는 실효세율 추정)으로 월급 실수령액을 빠르게 계산합니다. 계산에 사용된 가정값(요율/세액)도 함께 표기합니다." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://workvalue.kr/employee/salary-net.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
@@ -16,112 +16,255 @@
 
     <!-- ✅ fallback header -->
     <header id="wvHeader">
-      <div class="brand">
+      <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
         <div class="dot"></div>
         <div class="t">
           <strong>WorkValue</strong>
           <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
         </div>
-      </div>
+      </a>
       <nav aria-label="이동">
         <a href="/">홈</a>
         <a href="/business/bep.html">자영업 BEP</a>
         <a href="/business/labor-cost.html">인건비 계산</a>
-        <a href="/employee/hourly.html">실수령 시급</a>
-        <a href="/employee/salary-net.html">월급 실수령(추정)</a>
+        <a href="/employee/hourly.html">단순 급여 추정</a>
+        <a class="active" href="/employee/salary-net.html">월급 실수령(추정)</a>
       </nav>
     </header>
 
     <section class="card">
-      <div class="cardHead">
+      <div class="cardHead hero">
         <div>
-          <h2>월급 실수령액 계산기(추정)</h2>
-          <p class="sub">공제 항목을 단순 비율로 반영하여 실수령액을 추정합니다.</p>
+          <h1 class="heroTitle">월급 실수령액 계산기(추정)</h1>
+          <p class="sub heroSub">
+            4대보험·세금 항목을 입력하거나(권장), 실효세율로 대략 추정하여 실수령을 계산합니다.
+          </p>
         </div>
       </div>
 
       <div class="cardBody">
         <div class="cols">
-          <div>
+
+          <!-- 입력 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <h3>입력</h3>
+              <span class="pill">공제 구조 공개</span>
+            </div>
+
             <div class="row">
               <div>
-                <label>월급(세전, 원)</label>
-                <input id="grossS" type="number" value="3000000" min="0" step="10000" />
+                <label for="grossPay">월급(세전, 원)</label>
+                <input id="grossPay" inputmode="numeric" placeholder="예: 3,000,000" />
+                <div class="small">입력 시 자동 콤마 적용</div>
               </div>
+
               <div>
-                <label>부양가족 수(본인 포함)</label>
-                <input id="depS" type="number" value="1" min="1" step="1" />
+                <label for="nonTaxable">비과세(선택, 원)</label>
+                <input id="nonTaxable" inputmode="numeric" placeholder="예: 0" />
+                <div class="small">비과세는 ‘세금/보험 산정에서 제외’로 단순 반영</div>
               </div>
             </div>
 
-            <div class="row" style="margin-top:10px;">
-              <div>
-                <label>공제 프리셋(선택)</label>
-                <select id="presetS">
-                  <option value="standard" selected>일반적인 직장가입자 기준</option>
-                  <option value="light">공제 부담이 다소 낮은 경우</option>
-                  <option value="heavy">공제 부담이 다소 높은 경우</option>
-                </select>
+            <div class="content" style="margin-top:14px;">
+              <div class="panelHead" style="padding:0; border:0; background:none;">
+                <h3 style="margin:0;">세금 입력 방식</h3>
+                <span class="pill">추천: 직접 입력</span>
               </div>
-              <div>
-                <label>소득세 추정 포함</label>
-                <div style="display:flex; gap:10px; align-items:center; height:42px;">
-                  <input id="includeTaxS" type="checkbox" checked />
-                  <span class="small">체크 해제 시 보험료 중심 추정치만 계산합니다.</span>
+
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label>소득세 입력</label>
+                  <div class="toggleRow">
+                    <input id="taxModeDirect" type="radio" name="taxMode" checked />
+                    <div class="toggleText">
+                      <div class="toggleTitle">직접 입력(권장)</div>
+                      <div class="toggleDesc">급여명세서에 있는 “소득세(갑근세)”를 그대로 입력합니다.</div>
+                    </div>
+                  </div>
+                  <div class="toggleRow" style="margin-top:10px;">
+                    <input id="taxModeRate" type="radio" name="taxMode" />
+                    <div class="toggleText">
+                      <div class="toggleTitle">실효세율로 대략 추정</div>
+                      <div class="toggleDesc">정확도↓. “대략 어느 정도”만 보고 싶을 때 사용합니다.</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="infoBox">
+                  <div class="infoTitle">주의</div>
+                  <div class="infoDesc">
+                    소득세는 가족/부양/공제/간이세액표에 따라 변동이 커서<br/>
+                    “정확 추정”은 어렵습니다. 가능하면 직접 입력을 권장합니다.
+                  </div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label for="incomeTax">소득세(원)</label>
+                  <input id="incomeTax" inputmode="numeric" placeholder="예: 50,000" />
+                  <div class="small">직접 입력 모드에서 사용</div>
+                </div>
+
+                <div>
+                  <label for="effectiveTaxRate">실효세율(%, 선택)</label>
+                  <input id="effectiveTaxRate" inputmode="decimal" placeholder="예: 3" />
+                  <div class="small">실효세율 모드에서 사용(기본 과세기준에 % 적용)</div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label for="localTaxRate">지방소득세(소득세의 %, 기본 10%)</label>
+                  <input id="localTaxRate" inputmode="decimal" placeholder="예: 10" />
+                  <div class="small">보통 소득세의 10%로 계산됩니다(가정값 수정 가능).</div>
+                </div>
+
+                <div>
+                  <label for="otherDeductions">기타 공제(선택, 원)</label>
+                  <input id="otherDeductions" inputmode="numeric" placeholder="예: 0" />
+                  <div class="small">식대 차감/조합비/상환 등 추가 공제 항목</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="content" style="margin-top:14px;">
+              <div class="panelHead" style="padding:0; border:0; background:none;">
+                <h3 style="margin:0;">4대보험(예시 요율)</h3>
+                <span class="pill">수정 가능</span>
+              </div>
+              <p class="small" style="margin-top:8px;">
+                아래 요율은 <b>예시 기본값</b>입니다. 회사/년도/기준에 따라 달라질 수 있으니 필요하면 수정하세요.
+              </p>
+
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label for="pensionRate">국민연금(근로자 부담 %, 예시)</label>
+                  <input id="pensionRate" inputmode="decimal" placeholder="예: 4.5" />
+                </div>
+                <div>
+                  <label for="healthRate">건강보험(근로자 부담 %, 예시)</label>
+                  <input id="healthRate" inputmode="decimal" placeholder="예: 3.545" />
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label for="careRate">장기요양(건보료의 %, 예시)</label>
+                  <input id="careRate" inputmode="decimal" placeholder="예: 12.95" />
+                  <div class="small">장기요양 = 건강보험료 × (요양요율%)</div>
+                </div>
+                <div>
+                  <label for="employmentRate">고용보험(근로자 부담 %, 예시)</label>
+                  <input id="employmentRate" inputmode="decimal" placeholder="예: 0.9" />
                 </div>
               </div>
             </div>
 
             <div class="btnrow">
-              <button class="primary" id="btnCalcS" type="button">계산하기</button>
+              <button class="primary" id="btnCalc" type="button">계산하기</button>
+              <button class="ghost" id="btnReset" type="button">초기화</button>
             </div>
 
-            <div class="content">
-              <h3>안내</h3>
-              <p class="small">
-                본 결과는 공제 구조를 빠르게 확인하시도록 제공되는 추정치입니다.
-                수당/상여 포함 여부, 보험료 기준, 세액 적용 방식에 따라 실제와 차이가 발생할 수 있습니다.
-              </p>
+            <div class="content" style="margin-top:14px;">
+              <h3>요약(계산 구조)</h3>
+              <ul>
+                <li>과세/보험 기준액(단순) = <b>세전 월급 − 비과세</b></li>
+                <li>4대보험 = <b>기준액 ×(연금/건보/고용) + 건보료×요양요율</b></li>
+                <li>소득세 = <b>직접 입력</b> 또는 <b>(기준액 − 4대보험)×실효세율</b></li>
+                <li>지방소득세 = <b>소득세 × (지방세율%)</b></li>
+                <li>실수령 = <b>세전 월급 − (4대보험 + 세금 + 기타공제)</b></li>
+              </ul>
+              <p class="small">※ 실제 계산은 급여체계/비과세 항목/공제조건/간이세액표/보험료 상하한 등에 따라 달라질 수 있습니다.</p>
             </div>
           </div>
 
-          <div>
+          <!-- 결과 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <h3>결과</h3>
+              <div class="badgeRow">
+                <span class="badgeWarn">추정</span>
+                <span class="badgeSoft" id="taxModeBadge">세금: -</span>
+              </div>
+            </div>
+
             <div class="kpi">
               <div class="box">
-                <p class="t">실수령액(추정)</p>
-                <p class="v" id="kpiNetS">-</p>
-                <p class="h">세전 월급에서 공제를 반영한 값입니다.</p>
+                <p class="t">월 실수령(추정)</p>
+                <p class="v" id="kpiNet">-</p>
+                <p class="h">공제 반영 후</p>
               </div>
               <div class="box">
-                <p class="t">총 공제액(추정)</p>
-                <p class="v" id="kpiDeductS">-</p>
-                <p class="h">보험료 및 세금을 단순 반영합니다.</p>
+                <p class="t">총 공제</p>
+                <p class="v" id="kpiDeduct">-</p>
+                <p class="h">보험+세금+기타</p>
               </div>
               <div class="box">
-                <p class="t">공제율(추정)</p>
-                <p class="v" id="kpiRateS">-</p>
-                <p class="h">총 공제액 ÷ 세전 월급</p>
+                <p class="t">4대보험(추정)</p>
+                <p class="v" id="kpiIns">-</p>
+                <p class="h">근로자 부담분</p>
               </div>
               <div class="box">
-                <p class="t">공제 항목</p>
-                <p class="v">항목별</p>
-                <p class="h">아래에서 항목별 추정치를 확인합니다.</p>
+                <p class="t">세금(추정)</p>
+                <p class="v" id="kpiTax">-</p>
+                <p class="h">소득세+지방세</p>
               </div>
             </div>
 
-            <div class="content">
-              <h3>공제 항목(추정)</h3>
-              <ul id="deductListS"></ul>
-              <p class="small">실제 공제 항목/금액은 급여명세서 기준 확인을 권장드립니다.</p>
+            <div class="content" style="margin-top:14px;">
+              <h3>세부 내역</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>항목</th>
+                    <th>금액</th>
+                    <th>비고</th>
+                  </tr>
+                </thead>
+                <tbody id="breakdownBody">
+                  <tr><td>세전 월급</td><td>-</td><td>입력값</td></tr>
+                  <tr><td>비과세</td><td>-</td><td>선택</td></tr>
+                  <tr><td>국민연금</td><td>-</td><td>예시 요율</td></tr>
+                  <tr><td>건강보험</td><td>-</td><td>예시 요율</td></tr>
+                  <tr><td>장기요양</td><td>-</td><td>건보×요양</td></tr>
+                  <tr><td>고용보험</td><td>-</td><td>예시 요율</td></tr>
+                  <tr><td>소득세</td><td>-</td><td>직접/추정</td></tr>
+                  <tr><td>지방소득세</td><td>-</td><td>소득세×%</td></tr>
+                  <tr><td>기타 공제</td><td>-</td><td>선택</td></tr>
+                  <tr><td><b>실수령</b></td><td><b>-</b></td><td>세전−총공제</td></tr>
+                </tbody>
+              </table>
             </div>
 
-            <div class="content">
-              <h3>관련 도구</h3>
-              <ul>
-                <li><a href="/employee/hourly.html"><b>실수령 시급 계산기</b></a></li>
-                <li><a href="/business/bep.html"><b>자영업 BEP 계산기</b></a></li>
-                <li><a href="/business/labor-cost.html"><b>인건비 계산기</b></a></li>
-              </ul>
+            <div class="content" style="margin-top:14px;">
+              <h3>계산에 사용된 값(가정/입력)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>항목</th>
+                    <th>값</th>
+                    <th>설명</th>
+                  </tr>
+                </thead>
+                <tbody id="assumptionsBody">
+                  <tr><td>세금 모드</td><td>-</td><td>직접 입력 또는 실효세율 추정</td></tr>
+                  <tr><td>지방세율</td><td>-</td><td>소득세의 %</td></tr>
+                  <tr><td>연금/건보/고용</td><td>-</td><td>예시 기본값(수정 가능)</td></tr>
+                  <tr><td>요양요율</td><td>-</td><td>건보료의 %</td></tr>
+                  <tr><td>보험/세금 기준액</td><td>-</td><td>세전−비과세(단순)</td></tr>
+                </tbody>
+              </table>
+              <p class="small">※ 요율/세액을 바꿔보면서 “내 회사/내 명세서와 맞추기” 용도로 쓰면 정확도가 올라갑니다.</p>
+            </div>
+
+            <div class="ctaBox">
+              <div>
+                <div class="ctaTitle">주급/시급으로 빠르게 보고 싶어?</div>
+                <div class="ctaDesc">근무 패턴 기준으로 주급/월급을 먼저 추정해볼 수 있어요.</div>
+              </div>
+              <a class="ctaBtn" href="/employee/hourly.html">단순 급여 추정으로 이동</a>
             </div>
 
           </div>
@@ -143,6 +286,278 @@
   <script type="module">
     import { initWorkValue } from "/assets/app.js?v=20260203";
     initWorkValue();
+
+    const $ = (id) => document.getElementById(id);
+
+    const num = (v, fallback = 0) => {
+      const s = String(v ?? "").replace(/,/g, "").trim();
+      const n = Number(s);
+      return Number.isFinite(n) ? n : fallback;
+    };
+    const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+    const won = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
+
+    // 콤마 포맷(커서 보존)
+    function formatCommaKeepCursor(inputEl) {
+      const raw = inputEl.value;
+      const selStart = inputEl.selectionStart ?? raw.length;
+
+      const digitsOnly = raw.replace(/[^\d]/g, "");
+      if (!digitsOnly) { inputEl.value = ""; return; }
+
+      const formatted = Number(digitsOnly).toLocaleString("ko-KR");
+      const leftRaw = raw.slice(0, selStart);
+      const leftDigits = leftRaw.replace(/[^\d]/g, "").length;
+
+      inputEl.value = formatted;
+
+      let pos = 0, cnt = 0;
+      while (pos < formatted.length) {
+        if (/\d/.test(formatted[pos])) cnt++;
+        if (cnt >= leftDigits) { pos++; break; }
+        pos++;
+      }
+      inputEl.setSelectionRange(pos, pos);
+    }
+
+    // 기본값(예시) — 사용자 수정 가능
+    function preset() {
+      $("grossPay").value = "3,000,000";
+      $("nonTaxable").value = "0";
+
+      $("taxModeDirect").checked = true;
+      $("incomeTax").value = "0";
+      $("effectiveTaxRate").value = "3"; // 대략값 예시
+      $("localTaxRate").value = "10";
+      $("otherDeductions").value = "0";
+
+      $("pensionRate").value = "4.5";
+      $("healthRate").value = "3.545";
+      $("careRate").value = "12.95";
+      $("employmentRate").value = "0.9";
+    }
+
+    function setTaxModeUI() {
+      const direct = $("taxModeDirect").checked;
+
+      $("incomeTax").disabled = !direct;
+      $("effectiveTaxRate").disabled = direct;
+
+      const badge = $("taxModeBadge");
+      badge.textContent = direct ? "세금: 직접 입력" : "세금: 실효세율";
+    }
+
+    function calc() {
+      setTaxModeUI();
+
+      const gross = clamp(num($("grossPay").value, 0), 0, 999999999);
+      const nonTax = clamp(num($("nonTaxable").value, 0), 0, gross);
+
+      // 단순 기준액(과세/보험 기준액): 세전 - 비과세
+      const base = Math.max(gross - nonTax, 0);
+
+      // 보험 요율(예시)
+      const pensionR = clamp(num($("pensionRate").value, 0), 0, 20) / 100;
+      const healthR = clamp(num($("healthRate").value, 0), 0, 20) / 100;
+      const careR = clamp(num($("careRate").value, 0), 0, 50) / 100; // 건보료의 %
+      const employR = clamp(num($("employmentRate").value, 0), 0, 10) / 100;
+
+      const pension = base * pensionR;
+      const health = base * healthR;
+      const care = health * careR;
+      const employ = base * employR;
+
+      const ins = pension + health + care + employ;
+
+      // 세금
+      let incomeTax = 0;
+      if ($("taxModeDirect").checked) {
+        incomeTax = clamp(num($("incomeTax").value, 0), 0, base);
+      } else {
+        const eff = clamp(num($("effectiveTaxRate").value, 0), 0, 50) / 100;
+        // 아주 단순: (기준액 - 4대보험) × 실효세율
+        const taxableApprox = Math.max(base - ins, 0);
+        incomeTax = taxableApprox * eff;
+      }
+
+      const localRate = clamp(num($("localTaxRate").value, 10), 0, 30) / 100;
+      const localTax = incomeTax * localRate;
+
+      const other = clamp(num($("otherDeductions").value, 0), 0, gross);
+
+      const tax = incomeTax + localTax;
+      const deduct = ins + tax + other;
+      const net = Math.max(gross - deduct, 0);
+
+      // KPI
+      $("kpiNet").textContent = won(net);
+      $("kpiDeduct").textContent = won(deduct);
+      $("kpiIns").textContent = won(ins);
+      $("kpiTax").textContent = won(tax);
+
+      // breakdown table
+      $("breakdownBody").innerHTML = `
+        <tr><td>세전 월급</td><td><b>${won(gross)}</b></td><td>입력값</td></tr>
+        <tr><td>비과세</td><td>${nonTax > 0 ? won(nonTax) : "-"}</td><td>선택</td></tr>
+        <tr><td>국민연금</td><td>${pension > 0 ? won(pension) : "-"}</td><td>${(pensionR*100).toFixed(3)}%</td></tr>
+        <tr><td>건강보험</td><td>${health > 0 ? won(health) : "-"}</td><td>${(healthR*100).toFixed(3)}%</td></tr>
+        <tr><td>장기요양</td><td>${care > 0 ? won(care) : "-"}</td><td>건보×${(careR*100).toFixed(2)}%</td></tr>
+        <tr><td>고용보험</td><td>${employ > 0 ? won(employ) : "-"}</td><td>${(employR*100).toFixed(3)}%</td></tr>
+        <tr><td>소득세</td><td>${incomeTax > 0 ? won(incomeTax) : "-"}</td><td>${$("taxModeDirect").checked ? "직접 입력" : "실효세율 추정"}</td></tr>
+        <tr><td>지방소득세</td><td>${localTax > 0 ? won(localTax) : "-"}</td><td>소득세×${(localRate*100).toFixed(1)}%</td></tr>
+        <tr><td>기타 공제</td><td>${other > 0 ? won(other) : "-"}</td><td>선택</td></tr>
+        <tr><td><b>실수령</b></td><td><b>${won(net)}</b></td><td>세전−총공제</td></tr>
+      `;
+
+      // assumptions table
+      $("assumptionsBody").innerHTML = `
+        <tr><td>세금 모드</td><td><b>${$("taxModeDirect").checked ? "직접 입력" : "실효세율"}</b></td><td>정확도는 직접 입력이 높음</td></tr>
+        <tr><td>지방세율</td><td><b>${(localRate*100).toFixed(1)}%</b></td><td>소득세의 %</td></tr>
+        <tr><td>연금/건보/고용</td><td><b>${(pensionR*100).toFixed(3)}% / ${(healthR*100).toFixed(3)}% / ${(employR*100).toFixed(3)}%</b></td><td>예시 기본값(수정 가능)</td></tr>
+        <tr><td>요양요율</td><td><b>${(careR*100).toFixed(2)}%</b></td><td>건강보험료의 %</td></tr>
+        <tr><td>보험/세금 기준액</td><td><b>${won(base)}</b></td><td>세전−비과세(단순)</td></tr>
+      `;
+    }
+
+    // 이벤트
+    $("btnCalc").addEventListener("click", calc);
+    $("btnReset").addEventListener("click", () => { preset(); setTaxModeUI(); calc(); });
+
+    // 라디오 변경
+    $("taxModeDirect").addEventListener("change", () => { setTaxModeUI(); calc(); });
+    $("taxModeRate").addEventListener("change", () => { setTaxModeUI(); calc(); });
+
+    // 콤마 자동
+    ["grossPay","nonTaxable","incomeTax","otherDeductions"].forEach(id=>{
+      $(id).addEventListener("input", (e) => formatCommaKeepCursor(e.target));
+    });
+
+    // 입력 변경 시 자동 계산
+    [
+      "grossPay","nonTaxable","incomeTax","effectiveTaxRate","localTaxRate","otherDeductions",
+      "pensionRate","healthRate","careRate","employmentRate"
+    ].forEach(id=>{
+      $(id).addEventListener("input", calc);
+    });
+
+    // Enter로 계산
+    [
+      "grossPay","nonTaxable","incomeTax","effectiveTaxRate","localTaxRate","otherDeductions",
+      "pensionRate","healthRate","careRate","employmentRate"
+    ].forEach(id=>{
+      $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
+    });
+
+    const y = document.getElementById("y");
+    if (y) y.textContent = String(new Date().getFullYear());
+
+    preset();
+    setTaxModeUI();
+    calc();
   </script>
+
+  <!-- 페이지 전용 스타일: hourly 완전마감본과 통일 -->
+  <style>
+    .toggleRow{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      min-height: 42px;
+    }
+    .toggleRow input{
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      accent-color: rgba(59,231,176,.95);
+    }
+    .toggleText{ display:flex; flex-direction:column; gap:2px; line-height: 1.35; }
+    .toggleTitle{ font-weight: 900; letter-spacing: -.2px; font-size: 13px; color: rgba(255,255,255,.90); }
+    .toggleDesc{ font-size: 12.5px; color: rgba(255,255,255,.62); }
+
+    .infoBox{
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:2px;
+      height: 42px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+    }
+    .infoTitle{ font-weight: 900; letter-spacing: -.2px; font-size: 13px; color: rgba(255,255,255,.90); }
+    .infoDesc{ font-size: 12.5px; color: rgba(255,255,255,.62); line-height: 1.25; }
+
+    .badgeRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+    .badgeWarn{
+      font-size:12px; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255, 80, 80, .12);
+      color: rgba(255,255,255,.88);
+    }
+    .badgeSoft{
+      font-size:12px; font-weight:900;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.78);
+    }
+
+    .ctaBox{
+      margin-top: 14px;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .ctaTitle{
+      font-weight: 900;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      color: rgba(255,255,255,.92);
+      margin-bottom: 2px;
+    }
+    .ctaDesc{
+      font-size: 12.5px;
+      color: rgba(255,255,255,.68);
+      line-height: 1.35;
+    }
+    .ctaBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+      color: rgba(0,0,0,.75);
+      white-space: nowrap;
+    }
+    .ctaBtn:hover{ opacity: .92; }
+
+    @media (max-width:720px){
+      .ctaBox{ align-items: stretch; }
+      .ctaBtn{ width: 100%; }
+    }
+  </style>
 </body>
 </html>

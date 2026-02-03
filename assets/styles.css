@@ -26,6 +26,9 @@ body{
     radial-gradient(1200px 600px at 18% -10%, rgba(76,201,255,.16), transparent 60%),
     radial-gradient(900px 520px at 92% 0%, rgba(164,109,255,.12), transparent 55%),
     var(--bg);
+
+  /* ✅ 하단 그라데이션 번짐 제거 */
+  background-attachment: fixed;
 }
 
 a{color:inherit;text-decoration:none}
@@ -150,6 +153,7 @@ input, select{
   color:var(--text);
   padding: 0 12px;
   outline:none;
+  font-variant-numeric: tabular-nums;
 }
 input:focus, select:focus{
   border-color: rgba(76,201,255,.55);
@@ -203,9 +207,9 @@ button.ghost{
 }
 .kpi .v{
   margin:6px 0 2px;
-  font-size:22px;
+  font-size:24px; /* ✅ 가독성 강화 */
   font-weight:900;
-  letter-spacing:-.2px;
+  letter-spacing:-.4px;
 }
 .kpi .h{
   margin:0;
@@ -272,6 +276,17 @@ tbody tr:last-child td{border-bottom:0}
   cursor:pointer;
   font-weight:800;
   letter-spacing:-.1px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.faq summary::after{
+  content: "⌄";
+  opacity: .7;
+  transform: translateY(-1px);
+}
+.faq details[open] summary::after{
+  content: "⌃";
 }
 .faq p{margin:8px 0 0; color:var(--soft)}
 
@@ -296,15 +311,159 @@ footer .links a{
 }
 footer .links a:hover{color:var(--soft)}
 
-/* WorkValue: 공통 헤더 active 표시(선택) */
-header nav a.active {
-  font-weight: 700;
-  text-decoration: underline;
-}
-
 /* ✅ nav active 표시 */
 header nav a.active {
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 6px;
+}
+
+/* =========================
+   ✅ 공통 UI upgrade (깔끔/정돈)
+========================= */
+
+/* container 여백 균형 */
+.container{
+  padding: 18px 0 36px;
+}
+
+/* Header: sticky + blur */
+header{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(11,15,20,.72), rgba(11,15,20,0));
+  padding: 14px 0 10px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* nav 버튼 업그레이드 */
+nav[aria-label="이동"] a{
+  background: rgba(18,26,35,.55);
+  border: 1px solid rgba(255,255,255,.10);
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+nav[aria-label="이동"] a:hover{
+  transform: translateY(-1px);
+  background: rgba(18,26,35,.78);
+  border-color: rgba(255,255,255,.14);
+}
+
+/* Hero */
+.cardHead.hero{
+  padding: 18px 18px 16px;
+}
+.heroTitle{
+  margin:0;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -.6px;
+}
+.heroSub{
+  margin-top: 8px;
+  font-size: 13.5px;
+}
+
+/* Panel */
+.content.panel{
+  background: rgba(0,0,0,.18);
+}
+.panelHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 10px;
+}
+.panelHead h3{ margin:0; }
+
+/* 작은 라벨 */
+.pill{
+  font-size: 12px;
+  color: rgba(0,0,0,.75);
+  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+
+/* =========================
+   ✅ BEP UI patch (차트/레전드)
+========================= */
+
+.chartWrap{
+  margin-top: 14px;
+  padding: 14px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+}
+
+.chartHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom: 10px;
+}
+
+.legendPills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+
+.lp{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size: 12.5px;
+  color: rgba(255,255,255,.78);
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(18,26,35,.55);
+}
+
+.lp i{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  display:inline-block;
+}
+
+.dotRev{ background: rgba(76,201,255,.95); }
+.dotCost{ background: rgba(164,109,255,.80); }
+.dotBep{ background: rgba(59,231,176,.95); }
+
+/* 차트 영역 안정화 */
+.canvasBox{
+  width: 100%;
+  height: 300px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.12);
+  padding: 8px;
+}
+
+/* canvas는 부모를 꽉 채움 */
+#bepChart{
+  width: 100% !important;
+  height: 100% !important;
+  display:block;
+}
+
+/* 모바일 정리 */
+@media (max-width: 720px){
+  header{ position: relative; } /* 모바일 sticky 부담 줄이기 */
+  nav[aria-label="이동"]{ gap:8px; }
+  nav[aria-label="이동"] a{ padding:8px 9px; border-radius:12px; font-size:12.5px; }
+  .heroTitle{ font-size: 20px; }
+
+  .chartHead{ flex-direction: column; }
+  .legendPills{ justify-content:flex-start; }
+  .canvasBox{ height: 260px; }
 }

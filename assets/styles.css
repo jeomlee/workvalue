@@ -295,3 +295,9 @@ footer .links a{
   background: rgba(0,0,0,.14);
 }
 footer .links a:hover{color:var(--soft)}
+
+/* WorkValue: 공통 헤더 active 표시(선택) */
+header nav a.active {
+  font-weight: 700;
+  text-decoration: underline;
+}

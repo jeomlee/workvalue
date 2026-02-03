@@ -7,39 +7,15 @@
   <title>알바·근로자 인건비 계산기 | 사장님 총부담 & 실수령 | WorkValue</title>
   <meta name="description" content="시급, 근무시간, 주휴수당, 4대보험, 산재보험, 퇴직금을 반영하여 근로자 실수령액과 사장님 총 인건비 부담을 함께 계산하실 수 있습니다." />
   <meta name="robots" content="index,follow" />
-  <link rel="canonical" href="https://workvalue.kr/business/labor-cost" />
-
+  <link rel="canonical" href="https://workvalue.kr/business/labor-cost.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
-
-  <!-- Search Console -->
   <meta name="google-site-verification" content="2j0qNv5hU7oaXeGm5eFOfF0MPQueETQQGz-Ue2rr0cQ" />
-
-  <!-- (선택) AdSense 코드: 승인 전이라면 주석 처리해두셔도 됩니다 -->
-  <!--
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX"
-    crossorigin="anonymous"></script>
-  -->
 </head>
 
 <body>
 <div class="container">
+  <header id="wvHeader"></header>
 
-  <header>
-    <div class="brand">
-      <div class="dot"></div>
-      <div class="t">
-        <strong>알바·근로자 인건비 계산기</strong>
-        <span>근로자 실수령과 사장님 총부담을 함께 확인하실 수 있습니다</span>
-      </div>
-    </div>
-    <nav aria-label="이동">
-      <a href="/">홈</a>
-      <a href="/business/bep">자영업 BEP</a>
-      <a href="/employee/hourly">실수령 시급</a>
-    </nav>
-  </header>
-
-  <!-- 계산기 -->
   <section class="card">
     <div class="cardHead">
       <div>
@@ -52,8 +28,6 @@
 
     <div class="cardBody">
       <div class="cols">
-
-        <!-- 입력 -->
         <div>
           <div class="row">
             <div>
@@ -108,7 +82,6 @@
             </div>
           </div>
 
-          <!-- 업종별 산재 프리셋 -->
           <div class="row" style="margin-top:10px;">
             <div>
               <label>산재 요율 프리셋(선택)</label>
@@ -119,9 +92,7 @@
                 <option value="office">사무/일반(예시)</option>
                 <option value="delivery">배달/라이더(예시)</option>
               </select>
-              <p class="small">
-                프리셋은 입력 편의를 위한 예시이며, 실제 업종 요율은 고시에 따라 확인해 주시기를 권장드립니다.
-              </p>
+              <p class="small">프리셋은 입력 편의를 위한 예시이며 실제 업종 요율은 고시에 따라 확인을 권장드립니다.</p>
             </div>
             <div>
               <label>산재보험 요율(%, 사업주)</label>
@@ -129,7 +100,6 @@
             </div>
           </div>
 
-          <!-- (선택) 고용안정/직능 개발 사업주 부담률 -->
           <div class="row" style="margin-top:10px;">
             <div>
               <label>고용안정·직업능력개발(사업주, %, 선택)</label>
@@ -140,7 +110,7 @@
           </div>
 
           <div class="btnrow">
-            <button class="primary" id="btnCalcLC">계산하기</button>
+            <button class="primary" id="btnCalcLC" type="button">계산하기</button>
           </div>
 
           <div class="content">
@@ -154,7 +124,6 @@
           </div>
         </div>
 
-        <!-- 결과 -->
         <div>
           <div class="kpi">
             <div class="box">
@@ -189,17 +158,15 @@
             <ul id="lcOwnerBreakdown"></ul>
           </div>
         </div>
-
       </div>
     </div>
   </section>
 
-  <!-- BEP 연동 강화 -->
   <section class="card">
     <div class="cardHead">
       <div>
         <h2>손익분기점(BEP) 자동 연동</h2>
-        <p class="sub">아래 값까지 함께 입력하시면, 현재 인건비를 기준으로 손익분기점 페이지가 자동으로 채워집니다.</p>
+        <p class="sub">아래 값까지 입력하시면, 현재 인건비를 기준으로 손익분기점 페이지가 자동으로 채워집니다.</p>
       </div>
     </div>
 
@@ -232,9 +199,7 @@
             <a id="lcToBEP" class="primary" href="/business/bep.html">이 인건비를 기준으로 BEP를 계산하기</a>
           </div>
 
-          <p class="small">
-            안내: 본 연동은 “인건비를 월 고정비로 가정”하여 보수적으로 계산합니다.
-          </p>
+          <p class="small">안내: 본 연동은 “인건비를 월 고정비로 가정”하여 보수적으로 계산합니다.</p>
         </div>
 
         <div>
@@ -251,15 +216,12 @@
             </div>
           </div>
 
-          <p class="small">
-            안내: 직원 1명 추가 시 필요한 매출은 “직원 1명의 총부담 ÷ (1-변동비율)”로 단순 환산합니다.
-          </p>
+          <p class="small">안내: 직원 1명 추가 시 필요한 매출은 “직원 1명의 총부담 ÷ (1-변동비율)”로 단순 환산합니다.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 근무시간 시뮬레이션 -->
   <section class="card">
     <div class="cardHead">
       <div>
@@ -284,12 +246,9 @@
     </div>
   </section>
 
-  <!-- FAQ -->
   <section class="card">
     <div class="cardHead">
-      <div>
-        <h2>자주 묻는 질문</h2>
-      </div>
+      <div><h2>자주 묻는 질문</h2></div>
     </div>
     <div class="cardBody">
       <div class="content" style="margin-top:0;">
@@ -319,43 +278,18 @@
 
   <footer>
     <div class="links">
-      <a href="/about">소개</a>
-      <a href="/privacy">개인정보처리방침</a>
-      <a href="/terms">이용약관</a>
-      <a href="/contact">문의</a>
+      <a href="/about.html">소개</a>
+      <a href="/privacy.html">개인정보처리방침</a>
+      <a href="/terms.html">이용약관</a>
+      <a href="/contact.html">문의</a>
     </div>
     <p class="small">© <span id="y"></span> WorkValue</p>
   </footer>
-
 </div>
 
-<!-- ✅ 이 페이지에서만 계산 실행 -->
 <script type="module">
-  import { calcLaborCost } from "/assets/app.js";
-
-  const yearEl = document.getElementById("y");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
-
-  const run = () => calcLaborCost();
-
-  const btn = document.getElementById("btnCalcLC");
-  if (btn) btn.addEventListener("click", run);
-
-  const ids = [
-    "lcHourly","lcHours","lcDays","lcCount","lcHoliday","lcExtraHours","lcInsurance",
-    "lcIndustrialRate","lcIndustrialPreset","lcOwnerDevRate","lcSeverance",
-    "lcVarRate","lcOpenDays","lcHoursPerDay","lcTargetSales"
-  ];
-
-  ids.forEach((id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    el.addEventListener("input", run);
-    el.addEventListener("change", run);
-  });
-
-  // 최초 1회 실행
-  run();
+  import { initWorkValue } from "/assets/app.js";
+  initWorkValue();
 </script>
 
 <script type="application/ld+json">

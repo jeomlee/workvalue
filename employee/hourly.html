@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>실수령 시급 계산기 | 주급·월급 단순 추정 | WorkValue</title>
-  <meta name="description" content="시급, 근무시간, 휴게시간, 주 근무일수, 초과근로를 입력하시면 주급·월급을 단순 추정해 드립니다. 계산 기준과 예시, FAQ도 함께 확인하실 수 있습니다." />
+  <meta name="description" content="시급, 근무시간, 휴게시간, 주 근무일수, 초과근로를 입력하시면 주급·월급을 단순 추정해 드립니다." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://workvalue.kr/employee/hourly.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
@@ -13,20 +13,7 @@
 
 <body>
   <div class="container">
-    <header>
-      <div class="brand">
-        <div class="dot"></div>
-        <div class="t">
-          <strong>실수령 시급 계산기</strong>
-          <span>근무 패턴을 입력하시면 주급·월급을 단순 추정해 드립니다</span>
-        </div>
-      </div>
-      <nav aria-label="이동">
-        <a href="/">홈</a>
-        <a href="/employee/salary-net.html">월급 실수령(추정)</a>
-        <a href="/business/bep.html">자영업 BEP</a>
-      </nav>
-    </header>
+    <header id="wvHeader"></header>
 
     <section class="card">
       <div class="cardHead">
@@ -76,7 +63,7 @@
             </div>
 
             <div class="btnrow">
-              <button class="primary" id="btnCalcH">계산하기</button>
+              <button class="primary" id="btnCalcH" type="button">계산하기</button>
             </div>
 
             <div class="content">
@@ -87,14 +74,6 @@
                 <li>월급(단순) = 주급×4.345(월 평균 주수)로 환산</li>
               </ul>
               <p class="small">안내: 실제 지급 기준은 사업장 규정 및 계약 조건에 따라 달라질 수 있습니다.</p>
-            </div>
-
-            <div class="content">
-              <h3>입력 예시</h3>
-              <ul>
-                <li>예시 1) 시급 10,000원 / 1일 8시간 / 휴게 60분 / 주 5일</li>
-                <li>예시 2) 시급 11,000원 / 1일 7.5시간 / 휴게 30분 / 주 6일</li>
-              </ul>
             </div>
           </div>
 
@@ -118,33 +97,20 @@
               <div class="box">
                 <p class="t">참고 안내</p>
                 <p class="v">추정치</p>
-                <p class="h">정확한 금액은 급여명세서 또는 사업장 산정 기준을 확인해 주시기를 권장드립니다.</p>
-              </div>
-            </div>
-
-            <div class="content">
-              <h3>자주 묻는 질문</h3>
-              <div class="faq">
-                <details>
-                  <summary>주휴는 누구나 적용되나요?</summary>
-                  <p>주휴는 요건 충족 여부에 따라 달라질 수 있습니다. 본 계산기는 체크 여부에 따라 단순 계산에 포함합니다.</p>
-                </details>
-                <details>
-                  <summary>초과근로 가산은 어떻게 반영되나요?</summary>
-                  <p>본 페이지에서는 이해를 돕기 위해 초과근로 가산을 단순 50%로 반영합니다.</p>
-                </details>
+                <p class="h">정확한 금액은 급여명세서 또는 사업장 산정 기준 확인을 권장드립니다.</p>
               </div>
             </div>
 
             <div class="content">
               <h3>관련 도구</h3>
               <ul>
-                <li><a href="/employee/salary-net.html"><b>월급 실수령액 계산기(추정)</b></a> — 공제 구조를 항목별로 확인하실 수 있습니다.</li>
-                <li><a href="/business/bep.html"><b>자영업 손익분기점(BEP) 계산기</b></a> — 목표 매출 기준 순이익과 사장 시급을 확인하실 수 있습니다.</li>
+                <li><a href="/employee/salary-net.html"><b>월급 실수령액 계산기(추정)</b></a></li>
+                <li><a href="/business/bep.html"><b>자영업 손익분기점(BEP) 계산기</b></a></li>
+                <li><a href="/business/labor-cost.html"><b>인건비 계산기</b></a></li>
               </ul>
             </div>
-
           </div>
+
         </div>
       </div>
     </section>
@@ -161,17 +127,8 @@
   </div>
 
   <script type="module">
-    import { calcHourly } from "/assets/app.js";
-    document.getElementById("y").textContent = new Date().getFullYear();
-    document.getElementById("btnCalcH").addEventListener("click", calcHourly);
-    const ids = ["hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","includeHolidayH"];
-    ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener("input", calcHourly);
-      el.addEventListener("change", calcHourly);
-    });
-    calcHourly();
+    import { initWorkValue } from "/assets/app.js";
+    initWorkValue();
   </script>
 </body>
 </html>

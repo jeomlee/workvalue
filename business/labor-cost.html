@@ -36,7 +36,8 @@
         <a href="/">홈</a>
         <a href="/business/bep.html">자영업 BEP</a>
         <a class="active" href="/business/labor-cost.html">인건비 계산</a>
-        <a href="/employee/hourly.html">실수령 시급</a>
+        <!-- ✅ 라벨 통일 -->
+        <a href="/employee/hourly.html">단순 급여 추정</a>
         <a href="/employee/salary-net.html">월급 실수령(추정)</a>
       </nav>
     </header>
@@ -59,7 +60,7 @@
             <div class="panelHead">
               <div class="phLeft">
                 <h3>입력</h3>
-                <p class="phSub">월 기준으로 비용을 빠르게 추정해요</p>
+                <p class="phSub">기본값은 “최저임금 월 환산(209시간)” 기준(주40h + 주휴 포함)으로 맞춰져 있어요</p>
               </div>
               <span class="pill">월 기준</span>
             </div>
@@ -67,7 +68,7 @@
             <div class="row">
               <div>
                 <label for="hourlyWage">시급(원)</label>
-                <input id="hourlyWage" inputmode="numeric" placeholder="예: 10,000" />
+                <input id="hourlyWage" inputmode="numeric" placeholder="예: 10,320" />
                 <div class="small">금액은 자동으로 콤마가 들어갑니다.</div>
               </div>
               <div>
@@ -80,7 +81,10 @@
             <div class="row" style="margin-top:12px;">
               <div>
                 <label for="workDays">월 근무일수(일)</label>
-                <input id="workDays" inputmode="numeric" placeholder="예: 22" />
+                <input id="workDays" inputmode="decimal" placeholder="예: 21.77" />
+                <div class="small">
+                  최저임금 “월 환산 209시간”에 딱 맞추려면 (8h/일, 5일/주, 주휴 포함) 약 <b>21.77일</b>로 근사합니다.
+                </div>
               </div>
               <div>
                 <label for="weeklyDays">주 근무일수(일)</label>
@@ -88,6 +92,9 @@
                 <div class="small">주휴/월 주수 환산에 사용됩니다.</div>
               </div>
             </div>
+
+            <!-- ✅ 209h 기준 대비 차이 안내 -->
+            <div class="noticeLine" id="stdLine" style="display:none;"></div>
 
             <div class="row" style="margin-top:12px;">
               <div>
@@ -118,7 +125,7 @@
               </div>
               <div>
                 <label for="incomeTaxRate">원천징수/소득세(단순, %)</label>
-                <input id="incomeTaxRate" inputmode="decimal" placeholder="예: 3.3" />
+                <input id="incomeTaxRate" inputmode="decimal" placeholder="예: 0" />
                 <div class="small">필요할 때만 입력(기본 0%).</div>
               </div>
             </div>
@@ -148,7 +155,12 @@
                 <h3>결과</h3>
                 <p class="phSub">핵심 값부터 한눈에</p>
               </div>
-              <span class="pill" id="statusPill">정상</span>
+
+              <!-- ✅ 상태 + 209h 기준 배지 -->
+              <div class="pillRow">
+                <span class="pill" id="statusPill">정상</span>
+                <span class="pill soft" id="std209Pill">209h 기준: -</span>
+              </div>
             </div>
 
             <div class="kpi">
@@ -370,23 +382,12 @@
     }
 
     // ===== 단순 요율(가정) =====
-    // ⚠️ 정확 요율(연도별)로 고정하고 싶으면, 이 객체만 업데이트하면 전체 반영됨.
     const INS = {
-      emp: {
-        pension: 0.045,   // 국민연금(근로자) 근사
-        health: 0.035,    // 건강보험(근로자) 근사
-        care: 0.004,      // 장기요양(근로자) 근사
-        employ: 0.009     // 고용보험(근로자) 근사
-      },
-      owner: {
-        pension: 0.045,
-        health: 0.035,
-        care: 0.004,
-        employ: 0.010     // 사업주 고용보험(업종별 상이) → 단순 근사
-      }
+      emp: { pension: 0.045, health: 0.035, care: 0.004, employ: 0.009 },
+      owner:{ pension: 0.045, health: 0.035, care: 0.004, employ: 0.010 }
     };
 
-    function calcInsurance(amount, side /* 'emp'|'owner' */) {
+    function calcInsurance(amount, side) {
       const r = INS[side];
       const pension = amount * r.pension;
       const health  = amount * r.health;
@@ -402,20 +403,26 @@
     }
 
     function calcWeeklyHolidayHours(weeklyHours) {
-      // 단순화: 주휴시간 = 주 소정근로시간 / 5 (최대 8시간 캡)
-      // 실제는 소정근로시간, 개근, 사업장 규정 등 복잡
       const h = weeklyHours / 5;
       return clamp(h, 0, 8);
     }
 
-    function setStatus(text, kind /* ok|warn|no */) {
+    function setStatus(text, kind) {
       const pill = $("statusPill");
       pill.textContent = text;
       pill.classList.remove("ok","warn","no");
       pill.classList.add(kind);
     }
 
-    // ===== Assumptions =====
+    function fmtSignedWon(delta) {
+      const sign = delta >= 0 ? "+" : "−";
+      return sign + won(Math.abs(delta));
+    }
+    function fmtSignedHours(deltaH) {
+      const sign = deltaH >= 0 ? "+" : "−";
+      return sign + Math.abs(deltaH).toFixed(2) + "h";
+    }
+
     function updateAssumptions({ weeklyEligible, weeks, weeklyHolidayHours, severance, taxRate, insuranceMode }) {
       const weeklyCond = weeklyEligible
         ? "주 15시간 이상(가정) → 지급 가능"
@@ -429,36 +436,12 @@
       const rateText = `근로자(연금 ${pct(INS.emp.pension)} / 건강 ${pct(INS.emp.health)} / 요양 ${pct(INS.emp.care)} / 고용 ${pct(INS.emp.employ)}) · 사업주(연금 ${pct(INS.owner.pension)} / 건강 ${pct(INS.owner.health)} / 요양 ${pct(INS.owner.care)} / 고용 ${pct(INS.owner.employ)})`;
 
       $("assumptionsBody").innerHTML = `
-        <tr>
-          <td>주휴 조건</td>
-          <td><b>${weeklyCond}</b></td>
-          <td>주 15시간 이상 시 지급 가정</td>
-        </tr>
-        <tr>
-          <td>월 기준 주수</td>
-          <td><b>${Number.isFinite(weeks) ? weeks.toFixed(2) : "0.00"}주</b></td>
-          <td>월근무일수 ÷ 주근무일수</td>
-        </tr>
-        <tr>
-          <td>주휴시간(1주)</td>
-          <td><b>${weeklyHolidayHours > 0 ? weeklyHolidayHours.toFixed(2) + "시간" : "-"}</b></td>
-          <td>(주 소정근로시간/5), 최대 8시간</td>
-        </tr>
-        <tr>
-          <td>퇴직금 월 할당</td>
-          <td><b>${severance > 0 ? won(severance) : "-"}</b></td>
-          <td>(총지급 ÷ 12) 단순 근사</td>
-        </tr>
-        <tr>
-          <td>원천징수율</td>
-          <td><b>${pct(taxRate)}</b></td>
-          <td>선택 입력(프리랜서 3.3% 등)</td>
-        </tr>
-        <tr>
-          <td>4대보험 요율</td>
-          <td><b>${insText}</b></td>
-          <td style="line-height:1.5;">${rateText}</td>
-        </tr>
+        <tr><td>주휴 조건</td><td><b>${weeklyCond}</b></td><td>주 15시간 이상 시 지급 가정</td></tr>
+        <tr><td>월 기준 주수</td><td><b>${Number.isFinite(weeks) ? weeks.toFixed(2) : "0.00"}주</b></td><td>월근무일수 ÷ 주근무일수</td></tr>
+        <tr><td>주휴시간(1주)</td><td><b>${weeklyHolidayHours > 0 ? weeklyHolidayHours.toFixed(2) + "시간" : "-"}</b></td><td>(주 소정근로시간/5), 최대 8시간</td></tr>
+        <tr><td>퇴직금 월 할당</td><td><b>${severance > 0 ? won(severance) : "-"}</b></td><td>(총지급 ÷ 12) 단순 근사</td></tr>
+        <tr><td>원천징수율</td><td><b>${pct(taxRate)}</b></td><td>선택 입력(프리랜서 3.3% 등)</td></tr>
+        <tr><td>4대보험 요율</td><td><b>${insText}</b></td><td style="line-height:1.5;">${rateText}</td></tr>
       `;
     }
 
@@ -475,12 +458,7 @@
       `;
     }
 
-    function updateBreakdown({
-      basePay, weeklyPay, grossPay,
-      empDeduct, netPay,
-      ownerIns, severance,
-      ownerTotal
-    }) {
+    function updateBreakdown({ basePay, weeklyPay, grossPay, empDeduct, netPay, ownerIns, severance, ownerTotal }) {
       $("breakdownBody").innerHTML = `
         <tr><td>기본급</td><td><b>${won(basePay)}</b></td><td>시급×시간×일수</td></tr>
         <tr><td>주휴수당</td><td><b>${weeklyPay > 0 ? won(weeklyPay) : "-"}</b></td><td>조건 충족 + 포함 선택 시</td></tr>
@@ -493,19 +471,23 @@
       `;
     }
 
-    // ===== Preset =====
+    // ===== Preset (✅ 최저임금 표 기준) =====
     function preset() {
-      $("hourlyWage").value = "10,000";
+      $("hourlyWage").value = "10,320";
       $("dailyHours").value = "8";
-      $("workDays").value = "22";
       $("weeklyDays").value = "5";
+
+      // 209h 기준을 "이 페이지 계산식(기본급+주휴)"에 맞춰 딱 맞추는 근사치:
+      // 유급시간 = 8*workDays + 8*(workDays/5) = 9.6*workDays
+      // workDays = 209/9.6 = 21.7708...
+      $("workDays").value = "21.77";
+
       $("includeWeeklyHoliday").value = "yes";
       $("includeSeverance").value = "yes";
       $("insuranceMode").value = "employee";
       $("incomeTaxRate").value = "0";
     }
 
-    // ===== Main calc =====
     function calc() {
       const hourly = Math.max(num($("hourlyWage").value, 0), 0);
       const dailyHours = clamp(num($("dailyHours").value, 0), 0, 24);
@@ -514,10 +496,9 @@
 
       const includeWeekly = $("includeWeeklyHoliday").value === "yes";
       const includeSeverance = $("includeSeverance").value === "yes";
-      const insuranceMode = $("insuranceMode").value; // none | employee | both
+      const insuranceMode = $("insuranceMode").value;
       const taxRate = clamp(num($("incomeTaxRate").value, 0) / 100, 0, 0.5);
 
-      // 입력 기본 검증
       if (!(hourly > 0) || !(dailyHours > 0) || !(workDays > 0) || !(weeklyDays > 0)) {
         setStatus("입력 필요", "warn");
       } else {
@@ -533,15 +514,15 @@
       // 주 소정근로시간(근사)
       const weeklyHours = dailyHours * weeklyDays;
 
-      // 주휴 조건(단순 가정: 주 15시간 이상)
+      // 주휴 조건(단순: 주 15시간 이상)
       const weeklyEligible = weeklyHours >= 15;
 
-      // 주휴시간(1주) 근사
+      // 주휴시간(1주)
       const weeklyHolidayHours = (includeWeekly && weeklyEligible)
         ? calcWeeklyHolidayHours(weeklyHours)
         : 0;
 
-      // 주휴수당(월) = 시급 × (주휴시간) × (월 주수)
+      // 주휴수당(월)
       const weeklyPay = (includeWeekly && weeklyEligible && weeks > 0)
         ? hourly * weeklyHolidayHours * weeks
         : 0;
@@ -564,13 +545,13 @@
       // 원천징수(단순)
       const withholding = grossPay * taxRate;
 
-      // 근로자 공제(보험+원천)
+      // 근로자 공제
       const empDeduct = empIns.total + withholding;
 
       // 실수령
       const netPay = Math.max(grossPay - empDeduct, 0);
 
-      // 퇴직금 월 할당(단순: 총지급/12)
+      // 퇴직금 월 할당
       const severance = includeSeverance ? (grossPay / 12) : 0;
 
       // 사장 총부담
@@ -585,7 +566,7 @@
       $("outEmpDeduct").textContent = (empDeduct > 0) ? won(empDeduct) : "-";
       $("outOwnerTotal").textContent = (grossPay > 0) ? won(ownerTotal) : "-";
 
-      $("outMonthHours").textContent = (dailyHours > 0 && workDays > 0) ? (dailyHours * workDays).toFixed(1) + "시간" : "-";
+      $("outMonthHours").textContent = (dailyHours > 0 && workDays > 0) ? (dailyHours * workDays).toFixed(2) + "시간" : "-";
       $("outWeekHours").textContent = (weeklyDays > 0 && dailyHours > 0) ? (weeklyHours).toFixed(1) + "시간" : "-";
 
       $("outWeeklyPayHint").textContent =
@@ -621,6 +602,44 @@
         taxRate,
         insuranceMode
       });
+
+      // =========================
+      // ✅ 209h 기준 배지 + 차이 안내
+      // =========================
+      const STD_HOURS = 209;
+
+      const stdPill = $("std209Pill");
+      const stdLine = $("stdLine");
+
+      if (!(hourly > 0)) {
+        stdPill.textContent = "209h 기준: -";
+        stdLine.style.display = "none";
+      } else {
+        const stdPay = hourly * STD_HOURS;
+        const deltaPay = grossPay - stdPay;
+
+        // 배지: 209h 기준 월급 + 차이(원)
+        stdPill.textContent = `209h 기준: ${won(stdPay)} (${fmtSignedWon(deltaPay)})`;
+
+        // 현재 입력 기준 "유급시간" = 기본급시간 + 주휴시간(월)
+        const baseHours = dailyHours * workDays;
+        const weeklyPaidHours = (includeWeekly && weeklyEligible && weeks > 0) ? (weeklyHolidayHours * weeks) : 0;
+        const paidHours = baseHours + weeklyPaidHours;
+
+        const deltaHours = paidHours - STD_HOURS;
+
+        // 차이가 아주 작으면 안내 숨김(지저분 방지)
+        const show = Math.abs(deltaPay) >= Math.max(1000, hourly * 0.1); // 최소 1,000원 또는 시급의 10% 이상
+        if (show) {
+          stdLine.style.display = "block";
+          stdLine.innerHTML =
+            `현재 입력 기준 유급시간은 <b>${paidHours.toFixed(2)}h</b>로 계산돼요 → ` +
+            `209h 기준 대비 <b>${fmtSignedHours(deltaHours)}</b> (` +
+            `<b>${fmtSignedWon(deltaPay)}</b>).`;
+        } else {
+          stdLine.style.display = "none";
+        }
+      }
     }
 
     // ===== Events =====
@@ -645,7 +664,6 @@
       $(id).addEventListener("change", calc);
     });
 
-    // footer year fallback
     const y = document.getElementById("y");
     if (y) y.textContent = String(new Date().getFullYear());
 
@@ -653,7 +671,6 @@
     calc();
   </script>
 
-  <!-- ✅ 페이지 전용 UI 정돈 (깨짐 방지 + 가독성) -->
   <style>
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
@@ -665,7 +682,6 @@
 
     .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
     .heroSub{ max-width: 78ch; }
-
     nav[aria-label="이동"] a{ white-space: nowrap; }
 
     .cols2{
@@ -701,9 +717,7 @@
     table{ min-width: 620px; }
 
     /* status pill */
-    .pill{
-      white-space:nowrap;
-    }
+    .pill{ white-space:nowrap; }
     #statusPill.ok{
       border-color: rgba(59,231,176,.35);
       background: rgba(59,231,176,.10);
@@ -718,6 +732,32 @@
       border-color: rgba(255,80,80,.35);
       background: rgba(255,80,80,.10);
       color: rgba(255,255,255,.88);
+    }
+
+    /* ✅ pills group */
+    .pillRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .pill.soft{
+      border-color: rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.86);
+    }
+
+    /* ✅ notice line */
+    .noticeLine{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 180, 80, .25);
+      background: rgba(255, 180, 80, .10);
+      color: rgba(255,255,255,.88);
+      font-size: 12.5px;
+      line-height: 1.35;
     }
   </style>
 </body>

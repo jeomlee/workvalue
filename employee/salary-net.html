@@ -50,22 +50,38 @@
             <div class="panelHead">
               <div class="phLeft">
                 <h3>입력</h3>
-                <p class="phSub">명세서 값으로 맞추면 정확도가 크게 올라가요</p>
+                <p class="phSub">연봉으로 넣어도 되고, 월급으로 넣어도 돼요(서로 자동 변환)</p>
               </div>
               <span class="pill">공제 구조 공개</span>
             </div>
 
+            <!-- ✅ 연봉/월급 입력 (연동) -->
             <div class="row">
+              <div>
+                <label for="annualPay">연봉(세전, 원)</label>
+                <input id="annualPay" inputmode="numeric" placeholder="예: 36,000,000" />
+                <div class="small">연봉 입력 시 월급이 자동 계산됩니다(연봉÷12)</div>
+              </div>
+
               <div>
                 <label for="grossPay">월급(세전, 원)</label>
                 <input id="grossPay" inputmode="numeric" placeholder="예: 3,000,000" />
-                <div class="small">입력 시 자동 콤마 적용</div>
+                <div class="small">월급 입력 시 연봉이 자동 계산됩니다(월급×12)</div>
               </div>
+            </div>
 
+            <div class="row" style="margin-top:10px;">
               <div>
                 <label for="nonTaxable">비과세(선택, 원)</label>
                 <input id="nonTaxable" inputmode="numeric" placeholder="예: 0" />
                 <div class="small">비과세는 “보험/세금 기준액에서 제외”로 단순 반영</div>
+              </div>
+              <div>
+                <label class="mutedLabel">변환 기준</label>
+                <div class="infoMini">
+                  <b>연봉 ÷ 12</b>로 월급을 계산합니다.<br/>
+                  (상여/성과급/수당 포함 여부에 따라 실제 월 지급액과 다를 수 있어요.)
+                </div>
               </div>
             </div>
 
@@ -192,7 +208,7 @@
             <div class="panelHead">
               <div class="phLeft">
                 <h3>결과</h3>
-                <p class="phSub">한눈에: 실수령 / 총 공제 / 보험 / 세금</p>
+                <p class="phSub">월 기준 + (연간 환산)까지 한 번에</p>
               </div>
               <div class="badgeRow">
                 <span class="badgeWarn">추정</span>
@@ -201,6 +217,7 @@
               </div>
             </div>
 
+            <!-- ✅ KPI (월) -->
             <div class="kpi">
               <div class="box">
                 <p class="t">월 실수령(추정)</p>
@@ -208,19 +225,43 @@
                 <p class="h">공제 반영 후</p>
               </div>
               <div class="box">
-                <p class="t">총 공제</p>
+                <p class="t">총 공제(월)</p>
                 <p class="v" id="kpiDeduct">-</p>
                 <p class="h">보험+세금+기타</p>
               </div>
               <div class="box">
-                <p class="t">4대보험(추정)</p>
+                <p class="t">4대보험(월)</p>
                 <p class="v" id="kpiIns">-</p>
                 <p class="h">근로자 부담분</p>
               </div>
               <div class="box">
-                <p class="t">세금(추정)</p>
+                <p class="t">세금(월)</p>
                 <p class="v" id="kpiTax">-</p>
                 <p class="h">소득세+지방세</p>
+              </div>
+            </div>
+
+            <!-- ✅ KPI (연간 환산) -->
+            <div class="kpi" style="margin-top:10px;">
+              <div class="box">
+                <p class="t">연 실수령(환산)</p>
+                <p class="v" id="kpiNetY">-</p>
+                <p class="h">월 실수령 × 12</p>
+              </div>
+              <div class="box">
+                <p class="t">연 총 공제(환산)</p>
+                <p class="v" id="kpiDeductY">-</p>
+                <p class="h">월 총공제 × 12</p>
+              </div>
+              <div class="box">
+                <p class="t">연 4대보험(환산)</p>
+                <p class="v" id="kpiInsY">-</p>
+                <p class="h">월 보험 × 12</p>
+              </div>
+              <div class="box">
+                <p class="t">연 세금(환산)</p>
+                <p class="v" id="kpiTaxY">-</p>
+                <p class="h">월 세금 × 12</p>
               </div>
             </div>
 
@@ -344,8 +385,27 @@
       if (kind) el.classList.add(kind);
     }
 
-    // 기본값(예시) — 사용자 수정 가능
+    // ✅ 연봉↔월급 연동 (무한루프 방지)
+    let syncing = false;
+    function syncAnnualFromMonthly() {
+      if (syncing) return;
+      syncing = true;
+      const gross = clamp(num($("grossPay").value, 0), 0, 999999999);
+      const annual = gross * 12;
+      $("annualPay").value = gross > 0 ? annual.toLocaleString("ko-KR") : "";
+      syncing = false;
+    }
+    function syncMonthlyFromAnnual() {
+      if (syncing) return;
+      syncing = true;
+      const annual = clamp(num($("annualPay").value, 0), 0, 999999999999);
+      const gross = Math.floor(annual / 12); // 정수원 단위
+      $("grossPay").value = annual > 0 ? gross.toLocaleString("ko-KR") : "";
+      syncing = false;
+    }
+
     function preset() {
+      $("annualPay").value = "36,000,000";
       $("grossPay").value = "3,000,000";
       $("nonTaxable").value = "0";
 
@@ -363,7 +423,6 @@
 
     function setTaxModeUI() {
       const direct = $("taxModeDirect").checked;
-
       $("incomeTax").disabled = !direct;
       $("effectiveTaxRate").disabled = direct;
 
@@ -394,7 +453,7 @@
       // 보험 요율
       const pensionR = clamp(num($("pensionRate").value, 0), 0, 20) / 100;
       const healthR = clamp(num($("healthRate").value, 0), 0, 20) / 100;
-      const careR = clamp(num($("careRate").value, 0), 0, 50) / 100;   // 건보료의 %
+      const careR = clamp(num($("careRate").value, 0), 0, 50) / 100;
       const employR = clamp(num($("employmentRate").value, 0), 0, 10) / 100;
 
       const pension = base * pensionR;
@@ -426,7 +485,13 @@
       const deduct = ins + tax + other;
       const net = Math.max(gross - deduct, 0);
 
-      // KPI
+      // ✅ 연간 환산 (월 기준 × 12)
+      const netY = net * 12;
+      const deductY = deduct * 12;
+      const insY = ins * 12;
+      const taxY = tax * 12;
+
+      // KPI (월)
       $("kpiNet").textContent = (gross > 0 ? won(net) : "-");
       $("kpiDeduct").textContent = (gross > 0 ? won(deduct) : "-");
       $("kpiIns").textContent = (gross > 0 ? won(ins) : "-");
@@ -435,12 +500,18 @@
       $("kpiIncomeTax").textContent = (gross > 0 ? (incomeTax > 0 ? won(incomeTax) : "-") : "-");
       $("kpiIncomeTaxHint").textContent = incomeTaxHint || "-";
 
+      // KPI (연)
+      $("kpiNetY").textContent = (gross > 0 ? won(netY) : "-");
+      $("kpiDeductY").textContent = (gross > 0 ? won(deductY) : "-");
+      $("kpiInsY").textContent = (gross > 0 ? won(insY) : "-");
+      $("kpiTaxY").textContent = (gross > 0 ? won(taxY) : "-");
+
       // 입력 상태 배지
       const inputBadge = $("inputBadge");
       const okInputs = (gross > 0);
       setBadge(inputBadge, okInputs ? "입력: 정상" : "입력: 부족", okInputs ? "ok" : "warn");
 
-      // breakdown table
+      // breakdown
       $("breakdownBody").innerHTML = `
         <tr><td>세전 월급</td><td><b>${won(gross)}</b></td><td>입력값</td></tr>
         <tr><td>비과세</td><td>${nonTax > 0 ? won(nonTax) : "-"}</td><td>선택</td></tr>
@@ -451,24 +522,25 @@
         <tr><td>소득세</td><td>${incomeTax > 0 ? won(incomeTax) : "-"}</td><td>${$("taxModeDirect").checked ? "직접 입력" : "실효세율 추정"}</td></tr>
         <tr><td>지방소득세</td><td>${localTax > 0 ? won(localTax) : "-"}</td><td>소득세×${(localRate*100).toFixed(1)}%</td></tr>
         <tr><td>기타 공제</td><td>${other > 0 ? won(other) : "-"}</td><td>선택</td></tr>
-        <tr><td><b>실수령</b></td><td><b>${won(net)}</b></td><td>세전−총공제</td></tr>
+        <tr><td><b>실수령(월)</b></td><td><b>${won(net)}</b></td><td>세전−총공제</td></tr>
+        <tr><td><b>실수령(연 환산)</b></td><td><b>${won(netY)}</b></td><td>월 실수령×12</td></tr>
       `;
 
-      // assumptions table
+      // assumptions
       const taxModeText = $("taxModeDirect").checked ? "직접 입력" : "실효세율";
-      const baseText = won(base);
       const insText = `연금 ${(pensionR*100).toFixed(3)}% / 건보 ${(healthR*100).toFixed(3)}% / 고용 ${(employR*100).toFixed(3)}% · 요양 ${(careR*100).toFixed(2)}%(건보료 기준)`;
 
       $("assumptionsBody").innerHTML = `
         <tr><td>세금 모드</td><td><b>${taxModeText}</b></td><td>직접 입력이 정확도가 높음</td></tr>
         <tr><td>지방세율</td><td><b>${(localRate*100).toFixed(1)}%</b></td><td>소득세의 %</td></tr>
         <tr><td>보험 요율</td><td><b>${insText}</b></td><td>예시 기본값(수정 가능)</td></tr>
-        <tr><td>기준액(단순)</td><td><b>${baseText}</b></td><td>세전−비과세</td></tr>
+        <tr><td>기준액(단순)</td><td><b>${won(base)}</b></td><td>세전−비과세</td></tr>
+        <tr><td>연간 환산</td><td><b>월 값 × 12</b></td><td>실수령/공제/보험/세금 연 환산</td></tr>
         <tr><td>세금 추정 기준</td><td><b>${$("taxModeDirect").checked ? "명세서 소득세" : "(기준액−4대보험)×실효세율"}</b></td><td>대략 감(근사)</td></tr>
       `;
     }
 
-    // 이벤트
+    // 버튼
     $("btnCalc").addEventListener("click", calc);
     $("btnReset").addEventListener("click", () => { preset(); setTaxModeUI(); calc(); });
 
@@ -476,8 +548,20 @@
     $("taxModeDirect").addEventListener("change", () => { setTaxModeUI(); calc(); });
     $("taxModeRate").addEventListener("change", () => { setTaxModeUI(); calc(); });
 
+    // ✅ 연봉/월급 입력 이벤트(콤마 + 연동 + 계산)
+    $("annualPay").addEventListener("input", (e) => {
+      formatCommaKeepCursor(e.target);
+      syncMonthlyFromAnnual();
+      calc();
+    });
+    $("grossPay").addEventListener("input", (e) => {
+      formatCommaKeepCursor(e.target);
+      syncAnnualFromMonthly();
+      calc();
+    });
+
     // 콤마 자동(원 단위 입력)
-    ["grossPay","nonTaxable","incomeTax","otherDeductions"].forEach(id=>{
+    ["nonTaxable","incomeTax","otherDeductions"].forEach(id=>{
       $(id).addEventListener("input", (e) => {
         formatCommaKeepCursor(e.target);
         calc();
@@ -494,7 +578,7 @@
 
     // Enter로 계산
     [
-      "grossPay","nonTaxable","incomeTax","effectiveTaxRate","localTaxRate","otherDeductions",
+      "annualPay","grossPay","nonTaxable","incomeTax","effectiveTaxRate","localTaxRate","otherDeductions",
       "pensionRate","healthRate","careRate","employmentRate"
     ].forEach(id=>{
       $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
@@ -506,10 +590,11 @@
 
     preset();
     setTaxModeUI();
+    syncMonthlyFromAnnual();
+    syncAnnualFromMonthly();
     calc();
   </script>
 
-  <!-- 페이지 전용 스타일: hourly 최종본 톤과 통일 + 깨짐 방지 -->
   <style>
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
@@ -644,6 +729,20 @@
       color: rgba(255,255,255,.88);
       font-size: 12.5px;
       line-height: 1.35;
+    }
+
+    .mutedLabel{ opacity:.85; }
+    .infoMini{
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      color: rgba(255,255,255,.75);
+      font-size: 12.5px;
+      line-height: 1.35;
+      min-height: 42px;
+      display:flex;
+      align-items:center;
     }
 
     .ctaBox{

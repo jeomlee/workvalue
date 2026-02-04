@@ -45,16 +45,22 @@
       <div class="cardHead hero">
         <div>
           <h1 class="heroTitle">알바·근로자 인건비 계산기</h1>
-          <p class="sub heroSub">근로자 실수령(추정)과 사장님 총부담(추정)을 한 번에 확인합니다. (주휴·4대보험·퇴직금 가정 포함)</p>
+          <p class="sub heroSub">근로자 실수령(추정)과 사장님 총부담(추정)을 한 번에 확인합니다. (주휴·4대보험·퇴직금 단순 가정 포함)</p>
         </div>
       </div>
 
       <div class="cardBody">
-        <div class="cols">
+
+        <!-- ✅ 2열: 입력 / 결과 -->
+        <div class="cols2">
+
           <!-- 입력 -->
           <div class="content panel" style="margin-top:0;">
             <div class="panelHead">
-              <h3>입력</h3>
+              <div class="phLeft">
+                <h3>입력</h3>
+                <p class="phSub">월 기준으로 비용을 빠르게 추정해요</p>
+              </div>
               <span class="pill">월 기준</span>
             </div>
 
@@ -62,14 +68,16 @@
               <div>
                 <label for="hourlyWage">시급(원)</label>
                 <input id="hourlyWage" inputmode="numeric" placeholder="예: 10,000" />
+                <div class="small">금액은 자동으로 콤마가 들어갑니다.</div>
               </div>
               <div>
                 <label for="dailyHours">하루 근무시간(시간)</label>
                 <input id="dailyHours" inputmode="decimal" placeholder="예: 8" />
+                <div class="small">휴게시간은 별도 반영하지 않습니다(필요하면 옵션 추가 가능).</div>
               </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="margin-top:12px;">
               <div>
                 <label for="workDays">월 근무일수(일)</label>
                 <input id="workDays" inputmode="numeric" placeholder="예: 22" />
@@ -77,11 +85,11 @@
               <div>
                 <label for="weeklyDays">주 근무일수(일)</label>
                 <input id="weeklyDays" inputmode="numeric" placeholder="예: 5" />
-                <div class="small">주휴수당 계산에 사용됩니다.</div>
+                <div class="small">주휴/월 주수 환산에 사용됩니다.</div>
               </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="margin-top:12px;">
               <div>
                 <label for="includeWeeklyHoliday">주휴수당 포함</label>
                 <select id="includeWeeklyHoliday">
@@ -90,7 +98,7 @@
                 </select>
               </div>
               <div>
-                <label for="includeSeverance">퇴직금 적립(월 할당) 포함</label>
+                <label for="includeSeverance">퇴직금(월 할당) 포함</label>
                 <select id="includeSeverance">
                   <option value="yes" selected>포함(기본)</option>
                   <option value="no">미포함</option>
@@ -98,7 +106,7 @@
               </div>
             </div>
 
-            <div class="row">
+            <div class="row" style="margin-top:12px;">
               <div>
                 <label for="insuranceMode">4대보험 적용</label>
                 <select id="insuranceMode">
@@ -106,25 +114,25 @@
                   <option value="employee" selected>근로자 부담만(실수령 추정)</option>
                   <option value="both">근로자+사업주 부담(총부담 추정)</option>
                 </select>
-                <div class="small">정확한 적용 여부/요율은 근로형태·사업장·가입요건에 따라 달라질 수 있습니다.</div>
+                <div class="small">가입 여부/요율은 조건에 따라 달라질 수 있어요(여긴 근사치 모델).</div>
               </div>
               <div>
                 <label for="incomeTaxRate">원천징수/소득세(단순, %)</label>
                 <input id="incomeTaxRate" inputmode="decimal" placeholder="예: 3.3" />
-                <div class="small">프리랜서 3.3% 같은 단순 공제율이 필요할 때 사용(선택).</div>
+                <div class="small">필요할 때만 입력(기본 0%).</div>
               </div>
             </div>
 
             <div class="btnrow">
-              <button class="primary" id="btnCalc">계산하기</button>
-              <button class="ghost" id="btnReset">초기화</button>
+              <button class="primary" id="btnCalc" type="button">계산하기</button>
+              <button class="ghost" id="btnReset" type="button">초기화</button>
             </div>
 
             <div class="content" style="margin-top:14px;">
               <h3>계산 구조(요약)</h3>
               <ul>
                 <li>월 기본급(추정) = <b>시급 × 하루시간 × 월 근무일수</b></li>
-                <li>주휴수당(추정) = <b>(주 15시간 이상 & 주휴 포함 시) 시급 × 1일치 시간 × (월 기준 주수)</b></li>
+                <li>주휴수당(추정) = <b>(주 15시간 이상 & 포함) 시급 × 주휴시간 × (월 주수)</b></li>
                 <li>총지급(추정) = <b>기본급 + 주휴수당</b></li>
                 <li>실수령(추정) = <b>총지급 − (근로자 공제)</b></li>
                 <li>사업주 총부담(추정) = <b>총지급 + (사업주 보험 부담) + (퇴직금 월 할당)</b></li>
@@ -136,8 +144,11 @@
           <!-- 결과 -->
           <div class="content panel" style="margin-top:0;">
             <div class="panelHead">
-              <h3>결과</h3>
-              <span class="pill">한눈에 보기</span>
+              <div class="phLeft">
+                <h3>결과</h3>
+                <p class="phSub">핵심 값부터 한눈에</p>
+              </div>
+              <span class="pill" id="statusPill">정상</span>
             </div>
 
             <div class="kpi">
@@ -177,55 +188,100 @@
               </div>
             </div>
 
+            <div class="kpi" style="margin-top:10px;">
+              <div class="box">
+                <p class="t">월 총 근무시간</p>
+                <p class="v" id="outMonthHours">-</p>
+                <p class="h" id="outMonthHoursHint">하루시간 × 월근무일</p>
+              </div>
+              <div class="box">
+                <p class="t">주 소정근로시간</p>
+                <p class="v" id="outWeekHours">-</p>
+                <p class="h" id="outWeekHoursHint">하루시간 × 주근무일</p>
+              </div>
+            </div>
+
             <!-- 상세 breakdown -->
             <div class="content" style="margin-top:14px;">
               <h3>세부 내역(추정)</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>구분</th>
-                    <th>금액</th>
-                    <th>설명</th>
-                  </tr>
-                </thead>
-                <tbody id="breakdownBody">
-                  <tr><td>기본급</td><td>-</td><td>시급×시간×일수</td></tr>
-                  <tr><td>주휴수당</td><td>-</td><td>조건 충족 시</td></tr>
-                  <tr><td>총지급</td><td>-</td><td>기본급+주휴</td></tr>
-                  <tr><td>근로자 공제</td><td>-</td><td>보험/원천징수</td></tr>
-                  <tr><td>실수령</td><td>-</td><td>총지급-공제</td></tr>
-                  <tr><td>사업주 보험 부담</td><td>-</td><td>선택 시 반영</td></tr>
-                  <tr><td>퇴직금 월 할당</td><td>-</td><td>선택 시 반영</td></tr>
-                  <tr><td><b>사장님 총부담</b></td><td><b>-</b></td><td>총지급+사업주부담+퇴직금</td></tr>
-                </tbody>
-              </table>
+              <div class="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:30%;">구분</th>
+                      <th style="width:26%;">금액</th>
+                      <th style="width:44%;">설명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="breakdownBody">
+                    <tr><td>기본급</td><td>-</td><td>시급×시간×일수</td></tr>
+                    <tr><td>주휴수당</td><td>-</td><td>조건 충족 시</td></tr>
+                    <tr><td>총지급</td><td>-</td><td>기본급+주휴</td></tr>
+                    <tr><td>근로자 공제</td><td>-</td><td>보험/원천징수</td></tr>
+                    <tr><td>실수령</td><td>-</td><td>총지급-공제</td></tr>
+                    <tr><td>사업주 보험 부담</td><td>-</td><td>선택 시 반영</td></tr>
+                    <tr><td>퇴직금 월 할당</td><td>-</td><td>선택 시 반영</td></tr>
+                    <tr><td><b>사장님 총부담</b></td><td><b>-</b></td><td>총지급+사업주부담+퇴직금</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- 보험 상세 -->
+            <div class="content" style="margin-top:14px;">
+              <h3>보험/공제 상세(추정)</h3>
+              <div class="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:30%;">항목</th>
+                      <th style="width:24%;">근로자</th>
+                      <th style="width:24%;">사업주</th>
+                      <th style="width:22%;">비고</th>
+                    </tr>
+                  </thead>
+                  <tbody id="insBody">
+                    <tr><td>국민연금</td><td>-</td><td>-</td><td>단순 요율</td></tr>
+                    <tr><td>건강보험</td><td>-</td><td>-</td><td>단순 요율</td></tr>
+                    <tr><td>장기요양</td><td>-</td><td>-</td><td>단순 요율</td></tr>
+                    <tr><td>고용보험</td><td>-</td><td>-</td><td>단순 요율</td></tr>
+                    <tr><td><b>합계</b></td><td><b>-</b></td><td><b>-</b></td><td>선택 모드 반영</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="small" id="insNote" style="margin-top:10px;">
+                ※ “4대보험 적용”은 근사치 모델입니다(가입요건/보수월액 상한/업종별 산재 등 미반영).
+              </p>
             </div>
 
             <!-- 가정값 -->
             <div class="content" style="margin-top:14px;">
               <h3>계산에 사용된 값(가정/파라미터)</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th>항목</th>
-                    <th>값</th>
-                    <th>설명</th>
-                  </tr>
-                </thead>
-                <tbody id="assumptionsBody">
-                  <tr><td>주휴 조건</td><td>-</td><td>주 15시간 이상 시 지급 가정</td></tr>
-                  <tr><td>월 기준 주수</td><td>-</td><td>월 근무일수/주 근무일수 기반 근사</td></tr>
-                  <tr><td>퇴직금 월 할당</td><td>-</td><td>(총지급 ÷ 12) 근사</td></tr>
-                  <tr><td>원천징수율</td><td>-</td><td>선택 입력(기본 0%)</td></tr>
-                  <tr><td>4대보험 요율</td><td>-</td><td>단순 예시 요율(페이지 하단 안내)</td></tr>
-                </tbody>
-              </table>
+              <div class="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:30%;">항목</th>
+                      <th style="width:26%;">값</th>
+                      <th style="width:44%;">설명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="assumptionsBody">
+                    <tr><td>주휴 조건</td><td>-</td><td>주 15시간 이상 시 지급 가정</td></tr>
+                    <tr><td>월 기준 주수</td><td>-</td><td>월근무일수/주근무일수 기반 근사</td></tr>
+                    <tr><td>주휴시간(1주)</td><td>-</td><td>(주 소정근로시간/5), 최대 8시간 캡</td></tr>
+                    <tr><td>퇴직금 월 할당</td><td>-</td><td>(총지급 ÷ 12) 근사</td></tr>
+                    <tr><td>원천징수율</td><td>-</td><td>선택 입력(기본 0%)</td></tr>
+                    <tr><td>4대보험 요율</td><td>-</td><td>단순 예시 요율(아래)</td></tr>
+                  </tbody>
+                </table>
+              </div>
 
               <div class="small" style="margin-top:10px;">
                 <b>요율 안내(단순 가정)</b><br/>
                 • 이 계산기는 “대략 감”을 보기 위한 단순 모델입니다.<br/>
                 • 4대보험 요율은 실제 연도/사업장/가입 구분에 따라 달라집니다. 여기서는 <b>대략치</b>로 계산합니다.<br/>
-                • 필요하면 너 사이트 기준으로 “연도별 요율”을 고정 값으로 업데이트해줄게.
+                • 산재보험(업종별) / 건강보험 정교 요율(장기요양 연동) / 상·하한 / 비과세 등은 미반영.
               </div>
             </div>
 
@@ -273,7 +329,6 @@
       if (mod?.initWorkValue) mod.initWorkValue();
     } catch (_) {}
 
-    // ===== Helpers =====
     const $ = (id) => document.getElementById(id);
 
     const num = (v, fallback = 0) => {
@@ -291,22 +346,43 @@
 
     const pct = (r) => (Math.round(r * 10000) / 100).toLocaleString("ko-KR") + "%";
 
+    // ✅ 입력 콤마 + 커서 유지
+    function formatCommaKeepCursor(inputEl) {
+      const raw = inputEl.value;
+      const selStart = inputEl.selectionStart ?? raw.length;
+
+      const digitsOnly = raw.replace(/[^\d]/g, "");
+      if (!digitsOnly) { inputEl.value = ""; return; }
+
+      const formatted = Number(digitsOnly).toLocaleString("ko-KR");
+      const leftRaw = raw.slice(0, selStart);
+      const leftDigits = leftRaw.replace(/[^\d]/g, "").length;
+
+      inputEl.value = formatted;
+
+      let pos = 0, cnt = 0;
+      while (pos < formatted.length) {
+        if (/\d/.test(formatted[pos])) cnt++;
+        if (cnt >= leftDigits) { pos++; break; }
+        pos++;
+      }
+      inputEl.setSelectionRange(pos, pos);
+    }
+
     // ===== 단순 요율(가정) =====
-    // ⚠️ 정확 요율 고정이 필요하면, “적용연도” 기준으로 업데이트해줄게.
+    // ⚠️ 정확 요율(연도별)로 고정하고 싶으면, 이 객체만 업데이트하면 전체 반영됨.
     const INS = {
-      // 근로자 부담(대략치)
       emp: {
-        pension: 0.045,   // 국민연금(근로자)
-        health: 0.035,    // 건강보험(근로자) - 대략치
-        care: 0.004,      // 장기요양(근로자) - 대략치(health에 부가되는 구조 단순화)
-        employ: 0.009     // 고용보험(근로자) - 대략치
+        pension: 0.045,   // 국민연금(근로자) 근사
+        health: 0.035,    // 건강보험(근로자) 근사
+        care: 0.004,      // 장기요양(근로자) 근사
+        employ: 0.009     // 고용보험(근로자) 근사
       },
-      // 사업주 부담(대략치)
       owner: {
         pension: 0.045,
         health: 0.035,
         care: 0.004,
-        employ: 0.010     // 사업주는 업종/요율 다름 → 단순 1.0% 근사
+        employ: 0.010     // 사업주 고용보험(업종별 상이) → 단순 근사
       }
     };
 
@@ -321,27 +397,28 @@
     }
 
     function estimateWeeksInMonth(workDays, weeklyDays) {
-      // 월 근무일수 / 주 근무일수 = 월에 해당하는 주수(근사)
       if (!(weeklyDays > 0)) return 0;
       return workDays / weeklyDays;
     }
 
-    // ===== Preset =====
-    function preset() {
-      $("hourlyWage").value = "10,000";
-      $("dailyHours").value = "8";
-      $("workDays").value = "22";
-      $("weeklyDays").value = "5";
-      $("includeWeeklyHoliday").value = "yes";
-      $("includeSeverance").value = "yes";
-      $("insuranceMode").value = "employee";
-      $("incomeTaxRate").value = "0";
+    function calcWeeklyHolidayHours(weeklyHours) {
+      // 단순화: 주휴시간 = 주 소정근로시간 / 5 (최대 8시간 캡)
+      // 실제는 소정근로시간, 개근, 사업장 규정 등 복잡
+      const h = weeklyHours / 5;
+      return clamp(h, 0, 8);
     }
 
-    // ===== Assumptions table =====
-    function updateAssumptions({ weeklyEligible, weeks, severance, taxRate, insuranceMode }) {
+    function setStatus(text, kind /* ok|warn|no */) {
+      const pill = $("statusPill");
+      pill.textContent = text;
+      pill.classList.remove("ok","warn","no");
+      pill.classList.add(kind);
+    }
+
+    // ===== Assumptions =====
+    function updateAssumptions({ weeklyEligible, weeks, weeklyHolidayHours, severance, taxRate, insuranceMode }) {
       const weeklyCond = weeklyEligible
-        ? "주 15시간 이상(가정) → 지급"
+        ? "주 15시간 이상(가정) → 지급 가능"
         : "주 15시간 미만(가정) → 미지급";
 
       const insText =
@@ -359,8 +436,13 @@
         </tr>
         <tr>
           <td>월 기준 주수</td>
-          <td><b>${weeks.toFixed(2)}주</b></td>
+          <td><b>${Number.isFinite(weeks) ? weeks.toFixed(2) : "0.00"}주</b></td>
           <td>월근무일수 ÷ 주근무일수</td>
+        </tr>
+        <tr>
+          <td>주휴시간(1주)</td>
+          <td><b>${weeklyHolidayHours > 0 ? weeklyHolidayHours.toFixed(2) + "시간" : "-"}</b></td>
+          <td>(주 소정근로시간/5), 최대 8시간</td>
         </tr>
         <tr>
           <td>퇴직금 월 할당</td>
@@ -370,7 +452,7 @@
         <tr>
           <td>원천징수율</td>
           <td><b>${pct(taxRate)}</b></td>
-          <td>선택 입력(프리랜서 3.3% 등 단순 공제)</td>
+          <td>선택 입력(프리랜서 3.3% 등)</td>
         </tr>
         <tr>
           <td>4대보험 요율</td>
@@ -380,7 +462,19 @@
       `;
     }
 
-    // ===== Breakdown =====
+    function updateInsuranceTable(emp, owner, mode) {
+      const empV = (k) => (mode === "none" ? "-" : won(emp[k] || 0));
+      const ownerV = (k) => (mode === "both" ? won(owner[k] || 0) : "-");
+
+      $("insBody").innerHTML = `
+        <tr><td>국민연금</td><td><b>${empV("pension")}</b></td><td><b>${ownerV("pension")}</b></td><td>단순 요율</td></tr>
+        <tr><td>건강보험</td><td><b>${empV("health")}</b></td><td><b>${ownerV("health")}</b></td><td>단순 요율</td></tr>
+        <tr><td>장기요양</td><td><b>${empV("care")}</b></td><td><b>${ownerV("care")}</b></td><td>단순 요율</td></tr>
+        <tr><td>고용보험</td><td><b>${empV("employ")}</b></td><td><b>${ownerV("employ")}</b></td><td>단순 요율</td></tr>
+        <tr><td><b>합계</b></td><td><b>${mode === "none" ? "-" : won(emp.total || 0)}</b></td><td><b>${mode === "both" ? won(owner.total || 0) : "-"}</b></td><td>선택 모드 반영</td></tr>
+      `;
+    }
+
     function updateBreakdown({
       basePay, weeklyPay, grossPay,
       empDeduct, netPay,
@@ -399,6 +493,18 @@
       `;
     }
 
+    // ===== Preset =====
+    function preset() {
+      $("hourlyWage").value = "10,000";
+      $("dailyHours").value = "8";
+      $("workDays").value = "22";
+      $("weeklyDays").value = "5";
+      $("includeWeeklyHoliday").value = "yes";
+      $("includeSeverance").value = "yes";
+      $("insuranceMode").value = "employee";
+      $("incomeTaxRate").value = "0";
+    }
+
     // ===== Main calc =====
     function calc() {
       const hourly = Math.max(num($("hourlyWage").value, 0), 0);
@@ -409,8 +515,14 @@
       const includeWeekly = $("includeWeeklyHoliday").value === "yes";
       const includeSeverance = $("includeSeverance").value === "yes";
       const insuranceMode = $("insuranceMode").value; // none | employee | both
-
       const taxRate = clamp(num($("incomeTaxRate").value, 0) / 100, 0, 0.5);
+
+      // 입력 기본 검증
+      if (!(hourly > 0) || !(dailyHours > 0) || !(workDays > 0) || !(weeklyDays > 0)) {
+        setStatus("입력 필요", "warn");
+      } else {
+        setStatus("정상", "ok");
+      }
 
       // 기본급
       const basePay = hourly * dailyHours * workDays;
@@ -418,73 +530,93 @@
       // 월 주수(근사)
       const weeks = estimateWeeksInMonth(workDays, weeklyDays);
 
-      // 주 근무시간(근사)
+      // 주 소정근로시간(근사)
       const weeklyHours = dailyHours * weeklyDays;
 
       // 주휴 조건(단순 가정: 주 15시간 이상)
       const weeklyEligible = weeklyHours >= 15;
 
-      // 주휴수당(단순): "주 1일치 임금" × 월 주수
-      // 1일치 시간은 dailyHours로 가정
+      // 주휴시간(1주) 근사
+      const weeklyHolidayHours = (includeWeekly && weeklyEligible)
+        ? calcWeeklyHolidayHours(weeklyHours)
+        : 0;
+
+      // 주휴수당(월) = 시급 × (주휴시간) × (월 주수)
       const weeklyPay = (includeWeekly && weeklyEligible && weeks > 0)
-        ? hourly * dailyHours * weeks
+        ? hourly * weeklyHolidayHours * weeks
         : 0;
 
       // 총지급(추정)
       const grossPay = basePay + weeklyPay;
 
-      // 근로자 보험 공제(선택)
-      let empIns = { total: 0 };
+      // 보험(근로자)
+      let empIns = { pension: 0, health: 0, care: 0, employ: 0, total: 0 };
       if (insuranceMode === "employee" || insuranceMode === "both") {
         empIns = calcInsurance(grossPay, "emp");
+      }
+
+      // 보험(사업주)
+      let ownerInsObj = { pension: 0, health: 0, care: 0, employ: 0, total: 0 };
+      if (insuranceMode === "both") {
+        ownerInsObj = calcInsurance(grossPay, "owner");
       }
 
       // 원천징수(단순)
       const withholding = grossPay * taxRate;
 
-      // 근로자 공제
+      // 근로자 공제(보험+원천)
       const empDeduct = empIns.total + withholding;
 
       // 실수령
       const netPay = Math.max(grossPay - empDeduct, 0);
 
-      // 사업주 보험(선택)
-      let ownerIns = 0;
-      if (insuranceMode === "both") {
-        ownerIns = calcInsurance(grossPay, "owner").total;
-      }
-
       // 퇴직금 월 할당(단순: 총지급/12)
       const severance = includeSeverance ? (grossPay / 12) : 0;
 
       // 사장 총부담
-      const ownerTotal = grossPay + ownerIns + severance;
+      const ownerTotal = grossPay + ownerInsObj.total + severance;
 
       // KPI 출력
-      $("outBasePay").textContent = won(basePay);
-      $("outWeeklyPay").textContent = weeklyPay > 0 ? won(weeklyPay) : "-";
-      $("outGrossPay").textContent = won(grossPay);
-      $("outNetPay").textContent = won(netPay);
+      $("outBasePay").textContent = (basePay > 0) ? won(basePay) : "-";
+      $("outWeeklyPay").textContent = (weeklyPay > 0) ? won(weeklyPay) : "-";
+      $("outGrossPay").textContent = (grossPay > 0) ? won(grossPay) : "-";
+      $("outNetPay").textContent = (grossPay > 0) ? won(netPay) : "-";
 
-      $("outEmpDeduct").textContent = empDeduct > 0 ? won(empDeduct) : "-";
-      $("outOwnerTotal").textContent = won(ownerTotal);
+      $("outEmpDeduct").textContent = (empDeduct > 0) ? won(empDeduct) : "-";
+      $("outOwnerTotal").textContent = (grossPay > 0) ? won(ownerTotal) : "-";
 
-      $("outWeeklyPayHint").textContent = (includeWeekly && weeklyEligible) ? "주휴 반영됨" : "조건/선택에 따라 미반영";
+      $("outMonthHours").textContent = (dailyHours > 0 && workDays > 0) ? (dailyHours * workDays).toFixed(1) + "시간" : "-";
+      $("outWeekHours").textContent = (weeklyDays > 0 && dailyHours > 0) ? (weeklyHours).toFixed(1) + "시간" : "-";
+
+      $("outWeeklyPayHint").textContent =
+        includeWeekly
+          ? (weeklyEligible ? `주휴 반영됨(주휴시간 ${weeklyHolidayHours.toFixed(2)}h/주)` : "주 15시간 미만(가정) → 미반영")
+          : "주휴 미포함 선택";
+
       $("outGrossPayHint").textContent = weeklyPay > 0 ? "기본급 + 주휴" : "기본급(주휴 미포함)";
       $("outNetPayHint").textContent = (insuranceMode !== "none" || taxRate > 0) ? "공제 반영됨" : "공제 0% 가정";
-      $("outEmpDeductHint").textContent = `${insuranceMode === "none" ? "보험 미적용" : "보험 공제"} · 원천징수 ${pct(taxRate)}`;
-      $("outOwnerTotalHint").textContent = `보험(${insuranceMode === "both" ? "사업주 포함" : "미포함"}) · 퇴직금(${includeSeverance ? "포함" : "미포함"})`;
+      $("outEmpDeductHint").textContent = `${insuranceMode === "none" ? "보험 미적용" : "보험 공제"} · 원천 ${pct(taxRate)}`;
+
+      $("outOwnerTotalHint").textContent =
+        `보험(${insuranceMode === "both" ? "사업주 포함" : "미포함"}) · 퇴직금(${includeSeverance ? "포함" : "미포함"})`;
+
+      $("outMonthHoursHint").textContent = "하루시간 × 월근무일";
+      $("outWeekHoursHint").textContent = "하루시간 × 주근무일";
 
       updateBreakdown({
         basePay, weeklyPay, grossPay,
         empDeduct, netPay,
-        ownerIns, severance,
+        ownerIns: ownerInsObj.total,
+        severance,
         ownerTotal
       });
+
+      updateInsuranceTable(empIns, ownerInsObj, insuranceMode);
 
       updateAssumptions({
         weeklyEligible,
         weeks: (weeks || 0),
+        weeklyHolidayHours,
         severance,
         taxRate,
         insuranceMode
@@ -493,16 +625,21 @@
 
     // ===== Events =====
     $("btnCalc").addEventListener("click", calc);
+
     $("btnReset").addEventListener("click", () => {
       preset();
       calc();
     });
 
-    // Enter로 계산
+    // 금액 콤마(커서 유지)
+    ["hourlyWage"].forEach(id => {
+      $(id).addEventListener("input", (e) => formatCommaKeepCursor(e.target));
+    });
+
+    // 실시간 계산
     ["hourlyWage","dailyHours","workDays","weeklyDays","incomeTaxRate"].forEach(id=>{
-      $(id).addEventListener("keydown", (e) => {
-        if (e.key === "Enter") calc();
-      });
+      $(id).addEventListener("input", calc);
+      $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
     ["includeWeeklyHoliday","includeSeverance","insuranceMode"].forEach(id=>{
       $(id).addEventListener("change", calc);
@@ -515,5 +652,73 @@
     preset();
     calc();
   </script>
+
+  <!-- ✅ 페이지 전용 UI 정돈 (깨짐 방지 + 가독성) -->
+  <style>
+    :root{
+      --fs-hero: clamp(20px, 2.2vw, 28px);
+      --fs-h3: clamp(15px, 1.2vw, 16px);
+      --fs-body: clamp(13.5px, 1.05vw, 14.5px);
+      --lh: 1.55;
+    }
+    body{ font-size: var(--fs-body); line-height: var(--lh); }
+
+    .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
+    .heroSub{ max-width: 78ch; }
+
+    nav[aria-label="이동"] a{ white-space: nowrap; }
+
+    .cols2{
+      display:grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, .98fr);
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .cols2{ grid-template-columns: 1fr; }
+    }
+
+    .panelHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 6px;
+    }
+    .phLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .phLeft h3{ margin:0; font-size: var(--fs-h3); letter-spacing:-.2px; }
+    .phSub{
+      margin:0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height:1.45;
+    }
+
+    .kpi .t{ font-size:12.5px; }
+    .kpi .v{ font-size: clamp(20px, 2.2vw, 24px); line-height:1.15; }
+    .kpi .h{ font-size:12.5px; line-height:1.4; }
+
+    .tableWrap{ overflow-x:auto; }
+    table{ min-width: 620px; }
+
+    /* status pill */
+    .pill{
+      white-space:nowrap;
+    }
+    #statusPill.ok{
+      border-color: rgba(59,231,176,.35);
+      background: rgba(59,231,176,.10);
+      color: rgba(255,255,255,.88);
+    }
+    #statusPill.warn{
+      border-color: rgba(255,180,80,.35);
+      background: rgba(255,180,80,.10);
+      color: rgba(255,255,255,.88);
+    }
+    #statusPill.no{
+      border-color: rgba(255,80,80,.35);
+      background: rgba(255,80,80,.10);
+      color: rgba(255,255,255,.88);
+    }
+  </style>
 </body>
 </html>

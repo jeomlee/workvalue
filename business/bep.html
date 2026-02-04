@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>자영업 손익분기점(BEP) 계산기 | 차트·툴팁 한눈에 | WorkValue</title>
-  <meta name="description" content="고정비·변동비율·세율을 입력해 월/일 BEP 매출을 계산하고, 매출/총비용/이익 구조를 차트로 한눈에 확인하세요. (툴팁/호버 지원)" />
+  <title>자영업 손익분기점(BEP) 계산기 | 차트·툴팁 완성형 | WorkValue</title>
+  <meta name="description" content="고정비·변동비율·세율을 입력해 월/일 BEP(손익분기점) 매출을 계산하고, 매출/총비용/이익 구조를 차트로 한눈에 확인하세요. BEP/목표/직접입력 기준 및 툴팁 지원." />
   <meta name="robots" content="index,follow" />
   <link rel="canonical" href="https://workvalue.kr/business/bep.html" />
   <link rel="stylesheet" href="/assets/styles.css" />
@@ -18,7 +18,7 @@
     "@type":"WebPage",
     "name":"WorkValue BEP 계산기",
     "url":"https://workvalue.kr/business/bep.html",
-    "description":"자영업 손익분기점(BEP) 계산기: 월/일 기준 BEP 매출과 이익 구조를 차트로 확인"
+    "description":"자영업 손익분기점(BEP) 계산기: 월/일 기준 BEP 매출과 비용/이익 구조를 차트로 확인"
   }
   </script>
 </head>
@@ -49,18 +49,23 @@
         <div>
           <h1 class="heroTitle">자영업 손익분기점(BEP) 계산기</h1>
           <p class="sub heroSub">
-            고정비·변동비율·세율을 기준으로 손익분기점 매출을 계산하고, 그래프로 구조를 한눈에 확인합니다.
+            고정비·변동비율·세율을 기준으로 손익분기점 매출을 계산하고, 매출/총비용/이익 구조를 그래프로 한눈에 확인합니다.
           </p>
         </div>
       </div>
 
       <div class="cardBody">
-        <div class="cols">
+
+        <!-- ✅ 상단: 입력(좌) + 결과(우) -->
+        <div class="cols2">
 
           <!-- 입력 -->
           <div class="content panel" style="margin-top:0;">
             <div class="panelHead">
-              <h3>입력</h3>
+              <div class="phLeft">
+                <h3>입력</h3>
+                <p class="phSub">월 기준으로 빠르게 BEP를 계산해요</p>
+              </div>
               <span class="pill">월 기준</span>
             </div>
 
@@ -68,36 +73,38 @@
               <div>
                 <label for="fixedCost">월 고정비(원)</label>
                 <input id="fixedCost" inputmode="numeric" placeholder="예: 3,000,000" />
-                <div class="small">임대료/고정 인건비/보험료 등 “매출과 무관하게” 나가는 비용</div>
+                <div class="small">임대료/고정 인건비/보험료 등 “매출과 무관” 비용</div>
               </div>
               <div>
                 <label for="openDays">월 영업일수(일)</label>
                 <input id="openDays" inputmode="numeric" placeholder="예: 26" />
-                <div class="small">BEP(월) → BEP(일) 환산용</div>
+                <div class="small">BEP(월) → BEP(일) 환산</div>
               </div>
             </div>
 
-            <div class="row" style="margin-top:10px;">
+            <div class="row" style="margin-top:12px;">
               <div>
                 <label for="variableRate">변동비율(매출 대비, %)</label>
                 <input id="variableRate" inputmode="decimal" placeholder="예: 45" />
-                <div class="small">재료비/수수료/카드/배달앱 수수료 등 “매출에 비례”하는 비용 비율</div>
+                <div class="small">원가/수수료/카드/배달앱 등 “매출에 비례” 비용</div>
               </div>
               <div>
                 <label for="taxRate">세율/공제율(매출 대비, %)</label>
                 <input id="taxRate" inputmode="decimal" placeholder="예: 3.3" />
-                <div class="small">단순화 모델입니다(실제 세금/부가세/정산은 조건에 따라 다름).</div>
+                <div class="small">단순 모델(실제 세금/정산은 조건마다 다름)</div>
               </div>
             </div>
 
-            <div class="row" style="margin-top:10px;">
+            <div class="row" style="margin-top:12px;">
               <div>
                 <label for="targetProfit">목표 순이익(월, 원) (선택)</label>
                 <input id="targetProfit" inputmode="numeric" placeholder="예: 2,000,000" />
+                <div class="small">입력 시 “목표 매출(월/일)” 계산 + 차트에 TARGET 표시</div>
               </div>
               <div>
                 <label for="ownerHours">사장님 월 투입 시간(시간) (선택)</label>
                 <input id="ownerHours" inputmode="numeric" placeholder="예: 200" />
+                <div class="small">입력 시 “사장 시급(목표 기준)” 계산</div>
               </div>
             </div>
 
@@ -117,10 +124,13 @@
             </div>
           </div>
 
-          <!-- 결과 + 차트 -->
+          <!-- 결과 -->
           <div class="content panel" style="margin-top:0;">
             <div class="panelHead">
-              <h3>결과</h3>
+              <div class="phLeft">
+                <h3>결과</h3>
+                <p class="phSub">핵심 값만 먼저 보여줘요</p>
+              </div>
               <div class="badgeRow">
                 <span class="badgeSoft">단순 모델</span>
                 <span class="badgeStatus" id="cmBadge">공헌이익률: -</span>
@@ -165,71 +175,83 @@
             </div>
 
             <div class="content" style="margin-top:12px;">
-              <h3>요약(한 줄)</h3>
+              <h3>요약</h3>
               <p id="summaryLine" style="margin:0; color: var(--soft);">-</p>
             </div>
+          </div>
 
-            <!-- 차트 -->
-            <div class="chartWrap">
-              <div class="chartHead">
-                <div>
-                  <h3 style="margin:0;">BEP 차트</h3>
-                  <p class="small" style="margin:6px 0 0;">
-                    매출(파랑) / 총비용(보라) / 이익영역(초록, 손실영역은 빨강) / BEP(민트)
-                  </p>
-                </div>
-                <div class="legendPills">
-                  <span class="lp"><i class="dotRev"></i>매출</span>
-                  <span class="lp"><i class="dotCost"></i>총비용</span>
-                  <span class="lp"><i class="dotProfit"></i>이익</span>
-                  <span class="lp"><i class="dotLoss"></i>손실</span>
-                  <span class="lp"><i class="dotBep"></i>BEP</span>
-                </div>
-              </div>
+        </div>
 
-              <div class="canvasBox">
-                <canvas id="bepChart"></canvas>
-              </div>
-
-              <p class="small" id="chartNote" style="margin-top:10px;">
-                ※ 차트는 월 매출 0원 ~ 목표 매출(또는 BEP×1.6) 구간으로 자동 스케일됩니다.
+        <!-- ✅ 중단: 차트(전폭) -->
+        <div class="chartWrapWide">
+          <div class="chartHead">
+            <div>
+              <h3 style="margin:0;">BEP 차트</h3>
+              <p class="small" style="margin:6px 0 0;">
+                매출(파랑) / 총비용(보라) / 이익(초록 면적) / 손실(빨강 면적) / BEP(민트 점선) / 목표(TARGET, 주황 점선) / 커스텀(흰 점)
               </p>
             </div>
+            <div class="legendPills">
+              <span class="lp"><i class="dotRev"></i>매출</span>
+              <span class="lp"><i class="dotCost"></i>총비용</span>
+              <span class="lp"><i class="dotProfit"></i>이익</span>
+              <span class="lp"><i class="dotLoss"></i>손실</span>
+              <span class="lp"><i class="dotBep"></i>BEP</span>
+              <span class="lp"><i class="dotTarget"></i>TARGET</span>
+              <span class="lp"><i class="dotCustom"></i>커스텀</span>
+            </div>
+          </div>
 
-            <!-- 세부 내역: 토글 + 직접 입력 -->
-            <div class="content" style="margin-top:14px;">
-              <div class="panelHead" style="padding:0; border:0; background:none;">
-                <h3 style="margin:0;">세부 내역(월 기준)</h3>
-                <span class="pill">기준 선택</span>
+          <div class="canvasBoxWide">
+            <canvas id="bepChart"></canvas>
+          </div>
+
+          <p class="small" id="chartNote" style="margin-top:10px;">
+            ※ 차트는 월 매출 0원 ~ 목표 매출(또는 BEP×1.6) 구간으로 자동 스케일됩니다.
+          </p>
+        </div>
+
+        <!-- ✅ 하단: 세부내역 + 가정값 (전폭 2열) -->
+        <div class="cols2" style="margin-top:14px;">
+
+          <!-- 세부 내역 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <div class="phLeft">
+                <h3>세부 내역(월)</h3>
+                <p class="phSub">기준을 바꿔서 비용 구조를 확인해요</p>
               </div>
+              <span class="pill">기준 선택</span>
+            </div>
 
-              <div class="segWrap" style="margin-top:10px;">
-                <button class="seg active" id="segBep" type="button">BEP 기준</button>
-                <button class="seg" id="segTarget" type="button">목표 기준</button>
-                <button class="seg" id="segCustom" type="button">직접 입력</button>
-              </div>
+            <div class="segWrap">
+              <button class="seg active" id="segBep" type="button">BEP 기준</button>
+              <button class="seg" id="segTarget" type="button">목표 기준</button>
+              <button class="seg" id="segCustom" type="button">직접 입력</button>
+            </div>
 
-              <div class="customBox" id="customBox" style="display:none;">
-                <div class="row" style="margin-top:10px;">
-                  <div>
-                    <label for="customRevenue">월 매출(원)</label>
-                    <input id="customRevenue" inputmode="numeric" placeholder="예: 10,000,000" />
-                    <div class="small">입력값 기준으로 변동비/세금/총비용/이익을 계산합니다.</div>
-                  </div>
-                  <div>
-                    <label for="customRevenueRange">슬라이더(대략)</label>
-                    <input id="customRevenueRange" type="range" min="0" max="100" step="1" />
-                    <div class="small" id="rangeHint">0원 ~ -</div>
-                  </div>
+            <div class="customBox" id="customBox" style="display:none;">
+              <div class="row" style="margin-top:10px;">
+                <div>
+                  <label for="customRevenue">월 매출(원)</label>
+                  <input id="customRevenue" inputmode="numeric" placeholder="예: 10,000,000" />
+                  <div class="small">입력값 기준으로 변동비/세금/총비용/이익을 계산합니다. (차트에 커스텀 포인트 표시)</div>
+                </div>
+                <div>
+                  <label for="customRevenueRange">슬라이더(현재 범위)</label>
+                  <input id="customRevenueRange" type="range" min="0" max="100" step="1" />
+                  <div class="small" id="rangeHint">0원 ~ -</div>
                 </div>
               </div>
+            </div>
 
-              <table style="margin-top:12px;">
+            <div class="tableWrap" style="margin-top:12px;">
+              <table>
                 <thead>
                   <tr>
-                    <th>항목</th>
-                    <th>값</th>
-                    <th>설명</th>
+                    <th style="width:32%;">항목</th>
+                    <th style="width:28%;">값</th>
+                    <th style="width:40%;">설명</th>
                   </tr>
                 </thead>
                 <tbody id="detailBody">
@@ -240,21 +262,30 @@
                   <tr><td><b>이익(월)</b></td><td><b>-</b></td><td>매출 − 총비용</td></tr>
                 </tbody>
               </table>
-
-              <p class="small" id="detailNote" style="margin-top:10px;">
-                ※ “BEP 기준”은 직관성을 위해 BEP 매출에서의 구조를 보여줍니다.
-              </p>
             </div>
 
-            <!-- 가정값/파라미터 -->
-            <div class="content" style="margin-top:14px;">
-              <h3>계산에 사용된 값(가정/파라미터)</h3>
+            <p class="small" id="detailNote" style="margin-top:10px;">
+              ※ “BEP 기준”은 BEP 매출에서의 구조를 보여줍니다.
+            </p>
+          </div>
+
+          <!-- 가정값/파라미터 -->
+          <div class="content panel" style="margin-top:0;">
+            <div class="panelHead">
+              <div class="phLeft">
+                <h3>가정값/파라미터</h3>
+                <p class="phSub">계산에 어떤 값이 쓰였는지 투명하게 보여줘요</p>
+              </div>
+              <span class="pill">근사 모델</span>
+            </div>
+
+            <div class="tableWrap">
               <table>
                 <thead>
                   <tr>
-                    <th>항목</th>
-                    <th>값</th>
-                    <th>설명</th>
+                    <th style="width:32%;">항목</th>
+                    <th style="width:28%;">값</th>
+                    <th style="width:40%;">설명</th>
                   </tr>
                 </thead>
                 <tbody id="assumptionsBody">
@@ -267,7 +298,11 @@
               </table>
             </div>
 
+            <p class="small" style="margin-top:10px;">
+              실제 세금/부가세/정산/원가 구조는 더 복잡합니다. 이 도구는 “빠른 판단”을 위한 근사치입니다.
+            </p>
           </div>
+
         </div>
 
         <!-- FAQ -->
@@ -311,7 +346,6 @@
       if (mod?.initWorkValue) mod.initWorkValue();
     } catch (_) {}
 
-    // ===== Helpers =====
     const $ = (id) => document.getElementById(id);
 
     const num = (v, fallback = 0) => {
@@ -325,10 +359,9 @@
       const x = Math.round(num(n, 0));
       return x.toLocaleString("ko-KR") + "원";
     };
-
     const pct = (r) => (Math.round(r * 10000) / 100).toLocaleString("ko-KR") + "%";
 
-    // 콤마 포맷(커서 보존)
+    // 입력(원) 자동 콤마 + 커서 유지
     function formatCommaKeepCursor(inputEl) {
       const raw = inputEl.value;
       const selStart = inputEl.selectionStart ?? raw.length;
@@ -351,25 +384,29 @@
       inputEl.setSelectionRange(pos, pos);
     }
 
-    // ===== State =====
+    // ===== state =====
     let state = {
       fixedCost: 0,
       openDays: 26,
       rVar: 0,
       rTax: 0,
       cmRatio: 0,
+
       targetProfit: 0,
       ownerHours: 0,
+
       bepMonthly: 0,
       bepDaily: 0,
+
       targetMonthly: 0,
       targetDaily: 0,
+
       chartMaxX: 0,
-      detailMode: "bep", // "bep" | "target" | "custom"
-      customRevenue: 0,
+
+      detailMode: "bep",
+      customRevenue: 0
     };
 
-    // ===== Preset =====
     function preset() {
       $("fixedCost").value = "3,000,000";
       $("openDays").value = "26";
@@ -382,7 +419,6 @@
 
     // ===== Chart =====
     let chart = null;
-    let ctxPack = { fixedCost: 0, rVar: 0, rTax: 0 };
 
     function axisTick(v) {
       const n = Number(v);
@@ -392,22 +428,33 @@
       return n.toLocaleString("ko-KR");
     }
 
-    function buildSeries(fixedCost, rVar, rTax, maxX) {
-      const points = 60;
+    function calcAtRevenue(revenue) {
+      const varCost = revenue * state.rVar;
+      const taxCost = revenue * state.rTax;
+      const totalCost = state.fixedCost + varCost + taxCost;
+      const profit = revenue - totalCost;
+      return { varCost, taxCost, totalCost, profit };
+    }
+
+    function buildSeries(maxX) {
+      const points = 90;
       const rev = [];
       const cost = [];
       const profitFill = [];
       const lossFill = [];
+      const profitLine = []; // optional (not used, but helpful if needed)
 
       for (let i = 0; i <= points; i++) {
         const x = (maxX * i) / points;
         const yRev = x;
-        const yCost = fixedCost + x * (rVar + rTax);
+        const yCost = state.fixedCost + x * (state.rVar + state.rTax);
 
         rev.push({ x, y: yRev });
         cost.push({ x, y: yCost });
 
-        // 이익/손실 영역 분리(매출-비용 부호에 따라)
+        const p = yRev - yCost;
+        profitLine.push({ x, y: p });
+
         if (yRev >= yCost) {
           profitFill.push({ x, y: yRev });
           lossFill.push({ x, y: null });
@@ -419,36 +466,58 @@
       return { rev, cost, profitFill, lossFill };
     }
 
-    // plugin: BEP 수직선
-    const bepLinePlugin = {
-      id: "bepLinePlugin",
-      afterDatasetsDraw(chart, args, pluginOptions) {
-        const bepX = pluginOptions?.bepX ?? null;
-        if (!(bepX > 0)) return;
-
+    // 수직 라인( Bep / Target ) + 커스텀 포인트 라벨
+    const markerPlugin = {
+      id: "markerPlugin",
+      afterDatasetsDraw(chart, args, opts) {
         const { ctx, chartArea, scales } = chart;
-        const xPix = scales.x.getPixelForValue(bepX);
-        if (xPix < chartArea.left || xPix > chartArea.right) return;
+        const { bepX, targetX, customX } = opts || {};
 
-        ctx.save();
-        ctx.beginPath();
-        ctx.setLineDash([6, 6]);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "rgba(59,231,176,.85)";
-        ctx.moveTo(xPix, chartArea.top);
-        ctx.lineTo(xPix, chartArea.bottom);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        function drawVLine(xValue, color, label) {
+          if (!(xValue > 0)) return;
+          const x = scales.x.getPixelForValue(xValue);
+          if (x < chartArea.left || x > chartArea.right) return;
 
-        ctx.font = "900 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans KR', Arial";
-        ctx.fillStyle = "rgba(255,255,255,.85)";
-        ctx.textAlign = "left";
-        ctx.textBaseline = "top";
+          ctx.save();
+          ctx.beginPath();
+          ctx.setLineDash([6, 6]);
+          ctx.lineWidth = 2;
+          ctx.strokeStyle = color;
+          ctx.moveTo(x, chartArea.top);
+          ctx.lineTo(x, chartArea.bottom);
+          ctx.stroke();
+          ctx.setLineDash([]);
 
-        const lx = Math.min(Math.max(xPix + 8, chartArea.left + 8), chartArea.right - 44);
-        const ly = chartArea.top + 8;
-        ctx.fillText("BEP", lx, ly);
-        ctx.restore();
+          ctx.font = "900 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans KR', Arial";
+          ctx.fillStyle = "rgba(255,255,255,.88)";
+          ctx.textAlign = "left";
+          ctx.textBaseline = "top";
+
+          const lx = Math.min(Math.max(x + 8, chartArea.left + 8), chartArea.right - 60);
+          const ly = chartArea.top + 8;
+          ctx.fillText(label, lx, ly);
+          ctx.restore();
+        }
+
+        // BEP(민트) / TARGET(주황)
+        drawVLine(bepX, "rgba(59,231,176,.85)", "BEP");
+        drawVLine(targetX, "rgba(255,180,80,.85)", "TARGET");
+
+        // 커스텀 포인트(흰점) 라벨
+        if (customX >= 0) {
+          const x = scales.x.getPixelForValue(customX);
+          if (x >= chartArea.left && x <= chartArea.right) {
+            ctx.save();
+            ctx.font = "900 12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, 'Noto Sans KR', Arial";
+            ctx.fillStyle = "rgba(255,255,255,.85)";
+            ctx.textAlign = "left";
+            ctx.textBaseline = "bottom";
+            const lx = Math.min(Math.max(x + 8, chartArea.left + 8), chartArea.right - 80);
+            const ly = chartArea.bottom - 8;
+            ctx.fillText("커스텀", lx, ly);
+            ctx.restore();
+          }
+        }
       }
     };
 
@@ -461,57 +530,55 @@
         type: "scatter",
         data: {
           datasets: [
-            // 손실 영역(빨강) - 매출선을 비용선까지 채움 (비용선이 above, fill 대상은 비용선)
+            // 손실 면적
             {
-              label: "손실 영역",
-              data: [],
-              showLine: true,
-              borderWidth: 0,
-              pointRadius: 0,
-              fill: { target: 3 }, // 총비용 dataset index를 target으로(아래에서 index 맞춤)
-              backgroundColor: "rgba(255, 80, 80, .14)",
-            },
-            // 이익 영역(초록)
-            {
-              label: "이익 영역",
+              label: "손실",
               data: [],
               showLine: true,
               borderWidth: 0,
               pointRadius: 0,
               fill: { target: 3 },
-              backgroundColor: "rgba(59,231,176,.12)",
+              backgroundColor: "rgba(255, 80, 80, .14)"
             },
-            // 매출(파랑)
+            // 이익 면적
+            {
+              label: "이익",
+              data: [],
+              showLine: true,
+              borderWidth: 0,
+              pointRadius: 0,
+              fill: { target: 3 },
+              backgroundColor: "rgba(59,231,176,.12)"
+            },
+            // 매출 선
             {
               label: "매출",
               data: [],
               showLine: true,
               borderColor: "rgba(76,201,255,.95)",
-              backgroundColor: "rgba(76,201,255,.12)",
               borderWidth: 2,
               pointRadius: 0,
-              tension: 0.18,
+              tension: 0.18
             },
-            // 총비용(보라)
+            // 총비용 선
             {
               label: "총비용",
               data: [],
               showLine: true,
               borderColor: "rgba(164,109,255,.80)",
-              backgroundColor: "rgba(164,109,255,.10)",
               borderWidth: 2,
               pointRadius: 0,
-              tension: 0.18,
+              tension: 0.18
             },
-            // BEP 포인트(민트)
+            // 커스텀 포인트(흰 점) - 매출선 위
             {
-              label: "BEP 포인트",
+              label: "커스텀 포인트",
               data: [],
               showLine: false,
-              borderColor: "rgba(59,231,176,.95)",
-              backgroundColor: "rgba(59,231,176,.95)",
+              borderColor: "rgba(255,255,255,.92)",
+              backgroundColor: "rgba(255,255,255,.92)",
               pointRadius: 5,
-              pointHoverRadius: 7,
+              pointHoverRadius: 7
             }
           ]
         },
@@ -521,7 +588,7 @@
           interaction: { mode: "nearest", intersect: false },
           plugins: {
             legend: { display: false },
-            bepLinePlugin: { bepX: null },
+            markerPlugin: { bepX: null, targetX: null, customX: 0 },
             tooltip: {
               callbacks: {
                 title(items) {
@@ -530,21 +597,16 @@
                 },
                 label(item) {
                   const x = item.parsed.x;
-                  const cost = ctxPack.fixedCost + x * (ctxPack.rVar + ctxPack.rTax);
-                  const profit = x - cost;
+                  const { varCost, taxCost, totalCost, profit } = calcAtRevenue(x);
 
-                  const varCost = x * ctxPack.rVar;
-                  const taxCost = x * ctxPack.rTax;
-
-                  const lines = [];
-                  lines.push(`총비용: ${won(cost)}`);
-                  lines.push(`  ├ 고정비: ${won(ctxPack.fixedCost)}`);
-                  lines.push(`  ├ 변동비: ${won(varCost)}`);
-                  lines.push(`  └ 세금/공제: ${won(taxCost)}`);
-                  lines.push(`이익: ${won(profit)}`);
-
-                  // dataset명은 너무 길어질 수 있어 여기서는 공통 정보만
-                  return lines;
+                  // 커스텀 포인트일 때도 동일한 정보를 보여줌
+                  return [
+                    `총비용: ${won(totalCost)}`,
+                    `  ├ 고정비: ${won(state.fixedCost)}`,
+                    `  ├ 변동비: ${won(varCost)} (${pct(state.rVar)})`,
+                    `  └ 세금/공제: ${won(taxCost)} (${pct(state.rTax)})`,
+                    `이익: ${won(profit)}`
+                  ];
                 }
               }
             }
@@ -561,23 +623,27 @@
             }
           }
         },
-        plugins: [bepLinePlugin]
+        plugins: [markerPlugin]
       });
     }
 
-    function updateChart({ fixedCost, rVar, rTax, bepMonthly, targetMonthly, maxX }) {
-      ctxPack = { fixedCost, rVar, rTax };
+    function updateChart() {
+      const maxX = Math.max(state.chartMaxX || 0, 1);
+      const { rev, cost, profitFill, lossFill } = buildSeries(maxX);
 
-      const { rev, cost, profitFill, lossFill } = buildSeries(fixedCost, rVar, rTax, maxX);
-
-      // datasets index: 0 loss, 1 profit, 2 rev, 3 cost, 4 bep
+      // 손실(0), 이익(1), 매출(2), 비용(3)
       chart.data.datasets[0].data = lossFill;
       chart.data.datasets[1].data = profitFill;
       chart.data.datasets[2].data = rev;
       chart.data.datasets[3].data = cost;
-      chart.data.datasets[4].data = (bepMonthly > 0) ? [{ x: bepMonthly, y: bepMonthly }] : [];
 
-      chart.options.plugins.bepLinePlugin.bepX = (bepMonthly > 0 ? bepMonthly : null);
+      // 커스텀 포인트(4) — 매출선 위에 찍기
+      const cx = clamp(state.customRevenue || 0, 0, maxX);
+      chart.data.datasets[4].data = [{ x: cx, y: cx }];
+
+      chart.options.plugins.markerPlugin.bepX = (state.bepMonthly > 0 ? state.bepMonthly : null);
+      chart.options.plugins.markerPlugin.targetX = (state.targetMonthly > 0 ? state.targetMonthly : null);
+      chart.options.plugins.markerPlugin.customX = cx;
 
       chart.update();
     }
@@ -601,26 +667,32 @@
     function setSummary() {
       const line = $("summaryLine");
       if (!(state.fixedCost > 0) || state.cmRatio <= 0) {
-        line.textContent = "고정비/비율을 입력하면, BEP(월/일)과 비용 구조가 여기에 한 줄로 정리됩니다.";
+        line.textContent = "고정비/비율을 입력하면, BEP(월/일)과 비용 구조가 여기에 정리됩니다.";
         return;
       }
+
+      const extra = (state.targetMonthly > 0)
+        ? ` 목표 순이익 <b>${won(state.targetProfit)}</b> 기준 목표 매출은 월 <b>${won(state.targetMonthly)}</b> (일 <b>${won(state.targetDaily)}</b>) 입니다.`
+        : ` 목표 순이익을 입력하면 TARGET도 함께 계산됩니다.`;
+
       line.innerHTML = `
         고정비 <b>${won(state.fixedCost)}</b>를 커버하려면 공헌이익률 <b>${pct(state.cmRatio)}</b> 기준으로
         월 <b>${won(state.bepMonthly)}</b> (일 <b>${won(state.bepDaily)}</b>, ${state.openDays}일 기준) 매출이 필요합니다.
+        ${extra}
       `;
     }
 
     function updateAssumptions() {
       const rows = [
         ["고정비(월)", won(state.fixedCost), "임대료/고정 인건비/보험료 등"],
-        ["변동비율", pct(state.rVar), "매출에 비례하는 비용 비율(원가/수수료 등)"],
-        ["세율/공제율", pct(state.rTax), "단순 모델의 매출 대비 공제 비율"],
+        ["변동비율", pct(state.rVar), "매출에 비례하는 비용 비율"],
+        ["세율/공제율", pct(state.rTax), "단순 모델의 매출 대비 공제"],
         ["공헌이익률", (state.cmRatio > 0 ? pct(state.cmRatio) : "0% 이하"), "1 − 변동비율 − 세율"],
         ["영업일수", `${state.openDays}일`, "월→일 환산"],
         ["BEP(월 매출)", (state.bepMonthly > 0 ? won(state.bepMonthly) : "-"), "고정비 ÷ 공헌이익률"],
         ["목표 순이익(월)", (state.targetProfit > 0 ? won(state.targetProfit) : "-"), "입력 시 목표 매출 계산"],
         ["목표 매출(월)", (state.targetMonthly > 0 ? won(state.targetMonthly) : "-"), "(고정비+목표순이익) ÷ 공헌이익률"],
-        ["사장님 투입시간", (state.ownerHours > 0 ? `${state.ownerHours.toLocaleString("ko-KR")}시간` : "-"), "입력 시 사장 시급 계산"],
+        ["사장님 투입시간", (state.ownerHours > 0 ? `${state.ownerHours.toLocaleString("ko-KR")}시간` : "-"), "입력 시 사장 시급 계산"]
       ];
 
       $("assumptionsBody").innerHTML = rows.map(([a,b,c]) => `
@@ -630,14 +702,6 @@
           <td>${c}</td>
         </tr>
       `).join("");
-    }
-
-    function calcAtRevenue(revenue) {
-      const varCost = revenue * state.rVar;
-      const taxCost = revenue * state.rTax;
-      const totalCost = state.fixedCost + varCost + taxCost;
-      const profit = revenue - totalCost;
-      return { revenue, varCost, taxCost, totalCost, profit };
     }
 
     function renderDetail(revenue, noteText) {
@@ -651,25 +715,21 @@
         <tr><td>총비용(월)</td><td><b>${won(totalCost)}</b></td><td>고정비+변동비+세금/공제</td></tr>
         <tr><td><b>이익(월)</b></td><td><b>${won(profit)}</b></td><td>매출−총비용</td></tr>
       `;
-
       $("detailNote").textContent = noteText;
     }
 
     function setSegment(mode) {
       state.detailMode = mode;
 
-      // 버튼 활성
       ["segBep","segTarget","segCustom"].forEach(id => $(id).classList.remove("active"));
       if (mode === "bep") $("segBep").classList.add("active");
       if (mode === "target") $("segTarget").classList.add("active");
       if (mode === "custom") $("segCustom").classList.add("active");
 
-      // custom box
       $("customBox").style.display = (mode === "custom") ? "" : "none";
 
-      // 목표 기준이 성립 안 하면 자동 안내
+      // 목표가 없는데 목표를 누르면 BEP로 되돌림
       if (mode === "target" && !(state.targetMonthly > 0)) {
-        // 목표가 없으면 BEP로 돌리고 안내
         state.detailMode = "bep";
         $("segTarget").classList.remove("active");
         $("segBep").classList.add("active");
@@ -677,37 +737,30 @@
       }
 
       renderDetailByMode();
+      // 커스텀 모드면 차트 커스텀 포인트도 즉시 반영
+      if (chart) updateChart();
     }
 
     function syncCustomRange() {
       const range = $("customRevenueRange");
-      const max = Math.max(state.chartMaxX || 0, state.bepMonthly * 1.6 || 0, state.targetMonthly || 0);
-      const maxX = max > 0 ? max : 10000000;
-
-      // range: 0~100 퍼센트
-      range.min = "0";
-      range.max = "100";
-      range.step = "1";
+      const maxX = Math.max(state.chartMaxX || 0, state.bepMonthly * 1.6 || 0, state.targetMonthly || 0) || 10000000;
 
       $("rangeHint").textContent = `0원 ~ ${won(maxX)}`;
 
-      // 현재 customRevenue를 range에 반영
-      const v = clamp(state.customRevenue, 0, maxX);
-      const pctV = Math.round((v / maxX) * 100);
-      range.value = String(Number.isFinite(pctV) ? pctV : 0);
+      const v = clamp(state.customRevenue || 0, 0, maxX);
+      const p = Math.round((v / maxX) * 100);
+      range.value = String(Number.isFinite(p) ? p : 0);
     }
 
     function setCustomRevenueFromRange() {
-      const range = $("customRevenueRange");
-      const max = Math.max(state.chartMaxX || 0, state.bepMonthly * 1.6 || 0, state.targetMonthly || 0);
-      const maxX = max > 0 ? max : 10000000;
-
-      const p = clamp(num(range.value, 0), 0, 100) / 100;
+      const maxX = Math.max(state.chartMaxX || 0, state.bepMonthly * 1.6 || 0, state.targetMonthly || 0) || 10000000;
+      const p = clamp(num($("customRevenueRange").value, 0), 0, 100) / 100;
       const v = Math.round(maxX * p);
 
       state.customRevenue = v;
       $("customRevenue").value = v > 0 ? v.toLocaleString("ko-KR") : "";
       renderDetailByMode();
+      if (chart) updateChart();
     }
 
     function renderDetailByMode() {
@@ -723,19 +776,17 @@
 
       if (state.detailMode === "target") {
         if (state.targetMonthly > 0) {
-          renderDetail(state.targetMonthly, "※ “목표 기준”은 목표 매출에서의 비용/이익 구조를 보여줍니다.");
+          renderDetail(state.targetMonthly, "※ “목표 기준”은 목표 매출(TARGET)에서의 비용/이익 구조를 보여줍니다.");
         } else {
           renderDetail(state.bepMonthly, "※ 목표가 없어 BEP 기준으로 표시합니다.");
         }
         return;
       }
 
-      // custom
-      const rev = Math.max(state.customRevenue || 0, 0);
-      renderDetail(rev, "※ “직접 입력”은 입력한 월 매출에서의 비용/이익 구조를 보여줍니다.");
+      renderDetail(Math.max(state.customRevenue || 0, 0), "※ “직접 입력”은 입력한 월 매출에서의 구조를 보여줍니다.");
     }
 
-    // ===== Calculation =====
+    // ===== main calc =====
     function calc() {
       state.fixedCost = Math.max(num($("fixedCost").value, 0), 0);
       state.openDays = clamp(num($("openDays").value, 26), 1, 31);
@@ -752,12 +803,20 @@
       $("outCmHint").textContent = `1 − ${pct(state.rVar)} − ${pct(state.rTax)}`;
       setCmBadge(state.cmRatio);
 
+      // 고정비 미입력
       if (!(state.fixedCost > 0)) {
         $("outBepMonthly").textContent = "-";
         $("outBepDaily").textContent = "-";
         $("outTargetMonthly").textContent = "-";
         $("outTargetDaily").textContent = "-";
         $("outOwnerHourly").textContent = "-";
+
+        $("outBepMonthlyHint").textContent = "공헌이익률 기준 손익분기점";
+        $("outBepDailyHint").textContent = "월 영업일수로 나눈 값";
+        $("outTargetHint").textContent = "목표 순이익 입력 시";
+        $("outTargetDailyHint").textContent = "목표 매출(월)/영업일수";
+        $("outOwnerHourlyHint").textContent = "목표순이익 / 투입시간";
+
         $("chartNote").textContent = "※ 먼저 ‘월 고정비’를 입력해 주세요.";
 
         state.bepMonthly = 0;
@@ -769,25 +828,32 @@
         setSummary();
         updateAssumptions();
         renderDetailByMode();
+
         if (chart) {
           chart.data.datasets.forEach(ds => ds.data = []);
-          chart.options.plugins.bepLinePlugin.bepX = null;
+          chart.options.plugins.markerPlugin.bepX = null;
+          chart.options.plugins.markerPlugin.targetX = null;
+          chart.options.plugins.markerPlugin.customX = 0;
           chart.update();
         }
         return;
       }
 
+      // 공헌이익률 성립 불가
       if (state.cmRatio <= 0) {
         $("outBepMonthly").textContent = "성립 불가";
         $("outBepDaily").textContent = "성립 불가";
         $("outBepMonthlyHint").textContent = "변동비율+세율이 너무 큽니다";
         $("outBepDailyHint").textContent = "공헌이익률이 0 이하";
+
         $("outTargetMonthly").textContent = "성립 불가";
         $("outTargetDaily").textContent = "성립 불가";
         $("outTargetHint").textContent = "비율을 낮춰주세요";
         $("outTargetDailyHint").textContent = "비율을 낮춰주세요";
+
         $("outOwnerHourly").textContent = "-";
         $("outOwnerHourlyHint").textContent = "목표순이익/시간 입력 시";
+
         $("chartNote").textContent = "※ 공헌이익률이 0 이하라 BEP가 성립하지 않습니다. 변동비율/세율을 낮춰보세요.";
 
         state.bepMonthly = 0;
@@ -802,19 +868,21 @@
 
         if (chart) {
           chart.data.datasets.forEach(ds => ds.data = []);
-          chart.options.plugins.bepLinePlugin.bepX = null;
+          chart.options.plugins.markerPlugin.bepX = null;
+          chart.options.plugins.markerPlugin.targetX = null;
+          chart.options.plugins.markerPlugin.customX = 0;
           chart.update();
         }
         return;
       }
 
+      // 정상 계산
       state.bepMonthly = state.fixedCost / state.cmRatio;
       state.bepDaily = state.bepMonthly / state.openDays;
 
       state.targetMonthly = (state.targetProfit > 0)
         ? (state.fixedCost + state.targetProfit) / state.cmRatio
         : 0;
-
       state.targetDaily = (state.targetMonthly > 0) ? (state.targetMonthly / state.openDays) : 0;
 
       const ownerHourly = (state.targetProfit > 0 && state.ownerHours > 0)
@@ -841,94 +909,126 @@
         ? `목표순이익 ${won(state.targetProfit)} ÷ ${state.ownerHours.toLocaleString("ko-KR")}시간`
         : "목표순이익/투입시간 입력 시";
 
-      // chart max
+      // 차트 스케일: 0 ~ max(목표, BEP*1.6)
       state.chartMaxX = Math.max(state.targetMonthly || 0, state.bepMonthly * 1.6);
       $("chartNote").textContent = `※ 차트는 0 ~ ${won(state.chartMaxX)} 구간을 표시합니다.`;
 
-      if (!chart) ensureChart();
-      updateChart({
-        fixedCost: state.fixedCost,
-        rVar: state.rVar,
-        rTax: state.rTax,
-        bepMonthly: state.bepMonthly,
-        targetMonthly: state.targetMonthly,
-        maxX: state.chartMaxX
-      });
+      // 커스텀 값 기본값 세팅(처음엔 BEP 근처로)
+      if (!state.customRevenue) {
+        state.customRevenue = Math.round(state.bepMonthly);
+        $("customRevenue").value = state.customRevenue.toLocaleString("ko-KR");
+      }
+
+      // 세그먼트 목표 버튼 활성/비활성
+      $("segTarget").disabled = !(state.targetMonthly > 0);
+      $("segTarget").classList.toggle("disabled", !(state.targetMonthly > 0));
 
       setSummary();
       updateAssumptions();
 
-      // 세부내역(모드 유지)
-      // 목표 기준 버튼 활성/비활성 느낌 처리
-      $("segTarget").disabled = !(state.targetMonthly > 0);
-      $("segTarget").classList.toggle("disabled", !(state.targetMonthly > 0));
-
-      // custom range 동기화
-      if (!state.customRevenue) {
-        // 초기엔 BEP 근처로 살짝 잡아줌
-        state.customRevenue = Math.round(state.bepMonthly);
-        $("customRevenue").value = state.customRevenue.toLocaleString("ko-KR");
-      }
+      if (!chart) ensureChart();
       syncCustomRange();
-
       renderDetailByMode();
+      updateChart();
     }
 
-    // ===== Segments events =====
+    // ===== Events =====
     $("segBep").addEventListener("click", () => setSegment("bep"));
     $("segTarget").addEventListener("click", () => setSegment("target"));
     $("segCustom").addEventListener("click", () => setSegment("custom"));
 
-    // custom inputs
+    // 커스텀 입력
     $("customRevenue").addEventListener("input", (e) => {
       formatCommaKeepCursor(e.target);
       state.customRevenue = Math.max(num(e.target.value, 0), 0);
       syncCustomRange();
       renderDetailByMode();
+      if (chart) updateChart();
     });
+    $("customRevenueRange").addEventListener("input", setCustomRevenueFromRange);
 
-    $("customRevenueRange").addEventListener("input", () => {
-      setCustomRevenueFromRange();
-    });
-
-    // ===== Main events =====
+    // 버튼
     $("btnCalc").addEventListener("click", calc);
     $("btnReset").addEventListener("click", () => {
       preset();
       state.detailMode = "bep";
       state.customRevenue = 0;
       setSegment("bep");
+
+      if (chart) { chart.destroy(); chart = null; }
       calc();
     });
 
-    // comma inputs
+    // 금액 입력 콤마
     ["fixedCost","targetProfit"].forEach(id => {
       $(id).addEventListener("input", (e) => formatCommaKeepCursor(e.target));
     });
 
-    // live calc
+    // 실시간 계산(입력 즉시)
     ["fixedCost","openDays","variableRate","taxRate","targetProfit","ownerHours"].forEach(id=>{
       $(id).addEventListener("input", calc);
       $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
 
-    // footer year
     const y = document.getElementById("y");
     if (y) y.textContent = String(new Date().getFullYear());
 
+    // init
     preset();
     setSegment("bep");
     calc();
   </script>
 
-  <!-- 페이지 전용 스타일 -->
+  <!-- ✅ UI 정돈: 페이지 전용 스타일 -->
   <style>
+    /* 가독성/깨짐 방지 */
+    :root{
+      --fs-hero: clamp(20px, 2.2vw, 28px);
+      --fs-h3: clamp(15px, 1.2vw, 16px);
+      --fs-body: clamp(13.5px, 1.05vw, 14.5px);
+      --lh: 1.55;
+    }
+    body{ font-size: var(--fs-body); line-height: var(--lh); }
+    .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
+    .heroSub{ max-width: 72ch; }
+
+    header{ align-items:flex-start; }
+    nav[aria-label="이동"] a{ white-space: nowrap; }
+
+    /* 2열 레이아웃 */
+    .cols2{
+      display:grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .cols2{ grid-template-columns: 1fr; }
+    }
+
+    /* panel header */
+    .panelHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .phLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .phLeft h3{ margin:0; font-size: var(--fs-h3); letter-spacing:-.2px; }
+    .phSub{
+      margin:0;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height:1.45;
+    }
+
+    /* badges */
     .badgeRow{
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       justify-content:flex-end;
       align-items:center;
+      flex: 0 0 auto;
     }
     .badgeSoft{
       font-size:12px; font-weight:900;
@@ -936,6 +1036,7 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
       color: rgba(255,255,255,.78);
+      white-space:nowrap;
     }
     .badgeStatus{
       font-size:12px; font-weight:900;
@@ -943,21 +1044,19 @@
       border:1px solid rgba(255,255,255,.10);
       background: rgba(255,255,255,.06);
       color: rgba(255,255,255,.86);
+      white-space:nowrap;
     }
-    .badgeStatus.ok{
-      border-color: rgba(59,231,176,.35);
-      background: rgba(59,231,176,.10);
-    }
-    .badgeStatus.warn{
-      border-color: rgba(255, 180, 80, .35);
-      background: rgba(255, 180, 80, .10);
-    }
-    .badgeStatus.no{
-      border-color: rgba(255, 80, 80, .35);
-      background: rgba(255, 80, 80, .10);
-    }
+    .badgeStatus.ok{ border-color: rgba(59,231,176,.35); background: rgba(59,231,176,.10); }
+    .badgeStatus.warn{ border-color: rgba(255,180,80,.35); background: rgba(255,180,80,.10); }
+    .badgeStatus.no{ border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.10); }
 
-    .chartWrap{
+    /* KPI */
+    .kpi .t{ font-size:12.5px; }
+    .kpi .v{ font-size: clamp(20px, 2.2vw, 24px); line-height:1.15; }
+    .kpi .h{ font-size:12.5px; line-height:1.4; }
+
+    /* chart wide */
+    .chartWrapWide{
       margin-top:14px;
       padding: 14px 14px;
       border-radius: 16px;
@@ -991,21 +1090,20 @@
       color: rgba(255,255,255,.78);
       font-weight: 900;
       letter-spacing: -.2px;
+      white-space:nowrap;
     }
-    .lp i{
-      width:10px; height:10px;
-      border-radius:999px;
-      display:inline-block;
-    }
+    .lp i{ width:10px; height:10px; border-radius:999px; display:inline-block; }
     .dotRev{ background: rgba(76,201,255,.95); }
     .dotCost{ background: rgba(164,109,255,.80); }
     .dotProfit{ background: rgba(59,231,176,.95); }
-    .dotLoss{ background: rgba(255, 80, 80, .95); }
+    .dotLoss{ background: rgba(255,80,80,.95); }
     .dotBep{ background: rgba(59,231,176,.95); }
+    .dotTarget{ background: rgba(255,180,80,.95); }
+    .dotCustom{ background: rgba(255,255,255,.92); }
 
-    .canvasBox{
+    .canvasBoxWide{
       width:100%;
-      height: 320px;
+      height: 400px;
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.22);
@@ -1013,15 +1111,18 @@
       padding: 10px;
     }
     @media (max-width: 720px){
-      .canvasBox{ height: 280px; }
+      .canvasBoxWide{ height: 310px; }
     }
 
-    /* Segmented controls */
-    .segWrap{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
+    /* table */
+    .tableWrap{ overflow-x:auto; }
+    table{ min-width: 560px; }
+    td, th{ vertical-align: top; }
+    tbody td{ word-break: keep-all; }
+    tbody td:nth-child(3){ color: rgba(255,255,255,.72); }
+
+    /* segmented */
+    .segWrap{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .seg{
       height:40px;
       padding: 0 12px;
@@ -1032,16 +1133,14 @@
       background: rgba(0,0,0,.18);
       color: rgba(255,255,255,.80);
       cursor:pointer;
+      white-space:nowrap;
     }
     .seg.active{
       background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
       color: rgba(0,0,0,.75);
-      border-color: rgba(255,255,255,.00);
+      border-color: rgba(255,255,255,0);
     }
-    .seg.disabled{
-      opacity: .45;
-      cursor: not-allowed;
-    }
+    .seg.disabled{ opacity:.45; cursor:not-allowed; }
 
     .customBox{
       padding: 12px 12px;
@@ -1050,7 +1149,6 @@
       background: rgba(255,255,255,.04);
       margin-top: 10px;
     }
-
     input[type="range"]{
       width: 100%;
       height: 42px;

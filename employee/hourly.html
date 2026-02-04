@@ -50,11 +50,9 @@
                 <h3>입력</h3>
                 <p class="phSub">주/월 단순 추정 (공제 미반영)</p>
               </div>
-
-              <!-- ✅ pill + 최저임금 배지 -->
               <div class="badgeRow" style="justify-content:flex-end;">
                 <span class="pill">주/월 단순</span>
-                <span class="pill pillSoft" id="minWageBadge">최저임금 기준: -</span>
+                <span class="pill">최저임금 기준: <span id="minWageText">10,320원</span></span>
               </div>
             </div>
 
@@ -322,21 +320,25 @@
 
     const $ = (id) => document.getElementById(id);
 
+    // ✅ 강화된 숫자 파서: blur 시점에 "원", 공백, ₩ 등이 섞여도 0으로 떨어지지 않게
     const num = (v, fallback = 0) => {
-      const s = String(v ?? "").replace(/,/g, "").trim();
+      const s = String(v ?? "")
+        .replace(/[^\d.\-]/g, "")   // 숫자, 점, 마이너스만 남김
+        .trim();
+      if (!s) return fallback;
       const n = Number(s);
       return Number.isFinite(n) ? n : fallback;
     };
+
     const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
     const won = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
 
-    const WEEKS_PER_MONTH = 4.345;
+    // ===== 상수 =====
+    const MIN_WAGE = 10320;        // ✅ 최저시급(기본값)
+    const WEEKS_PER_MONTH = 4.345; // 월 평균 주수
     const EXTRA_OT = 0.5;
     const EXTRA_NIGHT = 0.5;
     const EXTRA_HOLI = 1.0;
-
-    // ✅ 최저임금 기본값
-    const MIN_WAGE = 10320; // 2025 최저임금(시간급) 기본값
 
     // ===== 콤마 포맷(커서 보존) =====
     function formatCommaKeepCursor(inputEl) {
@@ -360,6 +362,12 @@
         pos++;
       }
       inputEl.setSelectionRange(pos, pos);
+    }
+
+    // ✅ blur/change 안전 포맷: 숫자만 남겨 콤마로 정규화
+    function formatMoneyOnBlur(inputEl) {
+      const digitsOnly = String(inputEl.value ?? "").replace(/[^\d]/g, "");
+      inputEl.value = digitsOnly ? Number(digitsOnly).toLocaleString("ko-KR") : "";
     }
 
     function preset() {
@@ -504,24 +512,35 @@
       $(id).addEventListener("change", calc);
     });
 
-    // 시급 자동 콤마
+    // ✅ 시급 자동 콤마 + 즉시 계산
     $("hourlyWage").addEventListener("input", (e) => {
       formatCommaKeepCursor(e.target);
       calc();
     });
+    // ✅ blur/change 때도 계산 0으로 떨어지는 이슈 방지
+    $("hourlyWage").addEventListener("blur", (e) => {
+      formatMoneyOnBlur(e.target);
+      calc();
+    });
+    $("hourlyWage").addEventListener("change", (e) => {
+      formatMoneyOnBlur(e.target);
+      calc();
+    });
 
-    // 입력값 바뀌면 자동 계산
+    // 나머지 입력값 바뀌면 자동 계산
     ["hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","nightHoursWeek","holidayHoursWeek"].forEach(id=>{
       $(id).addEventListener("input", calc);
+      $(id).addEventListener("blur", calc);
+      $(id).addEventListener("change", calc);
     });
 
     // footer year
     const y = document.getElementById("y");
     if (y) y.textContent = String(new Date().getFullYear());
 
-    // ✅ 최저임금 배지 표시
-    const mw = document.getElementById("minWageBadge");
-    if (mw) mw.textContent = `최저임금 기준: ${MIN_WAGE.toLocaleString("ko-KR")}원`;
+    // 상단 최저임금 문구
+    const mw = document.getElementById("minWageText");
+    if (mw) mw.textContent = MIN_WAGE.toLocaleString("ko-KR") + "원";
 
     preset();
     calc();
@@ -661,14 +680,6 @@
       border-color: rgba(255, 180, 80, .35);
       background: rgba(255, 180, 80, .10);
       color: rgba(255,255,255,.88);
-    }
-
-    /* ✅ 최저임금 pill */
-    .pillSoft{
-      border-color: rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      color: rgba(255,255,255,.86);
-      white-space: nowrap;
     }
 
     .ctaBox{

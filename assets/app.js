@@ -10,11 +10,17 @@ const HEADER_HTML = `
 <header class="wvHeader" id="wvHeader">
   <div class="wvHeaderInner">
     <a class="wvBrand" href="/" aria-label="WorkValue 홈">
-      <span class="wvLogoDot" aria-hidden="true"></span>
+      <span class="wvLogo" aria-hidden="true">
+        <span class="wvLogoDot"></span>
+        <span class="wvLogoRing"></span>
+      </span>
+
       <span class="wvBrandText">
         <strong class="wvBrandTitle">WorkValue</strong>
         <span class="wvBrandSub">급여·근로·자영업 계산기</span>
       </span>
+
+      <span class="wvChip" aria-hidden="true">빠른 계산</span>
     </a>
 
     <button class="wvMenuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="wvNav">
@@ -33,6 +39,7 @@ const HEADER_HTML = `
   </div>
 </header>
 `;
+
 
 const FOOTER_HTML = `
 <footer class="wvFooter" id="wvFooter">
@@ -61,72 +68,174 @@ const FOOTER_HTML = `
   - 이미 styles.css에 유사 스타일이 있다면 큰 충돌 없이 덮어쓰기만 됨
 ========================= */
 const COMMON_CSS = `
-/* WorkValue common header/footer */
-.wvHeader{ width:100%; position:sticky; top:0; z-index:50; backdrop-filter:saturate(1.2) blur(10px);
-  background: rgba(11,15,20,.82); border-bottom:1px solid rgba(255,255,255,.08);
+.wvHeader{
+  width:100%;
+  position:sticky;
+  top:0;
+  z-index:50;
+  background: rgba(11,15,20,.78);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  backdrop-filter: saturate(1.2) blur(12px);
 }
-.wvHeaderInner{ display:flex; align-items:center; justify-content:space-between; gap:14px;
+.wvHeaderInner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
   padding: 14px 0;
 }
-.wvBrand{ display:flex; align-items:center; gap:10px; text-decoration:none; min-width:0; }
-.wvLogoDot{ width:10px; height:10px; border-radius:999px;
-  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+
+/* Brand */
+.wvBrand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-decoration:none;
+  min-width: 0;
+}
+.wvLogo{
+  width: 22px;
+  height: 22px;
+  position: relative;
   flex: 0 0 auto;
 }
-.wvBrandText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-.wvBrandTitle{ color: rgba(255,255,255,.92); letter-spacing:-.3px; line-height:1.1; }
-.wvBrandSub{ color: rgba(255,255,255,.62); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.wvLogoDot{
+  position:absolute;
+  inset: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+  box-shadow: 0 0 0 6px rgba(76,201,255,.10);
+}
+.wvLogoRing{
+  position:absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.12);
+}
 
-.wvNav{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
+.wvBrandText{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  min-width: 0;
+}
+.wvBrandTitle{
+  color: rgba(255,255,255,.92);
+  letter-spacing: -.35px;
+  line-height: 1.1;
+  font-weight: 900;
+}
+.wvBrandSub{
+  color: rgba(255,255,255,.62);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wvChip{
+  margin-left: 6px;
+  display:inline-flex;
+  align-items:center;
+  height: 22px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.05);
+  color: rgba(255,255,255,.75);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+  white-space: nowrap;
+}
+
+/* Nav */
+.wvNav{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
 .wvNavLink, .wvNavCta{
-  display:inline-flex; align-items:center; justify-content:center;
-  height: 36px; padding: 0 12px; border-radius: 12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 12px;
   border: 1px solid rgba(255,255,255,.10);
   background: rgba(255,255,255,.04);
   color: rgba(255,255,255,.86);
-  font-weight: 900; letter-spacing:-.2px; font-size: 13px;
-  text-decoration:none; white-space:nowrap;
+  font-weight: 900;
+  letter-spacing: -.2px;
+  font-size: 13px;
+  text-decoration:none;
+  white-space: nowrap;
+  transition: transform .08s ease, opacity .08s ease, border-color .08s ease, background .08s ease;
 }
-.wvNavLink:hover, .wvNavCta:hover{ opacity:.92; border-color: rgba(255,255,255,.16); }
+.wvNavLink:hover, .wvNavCta:hover{
+  opacity: .94;
+  border-color: rgba(255,255,255,.16);
+  transform: translateY(-1px);
+}
 .wvNavLink.is-active{
-  border-color: rgba(76,201,255,.28);
+  border-color: rgba(76,201,255,.30);
   background: rgba(76,201,255,.10);
 }
+
 .wvNavCta{
   background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
   color: rgba(0,0,0,.75);
   border-color: rgba(255,255,255,.10);
 }
 
+/* Mobile menu button */
 .wvMenuBtn{
   display:none;
-  height:36px; width:44px; border-radius:12px;
-  border:1px solid rgba(255,255,255,.10);
+  height:36px;
+  width:44px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.10);
   background: rgba(255,255,255,.04);
   cursor:pointer;
 }
 .wvMenuIcon{
   display:block;
-  width:18px; height:2px; border-radius:99px;
-  background: rgba(255,255,255,.84);
+  width:18px;
+  height:2px;
+  border-radius:99px;
+  background: rgba(255,255,255,.86);
   position: relative;
   margin: 0 auto;
 }
 .wvMenuIcon::before, .wvMenuIcon::after{
   content:"";
   position:absolute;
-  left:0; width:18px; height:2px; border-radius:99px;
-  background: rgba(255,255,255,.84);
+  left:0;
+  width:18px;
+  height:2px;
+  border-radius:99px;
+  background: rgba(255,255,255,.86);
 }
 .wvMenuIcon::before{ top:-6px; }
 .wvMenuIcon::after{ top:6px; }
 
+/* Responsive */
 @media (max-width: 980px){
   .wvMenuBtn{ display:inline-flex; align-items:center; justify-content:center; }
-  .wvNav{ display:none; width:100%; padding-top: 10px; justify-content:flex-start; }
   .wvHeaderInner{ flex-wrap:wrap; }
+  .wvNav{
+    display:none;
+    width:100%;
+    padding-top: 10px;
+    justify-content:flex-start;
+  }
   .wvNav.is-open{ display:flex; }
+  .wvChip{ display:none; }
 }
+
+/* Footer */
 .wvFooter{ margin-top: 24px; border-top:1px solid rgba(255,255,255,.08); padding: 18px 0; }
 .wvFooterInner{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
 .wvFooterTitle{ font-weight: 900; color: rgba(255,255,255,.90); letter-spacing:-.2px; }
@@ -137,6 +246,7 @@ const COMMON_CSS = `
 .wvDot{ color: rgba(255,255,255,.45); }
 .wvFooterCopy{ color: rgba(255,255,255,.55); font-size:12.5px; font-weight:900; }
 `;
+
 
 function injectCommonCssOnce() {
   if (document.getElementById("wvCommonCss")) return;

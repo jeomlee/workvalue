@@ -300,7 +300,10 @@
   </div>
 
   <!-- ✅ 공통 app.js는 defer로 1번만 로드 -->
-  <script src="/assets/app.js?v=20260203" defer></script>
+<script type="module">
+  import { initWorkValue } from "/assets/app.js?v=20260205";
+  initWorkValue();
+</script>
 
   <!-- ✅ page script (app.js의 init은 DOMContentLoaded 후 자동 실행되는 구조를 권장)
        만약 app.js가 자동으로 init을 안한다면, 아래 DOMContentLoaded에서 window.initWorkValue() 같은 형태로 호출해줘.

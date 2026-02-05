@@ -189,7 +189,10 @@
   </div>
 
   <!-- ✅ 공통 app.js: 한 번만 로드 -->
-  <script src="/assets/app.js?v=20260203" defer></script>
+<script type="module">
+  import { initWorkValue } from "/assets/app.js?v=20260205";
+  initWorkValue();
+</script>
 
   <!-- ✅ price-decision 페이지 스크립트(단독 동작) -->
   <script>

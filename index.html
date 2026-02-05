@@ -132,7 +132,10 @@
   </div>
 
   <!-- ✅ 공통 app.js는 1번만 (defer) -->
-  <script src="/assets/app.js?v=20260203" defer></script>
+<script type="module">
+  import { initWorkValue } from "/assets/app.js?v=20260205";
+  initWorkValue();
+</script>
 
   <script>
     // footer year (공통 footer가 y를 쓰는 경우 대비)

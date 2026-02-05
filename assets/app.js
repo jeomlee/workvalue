@@ -6,39 +6,29 @@
   - 페이지별 계산기는 각 페이지에서만 처리 (충돌 방지)
 ============================================================================ */
 
-const HEADER_HTML = `
-<header class="wvHeader" id="wvHeader">
-  <div class="wvHeaderInner">
-    <a class="wvBrand" href="/" aria-label="WorkValue 홈">
-      <span class="wvLogo" aria-hidden="true">
-        <span class="wvLogoDot"></span>
-        <span class="wvLogoRing"></span>
-      </span>
-
-      <span class="wvBrandText">
-        <strong class="wvBrandTitle">WorkValue</strong>
-        <span class="wvBrandSub">급여·근로·자영업 계산기</span>
-      </span>
-
-      <span class="wvChip" aria-hidden="true">빠른 계산</span>
+function headerHTML() {
+  return `
+<header class="site-header" id="wvHeader">
+  <div class="header-inner">
+    <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
+      <div class="dot"></div>
+      <div class="t">
+        <strong>WorkValue</strong>
+        <span>급여·근로·자영업 계산기</span>
+      </div>
     </a>
 
-    <button class="wvMenuBtn" type="button" aria-label="메뉴 열기" aria-expanded="false" aria-controls="wvNav">
-      <span class="wvMenuIcon" aria-hidden="true"></span>
-    </button>
-
-    <nav class="wvNav" id="wvNav" aria-label="이동">
-      <a class="wvNavLink" href="/">홈</a>
-      <a class="wvNavLink" href="/employee/hourly.html">단순 급여</a>
-      <a class="wvNavLink" href="/employee/salary-net.html">월급 실수령</a>
-      <a class="wvNavLink" href="/business/bep.html">자영업 BEP</a>
-      <a class="wvNavLink" href="/business/labor-cost.html">인건비</a>
-      <a class="wvNavLink" href="/business/price-decision.html">가격 결정</a>
-      <a class="wvNavCta" href="/contact">문의</a>
+    <nav class="nav" aria-label="이동">
+      <a href="/employee/hourly.html">단순 급여</a>
+      <a href="/employee/salary-net.html">월급 실수령</a>
+      <a href="/business/bep.html">자영업 BEP</a>
+      <a href="/business/labor-cost.html">인건비</a>
+      <a href="/business/price-decision.html">가격 결정</a>
+      <a href="/contact.html">문의</a>
     </nav>
   </div>
-</header>
-`;
+</header>`;
+}
 
 
 const FOOTER_HTML = `

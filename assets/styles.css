@@ -17,6 +17,7 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+
 body{
   margin:0;
   color:var(--text);
@@ -26,7 +27,6 @@ body{
     radial-gradient(1200px 600px at 18% -10%, rgba(76,201,255,.16), transparent 60%),
     radial-gradient(900px 520px at 92% 0%, rgba(164,109,255,.12), transparent 55%),
     var(--bg);
-
   /* ✅ 하단 그라데이션 번짐 제거 */
   background-attachment: fixed;
 }
@@ -34,32 +34,57 @@ body{
 a{color:inherit;text-decoration:none}
 a:hover{opacity:.92}
 
+/* =========================================================
+   Layout container
+========================================================= */
 .container{
   width:min(1080px, calc(100% - 32px));
   margin:0 auto;
-  padding: 24px 0 32px;
+  padding: 18px 0 36px; /* ✅ 균형 조정 */
 }
 
-/* Header */
-header{
+/* =========================================================
+   Header (최종)
+   - 좌측 여백 확보
+   - nav 전체 오른쪽 정렬
+   - sticky + blur
+========================================================= */
+.site-header{
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(10px);
+  background: linear-gradient(180deg, rgba(11,15,20,.72), rgba(11,15,20,0));
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+/* header-inner: 좌측 여백을 확실히 */
+.site-header .header-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 26px; /* ✅ 핵심: 좌우 여백 증가 */
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:14px;
-  padding:18px 0 12px;
 }
+
+/* brand */
 .brand{
   display:flex;
   align-items:center;
   gap:12px;
+  min-width: 260px; /* ✅ 로고 영역 숨쉴 공간 */
 }
 .brand .dot{
   width:38px;height:38px;border-radius:12px;
   background: linear-gradient(135deg, var(--aqua), var(--mint));
   box-shadow: 0 12px 30px rgba(76,201,255,.18);
+  flex: 0 0 auto;
 }
 .brand .t{
   display:flex;flex-direction:column;gap:2px;
+  min-width: 0;
 }
 .brand strong{
   font-size:16px;
@@ -68,27 +93,50 @@ header{
 .brand span{
   font-size:13px;
   color:var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-nav[aria-label="이동"]{
+/* nav: 전부 오른쪽 정렬 */
+.site-header .nav{
+  margin-left: auto;          /* ✅ 핵심: 오른쪽으로 밀기 */
   display:flex;
   gap:10px;
   flex-wrap:wrap;
   justify-content:flex-end;
-}
-nav[aria-label="이동"] a{
-  font-size:13px;
-  color:var(--soft);
-  padding:8px 10px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.08);
-  background: rgba(0,0,0,.14);
-}
-nav[aria-label="이동"] a:hover{
-  background: rgba(255,255,255,.06);
+  align-items:center;
 }
 
-/* Cards */
+/* nav 버튼 스타일 */
+.site-header .nav a{
+  font-size:13px;
+  color:var(--soft);
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(18,26,35,.55);
+  transition: transform .12s ease, background .12s ease, border-color .12s ease, opacity .12s ease;
+  white-space: nowrap;
+}
+.site-header .nav a:hover{
+  transform: translateY(-1px);
+  background: rgba(18,26,35,.78);
+  border-color: rgba(255,255,255,.14);
+}
+
+/* ✅ nav active 표시 (pill 강조) */
+.site-header .nav a.active{
+  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+  color: rgba(0,0,0,.78);
+  border-color: transparent;
+  text-decoration: none;
+  font-weight: 900;
+}
+
+/* =========================================================
+   Cards
+========================================================= */
 .card{
   background: rgba(18,26,35,.85);
   border:1px solid var(--line);
@@ -120,6 +168,25 @@ nav[aria-label="이동"] a:hover{
   padding: 16px 18px 18px;
 }
 
+/* Hero */
+.cardHead.hero{
+  padding: 18px 18px 16px;
+}
+.heroTitle{
+  margin:0;
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -.6px;
+}
+.heroSub{
+  margin-top: 8px;
+  font-size: 13.5px;
+  max-width: 78ch;
+}
+
+/* =========================================================
+   Columns
+========================================================= */
 .cols{
   display:grid;
   grid-template-columns: 1.05fr .95fr;
@@ -129,7 +196,9 @@ nav[aria-label="이동"] a:hover{
   .cols{grid-template-columns:1fr}
 }
 
-/* Form blocks */
+/* =========================================================
+   Form blocks
+========================================================= */
 .row{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -160,6 +229,7 @@ input:focus, select:focus{
   box-shadow: 0 0 0 3px rgba(76,201,255,.12);
 }
 
+/* Buttons */
 .btnrow{
   display:flex;
   gap:10px;
@@ -185,7 +255,9 @@ button.ghost{
   border: 1px solid rgba(255,255,255,.10);
 }
 
-/* KPI */
+/* =========================================================
+   KPI
+========================================================= */
 .kpi{
   display:grid;
   grid-template-columns: 1fr 1fr;
@@ -207,7 +279,7 @@ button.ghost{
 }
 .kpi .v{
   margin:6px 0 2px;
-  font-size:24px; /* ✅ 가독성 강화 */
+  font-size:24px;
   font-weight:900;
   letter-spacing:-.4px;
 }
@@ -217,13 +289,18 @@ button.ghost{
   color:var(--muted);
 }
 
-/* Content blocks */
+/* =========================================================
+   Content blocks
+========================================================= */
 .content{
   margin-top:12px;
   padding: 14px 14px;
   border-radius: 16px;
   border: 1px solid rgba(255,255,255,.08);
   background: rgba(255,255,255,.05);
+}
+.content.panel{
+  background: rgba(0,0,0,.18);
 }
 .content h3{
   margin:0 0 8px;
@@ -241,7 +318,30 @@ button.ghost{
 }
 .small{font-size:12.5px;color:var(--muted); margin-top:8px}
 
-/* Table */
+/* panel head */
+.panelHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom: 10px;
+}
+.panelHead h3{ margin:0; }
+
+/* pill */
+.pill{
+  font-size: 12px;
+  color: rgba(0,0,0,.75);
+  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+
+/* =========================================================
+   Table
+========================================================= */
 table{
   width:100%;
   border-collapse: collapse;
@@ -264,7 +364,9 @@ tbody td{
 }
 tbody tr:last-child td{border-bottom:0}
 
-/* FAQ */
+/* =========================================================
+   FAQ
+========================================================= */
 .faq details{
   border:1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.16);
@@ -279,120 +381,48 @@ tbody tr:last-child td{border-bottom:0}
   display:flex;
   align-items:center;
   justify-content:space-between;
+  list-style:none;
 }
+.faq summary::-webkit-details-marker{ display:none; }
 .faq summary::after{
   content: "⌄";
   opacity: .7;
   transform: translateY(-1px);
 }
-.faq details[open] summary::after{
-  content: "⌃";
-}
+.faq details[open] summary::after{ content: "⌃"; }
 .faq p{margin:8px 0 0; color:var(--soft)}
 
-/* Footer */
-footer{
+/* =========================================================
+   Footer (최종)
+========================================================= */
+.site-footer{
   margin-top:16px;
   padding-top:14px;
   border-top:1px solid rgba(255,255,255,.10);
 }
-footer .links{
+.site-footer .footer-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 26px; /* ✅ 헤더와 좌우 여백 맞춤 */
   display:flex;
+  align-items:center;
+  justify-content:center;
   gap:10px;
   flex-wrap:wrap;
 }
-footer .links a{
+.site-footer .footer-inner a{
   font-size:13px;
   color:var(--muted);
-  padding:6px 8px;
-  border-radius: 12px;
+  padding:6px 10px;
+  border-radius: 999px;
   border:1px solid rgba(255,255,255,.08);
   background: rgba(0,0,0,.14);
 }
-footer .links a:hover{color:var(--soft)}
+.site-footer .footer-inner a:hover{color:var(--soft)}
 
-/* ✅ nav active 표시 */
-header nav a.active {
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 6px;
-}
-
-/* =========================
-   ✅ 공통 UI upgrade (깔끔/정돈)
-========================= */
-
-/* container 여백 균형 */
-.container{
-  padding: 18px 0 36px;
-}
-
-/* Header: sticky + blur */
-header{
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  backdrop-filter: blur(10px);
-  background: linear-gradient(180deg, rgba(11,15,20,.72), rgba(11,15,20,0));
-  padding: 14px 0 10px;
-  border-bottom: 1px solid rgba(255,255,255,.06);
-}
-
-/* nav 버튼 업그레이드 */
-nav[aria-label="이동"] a{
-  background: rgba(18,26,35,.55);
-  border: 1px solid rgba(255,255,255,.10);
-  transition: transform .12s ease, background .12s ease, border-color .12s ease;
-}
-nav[aria-label="이동"] a:hover{
-  transform: translateY(-1px);
-  background: rgba(18,26,35,.78);
-  border-color: rgba(255,255,255,.14);
-}
-
-/* Hero */
-.cardHead.hero{
-  padding: 18px 18px 16px;
-}
-.heroTitle{
-  margin:0;
-  font-size: 22px;
-  line-height: 1.25;
-  letter-spacing: -.6px;
-}
-.heroSub{
-  margin-top: 8px;
-  font-size: 13.5px;
-}
-
-/* Panel */
-.content.panel{
-  background: rgba(0,0,0,.18);
-}
-.panelHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom: 10px;
-}
-.panelHead h3{ margin:0; }
-
-/* 작은 라벨 */
-.pill{
-  font-size: 12px;
-  color: rgba(0,0,0,.75);
-  background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 900;
-  letter-spacing: -.2px;
-}
-
-/* =========================
-   ✅ BEP UI patch (차트/레전드)
-========================= */
-
+/* =========================================================
+   BEP UI patch (차트/레전드)
+========================================================= */
 .chartWrap{
   margin-top: 14px;
   padding: 14px 14px;
@@ -456,20 +486,9 @@ nav[aria-label="이동"] a:hover{
   display:block;
 }
 
-/* 모바일 정리 */
-@media (max-width: 720px){
-  header{ position: relative; } /* 모바일 sticky 부담 줄이기 */
-  nav[aria-label="이동"]{ gap:8px; }
-  nav[aria-label="이동"] a{ padding:8px 9px; border-radius:12px; font-size:12.5px; }
-  .heroTitle{ font-size: 20px; }
-
-  .chartHead{ flex-direction: column; }
-  .legendPills{ justify-content:flex-start; }
-  .canvasBox{ height: 260px; }
-}
-
-
-/* price-decision page helpers (없으면만 추가) */
+/* =========================================================
+   price-decision page helpers
+========================================================= */
 .page-head { margin: 18px 0 14px; }
 .page-head .desc { opacity: .8; line-height: 1.6; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -495,23 +514,32 @@ nav[aria-label="이동"] a:hover{
 @media (max-width: 960px){ .link-grid { grid-template-columns: 1fr; } }
 .link-card { display: block; padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); text-decoration: none; }
 
+/* =========================================================
+   Mobile tweaks
+========================================================= */
+@media (max-width: 720px){
+  .site-header{ position: relative; } /* 모바일 sticky 부담 줄이기 */
+  .site-header .header-inner{
+    padding: 12px 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .brand{ min-width: 0; }
+  .brand span{ white-space: normal; }
 
-/* header/footer inner wrapper */
-.site-header .header-inner,
-.site-footer .footer-inner{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 14px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-}
+  .site-header .nav{
+    width: 100%;
+    justify-content:flex-end;
+    gap:8px;
+  }
+  .site-header .nav a{
+    padding:8px 10px;
+    border-radius:999px;
+    font-size:12.5px;
+  }
 
-/* 모바일에서 nav 줄바꿈 */
-.site-header .nav{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
+  .heroTitle{ font-size: 20px; }
+  .chartHead{ flex-direction: column; }
+  .legendPills{ justify-content:flex-start; }
+  .canvasBox{ height: 260px; }
 }

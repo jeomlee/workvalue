@@ -612,6 +612,11 @@ function bindButtons(btnId, run) {
   - 페이지에 <header id="wvHeaderMount"></header>, <footer id="wvFooterMount"></footer>만 있으면 자동 주입
   - legacy로 기존 헤더/푸터가 있어도 교체
 ============================================================================ */
+/* ============================================================================
+  WorkValue 공통 레이아웃(헤더/푸터) 주입 (FIX)
+  - .container 중첩 제거
+  - footer 교체 범위 확장(페이지에 <footer>만 있어도 교체)
+============================================================================ */
 (function () {
   function wvPath() {
     try {
@@ -631,10 +636,11 @@ function bindButtons(btnId, run) {
     return `<a class="${active}" href="${href}">${text}</a>`;
   }
 
+  // ✅ 컨테이너 중첩 제거: header 자체가 레이아웃을 잡고, 페이지 container는 그대로 사용
   function headerHTML() {
     return `
 <header class="site-header" id="wvHeader">
-  <div class="container">
+  <div class="header-inner">
     <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
       <div class="dot"></div>
       <div class="t">
@@ -655,16 +661,17 @@ function bindButtons(btnId, run) {
 </header>`;
   }
 
-  // ✅ .html로 통일 (서치콘솔 리디렉션/미색인 이슈 예방)
   function footerHTML() {
     return `
 <footer class="site-footer" id="wvFooter">
-  <div class="container">
+  <div class="footer-inner">
     <a href="/contact.html">문의</a>
     <span class="dot">·</span>
     <a href="/terms.html">이용약관</a>
     <span class="dot">·</span>
     <a href="/privacy.html">개인정보처리방침</a>
+    <span class="dot">·</span>
+    <a href="/about.html">소개</a>
   </div>
 </footer>`;
   }
@@ -677,28 +684,33 @@ function bindButtons(btnId, run) {
   }
 
   window.wvMountLayout = function () {
+    // 1) mount id가 있으면 우선 주입
     const okHeader = replaceById("wvHeaderMount", headerHTML());
     const okFooter = replaceById("wvFooterMount", footerHTML());
 
+    // 2) mount가 없으면, “있을 법한 footer/header”를 찾아 교체 (범위를 넓힘)
     if (!okHeader) {
       const legacyH =
         document.getElementById("wvHeader") ||
         document.querySelector("header.site-header") ||
-        document.querySelector("header#wvHeader");
+        document.querySelector("header#wvHeader") ||
+        document.querySelector("header");
       if (legacyH) legacyH.outerHTML = headerHTML();
     }
+
     if (!okFooter) {
       const legacyF =
         document.getElementById("wvFooter") ||
         document.querySelector("footer.site-footer") ||
-        document.querySelector("footer#wvFooter");
+        document.querySelector("footer#wvFooter") ||
+        document.querySelector("footer"); // ✅ 그냥 footer도 교체
       if (legacyF) legacyF.outerHTML = footerHTML();
     }
 
-    // ✅ 주입 후 active 확정
     try { setActiveNav(); } catch {}
   };
 })();
+
 
 /* ============================================================================
   initWorkValue: 모든 페이지에서 자동 감지/바인딩

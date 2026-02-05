@@ -494,3 +494,24 @@ nav[aria-label="이동"] a:hover{
 .link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 @media (max-width: 960px){ .link-grid { grid-template-columns: 1fr; } }
 .link-card { display: block; padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); text-decoration: none; }
+
+
+/* header/footer inner wrapper */
+.site-header .header-inner,
+.site-footer .footer-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+/* 모바일에서 nav 줄바꿈 */
+.site-header .nav{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}

@@ -10,6 +10,12 @@
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="google-site-verification" content="2j0qNv5hU7oaXeGm5eFOfF0MPQueETQQGz-Ue2rr0cQ" />
 
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="WorkValue | 급여·근로·자영업 계산기" />
+  <meta property="og:description" content="급여·근로·자영업 계산기를 한 곳에서. 빠른 입력, 핵심 결과, 기준/FAQ까지." />
+  <meta property="og:url" content="https://workvalue.kr/" />
+
   <script type="application/ld+json">
   {
     "@context":"https://schema.org",
@@ -22,7 +28,6 @@
 
 <body>
   <div class="container">
-
     <header id="wvHeaderMount"></header>
 
     <main>
@@ -52,7 +57,7 @@
 
                 <a class="linkCard" href="/employee/salary-net.html">
                   <div class="lcTitle">월급 실수령액 계산기(추정)</div>
-                  <div class="lcDesc">공제 항목을 나누어 확인하실 수 있습니다.</div>
+                  <div class="lcDesc">공제 항목을 나누어 한눈에 확인하실 수 있습니다.</div>
                   <div class="lcGo">열기 →</div>
                 </a>
               </div>
@@ -110,7 +115,7 @@
             </div>
           </div>
 
-          <!-- 미니 CTA(선택) -->
+          <!-- CTA -->
           <div class="ctaBox" style="margin-top:14px;">
             <div>
               <div class="ctaTitle">가장 많이 쓰는 조합</div>
@@ -126,16 +131,15 @@
     <footer id="wvFooterMount"></footer>
   </div>
 
-  <script type="module">
-    // 공통 init(있으면 실행)
-    try {
-      const mod = await import("/assets/app.js?v=20260203");
-      if (mod?.initWorkValue) mod.initWorkValue();
-    } catch (_) {}
+  <!-- ✅ 공통 app.js는 1번만 (defer) -->
+  <script src="/assets/app.js?v=20260203" defer></script>
 
+  <script>
     // footer year (공통 footer가 y를 쓰는 경우 대비)
-    const y = document.getElementById("y");
-    if (y) y.textContent = String(new Date().getFullYear());
+    document.addEventListener("DOMContentLoaded", () => {
+      const y = document.getElementById("y");
+      if (y) y.textContent = String(new Date().getFullYear());
+    });
   </script>
 
   <!-- 페이지 전용 스타일: 정돈 + 깨짐 방지 -->

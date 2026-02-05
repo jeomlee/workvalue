@@ -24,168 +24,172 @@
 </head>
 
 <body>
-  <!-- ✅ 공통 헤더 주입 -->
-  <header id="wvHeaderMount"></header>
+  <!-- ✅ container는 딱 1번만 -->
+  <div class="container">
+    <!-- ✅ 공통 헤더 주입 -->
+    <header id="wvHeaderMount"></header>
 
-  <main class="container">
-    <section class="card">
-      <div class="cardHead hero">
-        <div>
-          <h1 class="heroTitle">가격 변경(인상/인하) 손익 영향 계산기</h1>
-          <p class="sub heroSub">
-            가격을 변경했을 때 얼마나 남는지 빠르게 계산해요.
-            판매량이 얼마나 변할지(%)를 가정하면, 월 손익 변화와 손익분기 판매량을 함께 확인할 수 있어요.
-          </p>
-        </div>
-      </div>
-
-      <div class="cardBody">
-        <div class="cols2">
-
-          <!-- 입력 카드 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>입력</h3>
-                <p class="phSub">현재/변경 가격, 1개당 변동비, 월 판매량, 고정비를 넣어주세요</p>
-              </div>
-              <span class="pill">월 기준</span>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="pd_price_now">현재 판매가(1개, 원)</label>
-                <input id="pd_price_now" inputmode="numeric" placeholder="예: 6,000" />
-                <div class="small">VAT 포함/미포함은 운영 방식에 맞게 일관되게 입력하세요.</div>
-              </div>
-              <div>
-                <label for="pd_price_new">변경 후 판매가(1개, 원)</label>
-                <input id="pd_price_new" inputmode="numeric" placeholder="예: 6,500" />
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <div>
-                <label for="pd_var_cost">변동비(1개당, 원)</label>
-                <input id="pd_var_cost" inputmode="numeric" placeholder="예: 2,500" />
-                <div class="small">원가/포장/수수료 등을 1개당 원으로 환산해 포함하면 더 정확해요.</div>
-              </div>
-              <div>
-                <label for="pd_qty_now">현재 월 판매량(개)</label>
-                <input id="pd_qty_now" inputmode="numeric" placeholder="예: 1,200" />
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <div>
-                <label for="pd_qty_change_pct">가격 변경 시 판매량 변화(%)</label>
-                <input id="pd_qty_change_pct" inputmode="decimal" placeholder="예: -8 (8% 감소)" />
-                <div class="small">인상 시 보통 음수(-), 인하 시 양수(+)로 입력하면 돼요.</div>
-              </div>
-              <div>
-                <label for="pd_fixed_cost">월 고정비(원)</label>
-                <input id="pd_fixed_cost" inputmode="numeric" placeholder="예: 4,500,000" />
-              </div>
-            </div>
-
-            <div class="btnrow">
-              <button class="primary" id="pd_calc_btn" type="button">계산하기</button>
-              <button class="ghost" id="pd_reset_btn" type="button">초기화</button>
-            </div>
-
-            <div class="content" style="margin-top:14px;">
-              <h3>계산 구조(요약)</h3>
-              <ul>
-                <li>단위 공헌이익 = <b>판매가 − 변동비</b></li>
-                <li>월 공헌이익 = <b>단위 공헌이익 × 월 판매량</b></li>
-                <li>영업이익(단순) = <b>월 공헌이익 − 고정비</b></li>
-                <li>손익분기 판매량(변경 후) = <b>고정비 ÷ 변경 후 단위 공헌이익</b> (단위 공헌이익 &gt; 0일 때)</li>
-              </ul>
-              <p class="small">주의: 광고비/폐기/할인/배달비 등 추가 변동 요소는 미반영. 빠른 판단용 근사치예요.</p>
-            </div>
-          </div>
-
-          <!-- 결과 카드 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>결과</h3>
-                <p class="phSub">월 손익 변화와 손익분기 판매량을 한 번에</p>
-              </div>
-              <span class="pill soft" id="pd_status_pill">대기</span>
-            </div>
-
-            <div class="kpi">
-              <div class="box">
-                <p class="t">현재 월 공헌이익</p>
-                <p class="v" id="pd_kpi_cm_now">-</p>
-                <p class="h">단위CM × 현재 판매량</p>
-              </div>
-              <div class="box">
-                <p class="t">변경 후 월 공헌이익</p>
-                <p class="v" id="pd_kpi_cm_new">-</p>
-                <p class="h">판매량 변화 가정 반영</p>
-              </div>
-
-              <div class="box">
-                <p class="t">월 손익 변화(Δ)</p>
-                <p class="v" id="pd_kpi_delta">-</p>
-                <p class="h">변경 후 영업이익 − 현재 영업이익</p>
-              </div>
-              <div class="box">
-                <p class="t">손익분기 판매량(변경 후)</p>
-                <p class="v" id="pd_kpi_bep_qty">-</p>
-                <p class="h">고정비 ÷ 변경 후 단위CM</p>
-              </div>
-            </div>
-
-            <div class="kpi" style="margin-top:10px;">
-              <div class="box">
-                <p class="t">현재 영업이익(고정비 반영)</p>
-                <p class="v" id="pd_kpi_op_now">-</p>
-                <p class="h">현재 공헌이익 − 고정비</p>
-              </div>
-              <div class="box">
-                <p class="t">변경 후 영업이익(가정 반영)</p>
-                <p class="v" id="pd_kpi_op_new">-</p>
-                <p class="h">변경 후 공헌이익 − 고정비</p>
-              </div>
-            </div>
-
-            <div class="content" style="margin-top:12px;">
-              <h3>코멘트</h3>
-              <p id="pd_comment" style="margin:0; color: var(--soft);">값을 입력한 뒤 계산해 주세요.</p>
-            </div>
-
-            <div class="content" style="margin-top:12px;">
-              <h3>차트</h3>
-              <div class="canvasBoxWide" style="height:280px;">
-                <canvas id="pd_chart"></canvas>
-              </div>
-              <p class="small" style="margin-top:10px;">
-                ※ 공헌이익/영업이익(현재 vs 변경 후)을 비교합니다.
-              </p>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="content" style="margin-top:14px;">
-          <h3>다른 계산기도 함께 확인해 보세요</h3>
-          <div class="faq" style="display:grid; gap:10px;">
-            <a class="btn ghost" href="/business/labor-cost.html">알바/근로자 인건비 계산기</a>
-            <a class="btn ghost" href="/business/bep.html">손익분기점(BEP) 계산기</a>
+    <!-- ✅ main에는 container 클래스 제거 (중첩 방지) -->
+    <main>
+      <section class="card">
+        <div class="cardHead hero">
+          <div>
+            <h1 class="heroTitle">가격 변경(인상/인하) 손익 영향 계산기</h1>
+            <p class="sub heroSub">
+              가격을 변경했을 때 얼마나 남는지 빠르게 계산해요.
+              판매량이 얼마나 변할지(%)를 가정하면, 월 손익 변화와 손익분기 판매량을 함께 확인할 수 있어요.
+            </p>
           </div>
         </div>
-      </div>
-    </section>
-  </main>
 
-  <!-- ✅ 공통 푸터 주입 -->
-  <footer id="wvFooterMount"></footer>
+        <div class="cardBody">
+          <div class="cols2">
 
-  <!-- ✅ 공통 app.js (defer 권장) -->
-  <script src="/assets/app.js" defer></script>
+            <!-- 입력 카드 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>입력</h3>
+                  <p class="phSub">현재/변경 가격, 1개당 변동비, 월 판매량, 고정비를 넣어주세요</p>
+                </div>
+                <span class="pill">월 기준</span>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="pd_price_now">현재 판매가(1개, 원)</label>
+                  <input id="pd_price_now" inputmode="numeric" placeholder="예: 6,000" />
+                  <div class="small">VAT 포함/미포함은 운영 방식에 맞게 일관되게 입력하세요.</div>
+                </div>
+                <div>
+                  <label for="pd_price_new">변경 후 판매가(1개, 원)</label>
+                  <input id="pd_price_new" inputmode="numeric" placeholder="예: 6,500" />
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <div>
+                  <label for="pd_var_cost">변동비(1개당, 원)</label>
+                  <input id="pd_var_cost" inputmode="numeric" placeholder="예: 2,500" />
+                  <div class="small">원가/포장/수수료 등을 1개당 원으로 환산해 포함하면 더 정확해요.</div>
+                </div>
+                <div>
+                  <label for="pd_qty_now">현재 월 판매량(개)</label>
+                  <input id="pd_qty_now" inputmode="numeric" placeholder="예: 1,200" />
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <div>
+                  <label for="pd_qty_change_pct">가격 변경 시 판매량 변화(%)</label>
+                  <input id="pd_qty_change_pct" inputmode="decimal" placeholder="예: -8 (8% 감소)" />
+                  <div class="small">인상 시 보통 음수(-), 인하 시 양수(+)로 입력하면 돼요.</div>
+                </div>
+                <div>
+                  <label for="pd_fixed_cost">월 고정비(원)</label>
+                  <input id="pd_fixed_cost" inputmode="numeric" placeholder="예: 4,500,000" />
+                </div>
+              </div>
+
+              <div class="btnrow">
+                <button class="primary" id="pd_calc_btn" type="button">계산하기</button>
+                <button class="ghost" id="pd_reset_btn" type="button">초기화</button>
+              </div>
+
+              <div class="content" style="margin-top:14px;">
+                <h3>계산 구조(요약)</h3>
+                <ul>
+                  <li>단위 공헌이익 = <b>판매가 − 변동비</b></li>
+                  <li>월 공헌이익 = <b>단위 공헌이익 × 월 판매량</b></li>
+                  <li>영업이익(단순) = <b>월 공헌이익 − 고정비</b></li>
+                  <li>손익분기 판매량(변경 후) = <b>고정비 ÷ 변경 후 단위 공헌이익</b> (단위 공헌이익 &gt; 0일 때)</li>
+                </ul>
+                <p class="small">주의: 광고비/폐기/할인/배달비 등 추가 변동 요소는 미반영. 빠른 판단용 근사치예요.</p>
+              </div>
+            </div>
+
+            <!-- 결과 카드 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>결과</h3>
+                  <p class="phSub">월 손익 변화와 손익분기 판매량을 한 번에</p>
+                </div>
+                <span class="pill" id="pd_status_pill">대기</span>
+              </div>
+
+              <div class="kpi">
+                <div class="box">
+                  <p class="t">현재 월 공헌이익</p>
+                  <p class="v" id="pd_kpi_cm_now">-</p>
+                  <p class="h">단위CM × 현재 판매량</p>
+                </div>
+                <div class="box">
+                  <p class="t">변경 후 월 공헌이익</p>
+                  <p class="v" id="pd_kpi_cm_new">-</p>
+                  <p class="h">판매량 변화 가정 반영</p>
+                </div>
+
+                <div class="box">
+                  <p class="t">월 손익 변화(Δ)</p>
+                  <p class="v" id="pd_kpi_delta">-</p>
+                  <p class="h">변경 후 영업이익 − 현재 영업이익</p>
+                </div>
+                <div class="box">
+                  <p class="t">손익분기 판매량(변경 후)</p>
+                  <p class="v" id="pd_kpi_bep_qty">-</p>
+                  <p class="h">고정비 ÷ 변경 후 단위CM</p>
+                </div>
+              </div>
+
+              <div class="kpi" style="margin-top:10px;">
+                <div class="box">
+                  <p class="t">현재 영업이익(고정비 반영)</p>
+                  <p class="v" id="pd_kpi_op_now">-</p>
+                  <p class="h">현재 공헌이익 − 고정비</p>
+                </div>
+                <div class="box">
+                  <p class="t">변경 후 영업이익(가정 반영)</p>
+                  <p class="v" id="pd_kpi_op_new">-</p>
+                  <p class="h">변경 후 공헌이익 − 고정비</p>
+                </div>
+              </div>
+
+              <div class="content" style="margin-top:12px;">
+                <h3>코멘트</h3>
+                <p id="pd_comment" style="margin:0; color: var(--soft);">값을 입력한 뒤 계산해 주세요.</p>
+              </div>
+
+              <div class="content" style="margin-top:12px;">
+                <h3>차트</h3>
+                <div class="canvasBoxWide" style="height:280px;">
+                  <canvas id="pd_chart"></canvas>
+                </div>
+                <p class="small" style="margin-top:10px;">
+                  ※ 공헌이익/영업이익(현재 vs 변경 후)을 비교합니다.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="content" style="margin-top:14px;">
+            <h3>다른 계산기도 함께 확인해 보세요</h3>
+            <div class="faq" style="display:grid; gap:10px;">
+              <a class="btnGhostLink" href="/business/labor-cost.html">알바/근로자 인건비 계산기</a>
+              <a class="btnGhostLink" href="/business/bep.html">손익분기점(BEP) 계산기</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ✅ 공통 푸터 주입 -->
+    <footer id="wvFooterMount"></footer>
+  </div>
+
+  <!-- ✅ 공통 app.js: 한 번만 로드 -->
+  <script src="/assets/app.js?v=20260203" defer></script>
 
   <!-- ✅ price-decision 페이지 스크립트(단독 동작) -->
   <script>
@@ -204,7 +208,6 @@
     };
     const signedWon = (n) => (n >= 0 ? "+" : "−") + won(Math.abs(n));
 
-    // ✅ 입력 콤마 + 커서 유지(금액용)
     function formatCommaKeepCursor(inputEl) {
       const raw = inputEl.value;
       const selStart = inputEl.selectionStart ?? raw.length;
@@ -231,14 +234,16 @@
       const pill = $("pd_status_pill");
       pill.textContent = text;
       pill.classList.remove("ok","warn","no");
-      pill.classList.add(kind);
+      if (kind) pill.classList.add(kind);
     }
 
-    // ===== Chart =====
     let pdChart = null;
 
     function ensureChart() {
-      const ctx = $("pd_chart").getContext("2d");
+      const c = $("pd_chart");
+      if (!c || typeof Chart === "undefined") return;
+
+      const ctx = c.getContext("2d");
       if (pdChart) pdChart.destroy();
 
       pdChart = new Chart(ctx, {
@@ -267,13 +272,16 @@
           scales: {
             x: { ticks: { color: "rgba(255,255,255,.65)" }, grid: { color: "rgba(255,255,255,.06)" } },
             y: {
-              ticks: { color: "rgba(255,255,255,.65)", callback: (v) => {
-                const n = Number(v);
-                if (!Number.isFinite(n)) return String(v);
-                if (n >= 100000000) return (n / 100000000).toFixed(1) + "억";
-                if (n >= 10000) return Math.round(n / 10000).toLocaleString("ko-KR") + "만";
-                return n.toLocaleString("ko-KR");
-              }},
+              ticks: {
+                color: "rgba(255,255,255,.65)",
+                callback: (v) => {
+                  const n = Number(v);
+                  if (!Number.isFinite(n)) return String(v);
+                  if (n >= 100000000) return (n / 100000000).toFixed(1) + "억";
+                  if (n >= 10000) return Math.round(n / 10000).toLocaleString("ko-KR") + "만";
+                  return n.toLocaleString("ko-KR");
+                }
+              },
               grid: { color: "rgba(255,255,255,.06)" }
             }
           }
@@ -283,6 +291,7 @@
 
     function updateChart(cmNow, cmNew, opNow, opNew) {
       if (!pdChart) ensureChart();
+      if (!pdChart) return;
       pdChart.data.datasets[0].data = [cmNow, cmNew];
       pdChart.data.datasets[1].data = [opNow, opNew];
       pdChart.update();
@@ -296,32 +305,25 @@
       const qtyChPct = clamp(num($("pd_qty_change_pct").value, 0), -99.9, 9999);
       const fixed    = Math.max(num($("pd_fixed_cost").value, 0), 0);
 
-      // 최소 입력 체크
       if (!(priceNow > 0) || !(priceNew > 0) || !(qtyNow > 0)) {
         setStatus("입력 필요", "warn");
         $("pd_comment").textContent = "현재/변경 판매가, 현재 월 판매량은 최소 입력이 필요해요.";
         return;
       }
 
-      // 단위 공헌이익
       const unitCmNow = priceNow - varCost;
       const unitCmNew = priceNew - varCost;
 
-      // 변경 후 판매량(가정)
       const qtyNew = Math.max(qtyNow * (1 + qtyChPct / 100), 0);
 
-      // 월 공헌이익
       const cmNow = unitCmNow * qtyNow;
       const cmNew = unitCmNew * qtyNew;
 
-      // 영업이익(단순)
       const opNow = cmNow - fixed;
       const opNew = cmNew - fixed;
 
-      // 손익분기 판매량(변경 후)
       const bepQty = (unitCmNew > 0) ? (fixed / unitCmNew) : Infinity;
 
-      // 출력
       $("pd_kpi_cm_now").textContent = won(cmNow);
       $("pd_kpi_cm_new").textContent = won(cmNew);
       $("pd_kpi_op_now").textContent = won(opNow);
@@ -330,25 +332,22 @@
       const delta = opNew - opNow;
       $("pd_kpi_delta").textContent = signedWon(delta);
 
-      if (Number.isFinite(bepQty)) {
-        $("pd_kpi_bep_qty").textContent = Math.ceil(bepQty).toLocaleString("ko-KR") + "개";
-      } else {
-        $("pd_kpi_bep_qty").textContent = "성립 불가";
-      }
+      $("pd_kpi_bep_qty").textContent =
+        Number.isFinite(bepQty) ? (Math.ceil(bepQty).toLocaleString("ko-KR") + "개") : "성립 불가";
 
-      // 코멘트
       const comment = [];
       comment.push(`변경 후 판매량(가정): ${Math.round(qtyNew).toLocaleString("ko-KR")}개 (현재 ${qtyNow.toLocaleString("ko-KR")}개, ${qtyChPct}% 반영)`);
       comment.push(`단위 공헌이익: 현재 ${won(unitCmNow)} → 변경 후 ${won(unitCmNew)} (판매가−변동비)`);
+
       if (unitCmNew <= 0) {
-        comment.push("⚠️ 변경 후 단위 공헌이익이 0 이하라, 판매를 많이 해도 고정비를 못 넘을 수 있어요(손익분기 성립 불가).");
+        comment.push("⚠️ 변경 후 단위 공헌이익이 0 이하라, 손익분기가 성립하지 않을 수 있어요.");
         setStatus("주의", "no");
       } else {
         comment.push(`손익분기(변경 후): 약 ${Math.ceil(bepQty).toLocaleString("ko-KR")}개 이상 판매 필요(고정비 ${won(fixed)} 기준)`);
         setStatus("정상", "ok");
       }
-      $("pd_comment").textContent = comment.join(" · ");
 
+      $("pd_comment").textContent = comment.join(" · ");
       updateChart(cmNow, cmNew, opNow, opNew);
     }
 
@@ -361,31 +360,25 @@
       $("pd_fixed_cost").value = "4,500,000";
     }
 
-    // 이벤트
     $("pd_calc_btn").addEventListener("click", calc);
     $("pd_reset_btn").addEventListener("click", () => { preset(); calc(); });
 
-    // 콤마 적용(금액 입력)
     ["pd_price_now","pd_price_new","pd_var_cost","pd_qty_now","pd_fixed_cost"].forEach(id => {
       $(id).addEventListener("input", (e) => {
-        // qty_now는 개수지만 콤마 편의로 동일 처리
         formatCommaKeepCursor(e.target);
         calc();
       });
       $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
 
-    // 퍼센트는 소수/부호 허용 → 콤마 처리 X
     $("pd_qty_change_pct").addEventListener("input", calc);
     $("pd_qty_change_pct").addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
 
-    // init
     preset();
     ensureChart();
     calc();
   </script>
 
-  <!-- ✅ 페이지 전용 스타일(기존 styles.css 보완) -->
   <style>
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
@@ -437,7 +430,7 @@
       color: rgba(255,255,255,.88);
     }
 
-    /* chart container (기존 bep 페이지 톤과 일치) */
+    /* chart container */
     .canvasBoxWide{
       width:100%;
       border-radius: 16px;
@@ -446,6 +439,23 @@
       overflow:hidden;
       padding: 10px;
     }
+
+    /* ✅ a태그를 버튼처럼 */
+    .btnGhostLink{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height:40px;
+      padding: 0 14px;
+      border-radius:14px;
+      font-weight:800;
+      letter-spacing:-.2px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      color: rgba(255,255,255,.90);
+      text-decoration:none;
+    }
+    .btnGhostLink:hover{ opacity:.92; }
   </style>
 </body>
 </html>

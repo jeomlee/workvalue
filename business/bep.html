@@ -24,299 +24,303 @@
 </head>
 
 <body>
-  <!-- ✅ 공통 헤더 주입 -->
-  <header id="wvHeaderMount"></header>
+  <!-- ✅ container는 페이지당 1번만 -->
+  <div class="container">
+    <!-- ✅ 공통 헤더 주입 -->
+    <header id="wvHeaderMount"></header>
 
-  <main class="container">
-    <section class="card">
-      <div class="cardHead hero">
-        <div>
-          <h1 class="heroTitle">자영업 손익분기점(BEP) 계산기</h1>
-          <p class="sub heroSub">
-            고정비·변동비율·세율을 기준으로 손익분기점 매출을 계산하고, 매출/총비용/이익 구조를 그래프로 한눈에 확인합니다.
-          </p>
-        </div>
-      </div>
-
-      <div class="cardBody">
-
-        <!-- ✅ 상단: 입력(좌) + 결과(우) -->
-        <div class="cols2">
-
-          <!-- 입력 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>입력</h3>
-                <p class="phSub">월 기준으로 빠르게 BEP를 계산해요</p>
-              </div>
-              <span class="pill">월 기준</span>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="fixedCost">월 고정비(원)</label>
-                <input id="fixedCost" inputmode="numeric" placeholder="예: 3,000,000" />
-                <div class="small">임대료/고정 인건비/보험료 등 “매출과 무관” 비용</div>
-              </div>
-              <div>
-                <label for="openDays">월 영업일수(일)</label>
-                <input id="openDays" inputmode="numeric" placeholder="예: 26" />
-                <div class="small">BEP(월) → BEP(일) 환산</div>
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <div>
-                <label for="variableRate">변동비율(매출 대비, %)</label>
-                <input id="variableRate" inputmode="decimal" placeholder="예: 45" />
-                <div class="small">원가/수수료/카드/배달앱 등 “매출에 비례” 비용</div>
-              </div>
-              <div>
-                <label for="taxRate">세율/공제율(매출 대비, %)</label>
-                <input id="taxRate" inputmode="decimal" placeholder="예: 3.3" />
-                <div class="small">단순 모델(실제 세금/정산은 조건마다 다름)</div>
-              </div>
-            </div>
-
-            <div class="row" style="margin-top:12px;">
-              <div>
-                <label for="targetProfit">목표 순이익(월, 원) (선택)</label>
-                <input id="targetProfit" inputmode="numeric" placeholder="예: 2,000,000" />
-                <div class="small">입력 시 “목표 매출(월/일)” 계산 + 차트에 TARGET 표시</div>
-              </div>
-              <div>
-                <label for="ownerHours">사장님 월 투입 시간(시간) (선택)</label>
-                <input id="ownerHours" inputmode="numeric" placeholder="예: 200" />
-                <div class="small">입력 시 “사장 시급(목표 기준)” 계산</div>
-              </div>
-            </div>
-
-            <div class="btnrow">
-              <button class="primary" id="btnCalc" type="button">계산하기</button>
-              <button class="ghost" id="btnReset" type="button">초기화</button>
-            </div>
-
-            <div class="content" style="margin-top:14px;">
-              <h3>공식</h3>
-              <ul>
-                <li>공헌이익률 = <b>1 − 변동비율 − 세율</b></li>
-                <li>BEP(월 매출) = <b>고정비 ÷ 공헌이익률</b></li>
-                <li>목표 매출(월) = <b>(고정비 + 목표순이익) ÷ 공헌이익률</b></li>
-              </ul>
-              <p class="small">주의: 공헌이익률이 0 이하이면 BEP가 성립하지 않습니다(변동비+세율이 너무 큼).</p>
-            </div>
+    <!-- ✅ main에는 container 클래스를 붙이지 않음 -->
+    <main>
+      <section class="card">
+        <div class="cardHead hero">
+          <div>
+            <h1 class="heroTitle">자영업 손익분기점(BEP) 계산기</h1>
+            <p class="sub heroSub">
+              고정비·변동비율·세율을 기준으로 손익분기점 매출을 계산하고, 매출/총비용/이익 구조를 그래프로 한눈에 확인합니다.
+            </p>
           </div>
-
-          <!-- 결과 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>결과</h3>
-                <p class="phSub">핵심 값만 먼저 보여줘요</p>
-              </div>
-              <div class="badgeRow">
-                <span class="badgeSoft">단순 모델</span>
-                <span class="badgeStatus" id="cmBadge">공헌이익률: -</span>
-              </div>
-            </div>
-
-            <div class="kpi">
-              <div class="box">
-                <p class="t">BEP 월 매출</p>
-                <p class="v" id="outBepMonthly">-</p>
-                <p class="h" id="outBepMonthlyHint">공헌이익률 기준 손익분기점</p>
-              </div>
-              <div class="box">
-                <p class="t">BEP 일 매출</p>
-                <p class="v" id="outBepDaily">-</p>
-                <p class="h" id="outBepDailyHint">월 영업일수로 나눈 값</p>
-              </div>
-
-              <div class="box">
-                <p class="t">공헌이익률</p>
-                <p class="v" id="outCmRatio">-</p>
-                <p class="h" id="outCmHint">1 − 변동비율 − 세율</p>
-              </div>
-              <div class="box">
-                <p class="t">목표 매출(월)</p>
-                <p class="v" id="outTargetMonthly">-</p>
-                <p class="h" id="outTargetHint">목표 순이익 입력 시</p>
-              </div>
-            </div>
-
-            <div class="kpi" style="margin-top:10px;">
-              <div class="box">
-                <p class="t">목표 매출(일)</p>
-                <p class="v" id="outTargetDaily">-</p>
-                <p class="h" id="outTargetDailyHint">목표 매출(월)/영업일수</p>
-              </div>
-              <div class="box">
-                <p class="t">사장 시급(목표 기준)</p>
-                <p class="v" id="outOwnerHourly">-</p>
-                <p class="h" id="outOwnerHourlyHint">목표순이익 / 투입시간</p>
-              </div>
-            </div>
-
-            <div class="content" style="margin-top:12px;">
-              <h3>요약</h3>
-              <p id="summaryLine" style="margin:0; color: var(--soft);">-</p>
-            </div>
-          </div>
-
         </div>
 
-        <!-- ✅ 중단: 차트(전폭) -->
-        <div class="chartWrapWide">
-          <div class="chartHead">
-            <div>
-              <h3 style="margin:0;">BEP 차트</h3>
-              <p class="small" style="margin:6px 0 0;">
-                매출(파랑) / 총비용(보라) / 이익(초록 면적) / 손실(빨강 면적) / BEP(민트 점선) / 목표(TARGET, 주황 점선) / 커스텀(흰 점)
+        <div class="cardBody">
+
+          <!-- ✅ 상단: 입력(좌) + 결과(우) -->
+          <div class="cols2">
+
+            <!-- 입력 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>입력</h3>
+                  <p class="phSub">월 기준으로 빠르게 BEP를 계산해요</p>
+                </div>
+                <span class="pill">월 기준</span>
+              </div>
+
+              <div class="row">
+                <div>
+                  <label for="fixedCost">월 고정비(원)</label>
+                  <input id="fixedCost" inputmode="numeric" placeholder="예: 3,000,000" />
+                  <div class="small">임대료/고정 인건비/보험료 등 “매출과 무관” 비용</div>
+                </div>
+                <div>
+                  <label for="openDays">월 영업일수(일)</label>
+                  <input id="openDays" inputmode="numeric" placeholder="예: 26" />
+                  <div class="small">BEP(월) → BEP(일) 환산</div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <div>
+                  <label for="variableRate">변동비율(매출 대비, %)</label>
+                  <input id="variableRate" inputmode="decimal" placeholder="예: 45" />
+                  <div class="small">원가/수수료/카드/배달앱 등 “매출에 비례” 비용</div>
+                </div>
+                <div>
+                  <label for="taxRate">세율/공제율(매출 대비, %)</label>
+                  <input id="taxRate" inputmode="decimal" placeholder="예: 3.3" />
+                  <div class="small">단순 모델(실제 세금/정산은 조건마다 다름)</div>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:12px;">
+                <div>
+                  <label for="targetProfit">목표 순이익(월, 원) (선택)</label>
+                  <input id="targetProfit" inputmode="numeric" placeholder="예: 2,000,000" />
+                  <div class="small">입력 시 “목표 매출(월/일)” 계산 + 차트에 TARGET 표시</div>
+                </div>
+                <div>
+                  <label for="ownerHours">사장님 월 투입 시간(시간) (선택)</label>
+                  <input id="ownerHours" inputmode="numeric" placeholder="예: 200" />
+                  <div class="small">입력 시 “사장 시급(목표 기준)” 계산</div>
+                </div>
+              </div>
+
+              <div class="btnrow">
+                <button class="primary" id="btnCalc" type="button">계산하기</button>
+                <button class="ghost" id="btnReset" type="button">초기화</button>
+              </div>
+
+              <div class="content" style="margin-top:14px;">
+                <h3>공식</h3>
+                <ul>
+                  <li>공헌이익률 = <b>1 − 변동비율 − 세율</b></li>
+                  <li>BEP(월 매출) = <b>고정비 ÷ 공헌이익률</b></li>
+                  <li>목표 매출(월) = <b>(고정비 + 목표순이익) ÷ 공헌이익률</b></li>
+                </ul>
+                <p class="small">주의: 공헌이익률이 0 이하이면 BEP가 성립하지 않습니다(변동비+세율이 너무 큼).</p>
+              </div>
+            </div>
+
+            <!-- 결과 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>결과</h3>
+                  <p class="phSub">핵심 값만 먼저 보여줘요</p>
+                </div>
+                <div class="badgeRow">
+                  <span class="badgeSoft">단순 모델</span>
+                  <span class="badgeStatus" id="cmBadge">공헌이익률: -</span>
+                </div>
+              </div>
+
+              <div class="kpi">
+                <div class="box">
+                  <p class="t">BEP 월 매출</p>
+                  <p class="v" id="outBepMonthly">-</p>
+                  <p class="h" id="outBepMonthlyHint">공헌이익률 기준 손익분기점</p>
+                </div>
+                <div class="box">
+                  <p class="t">BEP 일 매출</p>
+                  <p class="v" id="outBepDaily">-</p>
+                  <p class="h" id="outBepDailyHint">월 영업일수로 나눈 값</p>
+                </div>
+
+                <div class="box">
+                  <p class="t">공헌이익률</p>
+                  <p class="v" id="outCmRatio">-</p>
+                  <p class="h" id="outCmHint">1 − 변동비율 − 세율</p>
+                </div>
+                <div class="box">
+                  <p class="t">목표 매출(월)</p>
+                  <p class="v" id="outTargetMonthly">-</p>
+                  <p class="h" id="outTargetHint">목표 순이익 입력 시</p>
+                </div>
+              </div>
+
+              <div class="kpi" style="margin-top:10px;">
+                <div class="box">
+                  <p class="t">목표 매출(일)</p>
+                  <p class="v" id="outTargetDaily">-</p>
+                  <p class="h" id="outTargetDailyHint">목표 매출(월)/영업일수</p>
+                </div>
+                <div class="box">
+                  <p class="t">사장 시급(목표 기준)</p>
+                  <p class="v" id="outOwnerHourly">-</p>
+                  <p class="h" id="outOwnerHourlyHint">목표순이익 / 투입시간</p>
+                </div>
+              </div>
+
+              <div class="content" style="margin-top:12px;">
+                <h3>요약</h3>
+                <p id="summaryLine" style="margin:0; color: var(--soft);">-</p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- ✅ 중단: 차트(전폭) -->
+          <div class="chartWrapWide">
+            <div class="chartHead">
+              <div>
+                <h3 style="margin:0;">BEP 차트</h3>
+                <p class="small" style="margin:6px 0 0;">
+                  매출(파랑) / 총비용(보라) / 이익(초록 면적) / 손실(빨강 면적) / BEP(민트 점선) / 목표(TARGET, 주황 점선) / 커스텀(흰 점)
+                </p>
+              </div>
+              <div class="legendPills">
+                <span class="lp"><i class="dotRev"></i>매출</span>
+                <span class="lp"><i class="dotCost"></i>총비용</span>
+                <span class="lp"><i class="dotProfit"></i>이익</span>
+                <span class="lp"><i class="dotLoss"></i>손실</span>
+                <span class="lp"><i class="dotBep"></i>BEP</span>
+                <span class="lp"><i class="dotTarget"></i>TARGET</span>
+                <span class="lp"><i class="dotCustom"></i>커스텀</span>
+              </div>
+            </div>
+
+            <div class="canvasBoxWide">
+              <canvas id="bepChart"></canvas>
+            </div>
+
+            <p class="small" id="chartNote" style="margin-top:10px;">
+              ※ 차트는 월 매출 0원 ~ 목표 매출(또는 BEP×1.6) 구간으로 자동 스케일됩니다.
+            </p>
+          </div>
+
+          <!-- ✅ 하단: 세부내역 + 가정값 (전폭 2열) -->
+          <div class="cols2" style="margin-top:14px;">
+
+            <!-- 세부 내역 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>세부 내역(월)</h3>
+                  <p class="phSub">기준을 바꿔서 비용 구조를 확인해요</p>
+                </div>
+                <span class="pill">기준 선택</span>
+              </div>
+
+              <div class="segWrap">
+                <button class="seg active" id="segBep" type="button">BEP 기준</button>
+                <button class="seg" id="segTarget" type="button">목표 기준</button>
+                <button class="seg" id="segCustom" type="button">직접 입력</button>
+              </div>
+
+              <div class="customBox" id="customBox" style="display:none;">
+                <div class="row" style="margin-top:10px;">
+                  <div>
+                    <label for="customRevenue">월 매출(원)</label>
+                    <input id="customRevenue" inputmode="numeric" placeholder="예: 10,000,000" />
+                    <div class="small">입력값 기준으로 변동비/세금/총비용/이익을 계산합니다. (차트에 커스텀 포인트 표시)</div>
+                  </div>
+                  <div>
+                    <label for="customRevenueRange">슬라이더(현재 범위)</label>
+                    <input id="customRevenueRange" type="range" min="0" max="100" step="1" />
+                    <div class="small" id="rangeHint">0원 ~ -</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="tableWrap" style="margin-top:12px;">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:32%;">항목</th>
+                      <th style="width:28%;">값</th>
+                      <th style="width:40%;">설명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detailBody">
+                    <tr><td>공헌이익률</td><td>-</td><td>1 − 변동비율 − 세율</td></tr>
+                    <tr><td>변동비(월)</td><td>-</td><td>매출×변동비율</td></tr>
+                    <tr><td>세금/공제(월)</td><td>-</td><td>매출×세율</td></tr>
+                    <tr><td>총비용(월)</td><td>-</td><td>고정비 + 변동비 + 세금/공제</td></tr>
+                    <tr><td><b>이익(월)</b></td><td><b>-</b></td><td>매출 − 총비용</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="small" id="detailNote" style="margin-top:10px;">
+                ※ “BEP 기준”은 BEP 매출에서의 구조를 보여줍니다.
               </p>
             </div>
-            <div class="legendPills">
-              <span class="lp"><i class="dotRev"></i>매출</span>
-              <span class="lp"><i class="dotCost"></i>총비용</span>
-              <span class="lp"><i class="dotProfit"></i>이익</span>
-              <span class="lp"><i class="dotLoss"></i>손실</span>
-              <span class="lp"><i class="dotBep"></i>BEP</span>
-              <span class="lp"><i class="dotTarget"></i>TARGET</span>
-              <span class="lp"><i class="dotCustom"></i>커스텀</span>
-            </div>
-          </div>
 
-          <div class="canvasBoxWide">
-            <canvas id="bepChart"></canvas>
-          </div>
-
-          <p class="small" id="chartNote" style="margin-top:10px;">
-            ※ 차트는 월 매출 0원 ~ 목표 매출(또는 BEP×1.6) 구간으로 자동 스케일됩니다.
-          </p>
-        </div>
-
-        <!-- ✅ 하단: 세부내역 + 가정값 (전폭 2열) -->
-        <div class="cols2" style="margin-top:14px;">
-
-          <!-- 세부 내역 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>세부 내역(월)</h3>
-                <p class="phSub">기준을 바꿔서 비용 구조를 확인해요</p>
-              </div>
-              <span class="pill">기준 선택</span>
-            </div>
-
-            <div class="segWrap">
-              <button class="seg active" id="segBep" type="button">BEP 기준</button>
-              <button class="seg" id="segTarget" type="button">목표 기준</button>
-              <button class="seg" id="segCustom" type="button">직접 입력</button>
-            </div>
-
-            <div class="customBox" id="customBox" style="display:none;">
-              <div class="row" style="margin-top:10px;">
-                <div>
-                  <label for="customRevenue">월 매출(원)</label>
-                  <input id="customRevenue" inputmode="numeric" placeholder="예: 10,000,000" />
-                  <div class="small">입력값 기준으로 변동비/세금/총비용/이익을 계산합니다. (차트에 커스텀 포인트 표시)</div>
+            <!-- 가정값/파라미터 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <div class="phLeft">
+                  <h3>가정값/파라미터</h3>
+                  <p class="phSub">계산에 어떤 값이 쓰였는지 투명하게 보여줘요</p>
                 </div>
-                <div>
-                  <label for="customRevenueRange">슬라이더(현재 범위)</label>
-                  <input id="customRevenueRange" type="range" min="0" max="100" step="1" />
-                  <div class="small" id="rangeHint">0원 ~ -</div>
-                </div>
+                <span class="pill">근사 모델</span>
               </div>
+
+              <div class="tableWrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th style="width:32%;">항목</th>
+                      <th style="width:28%;">값</th>
+                      <th style="width:40%;">설명</th>
+                    </tr>
+                  </thead>
+                  <tbody id="assumptionsBody">
+                    <tr><td>고정비(월)</td><td>-</td><td>임대료/고정 인건비/보험료 등</td></tr>
+                    <tr><td>변동비율</td><td>-</td><td>매출에 비례하는 비용 비율</td></tr>
+                    <tr><td>세율/공제율</td><td>-</td><td>단순 모델의 매출 대비 공제</td></tr>
+                    <tr><td>공헌이익률</td><td>-</td><td>1 − 변동비율 − 세율</td></tr>
+                    <tr><td>영업일수</td><td>-</td><td>월→일 환산</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <p class="small" style="margin-top:10px;">
+                실제 세금/부가세/정산/원가 구조는 더 복잡합니다. 이 도구는 “빠른 판단”을 위한 근사치입니다.
+              </p>
             </div>
 
-            <div class="tableWrap" style="margin-top:12px;">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:32%;">항목</th>
-                    <th style="width:28%;">값</th>
-                    <th style="width:40%;">설명</th>
-                  </tr>
-                </thead>
-                <tbody id="detailBody">
-                  <tr><td>공헌이익률</td><td>-</td><td>1 − 변동비율 − 세율</td></tr>
-                  <tr><td>변동비(월)</td><td>-</td><td>매출×변동비율</td></tr>
-                  <tr><td>세금/공제(월)</td><td>-</td><td>매출×세율</td></tr>
-                  <tr><td>총비용(월)</td><td>-</td><td>고정비 + 변동비 + 세금/공제</td></tr>
-                  <tr><td><b>이익(월)</b></td><td><b>-</b></td><td>매출 − 총비용</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p class="small" id="detailNote" style="margin-top:10px;">
-              ※ “BEP 기준”은 BEP 매출에서의 구조를 보여줍니다.
-            </p>
           </div>
 
-          <!-- 가정값/파라미터 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <div class="phLeft">
-                <h3>가정값/파라미터</h3>
-                <p class="phSub">계산에 어떤 값이 쓰였는지 투명하게 보여줘요</p>
-              </div>
-              <span class="pill">근사 모델</span>
+          <!-- FAQ -->
+          <div class="content" style="margin-top:14px;">
+            <h3>자주 묻는 질문</h3>
+            <div class="faq">
+              <details>
+                <summary>BEP는 어떤 의미인가요?</summary>
+                <p>손익분기점(BEP)은 고정비를 모두 커버하고, 순이익이 0에 가까워지는 ‘최소 매출 수준’을 의미합니다.</p>
+              </details>
+              <details>
+                <summary>변동비율은 어떻게 잡아야 하나요?</summary>
+                <p>재료비·수수료·포장/배달비 등 매출이 늘면 함께 늘어나는 비용들을 월 매출로 나눠 “%”로 잡아보세요.</p>
+              </details>
+              <details>
+                <summary>세율을 매출 대비로 잡는 게 맞나요?</summary>
+                <p>정확한 세금 구조는 업종·과세 방식에 따라 다릅니다. 여기서는 매출 대비 공제율을 단순 입력하는 모델입니다.</p>
+              </details>
             </div>
-
-            <div class="tableWrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th style="width:32%;">항목</th>
-                    <th style="width:28%;">값</th>
-                    <th style="width:40%;">설명</th>
-                  </tr>
-                </thead>
-                <tbody id="assumptionsBody">
-                  <tr><td>고정비(월)</td><td>-</td><td>임대료/고정 인건비/보험료 등</td></tr>
-                  <tr><td>변동비율</td><td>-</td><td>매출에 비례하는 비용 비율</td></tr>
-                  <tr><td>세율/공제율</td><td>-</td><td>단순 모델의 매출 대비 공제</td></tr>
-                  <tr><td>공헌이익률</td><td>-</td><td>1 − 변동비율 − 세율</td></tr>
-                  <tr><td>영업일수</td><td>-</td><td>월→일 환산</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p class="small" style="margin-top:10px;">
-              실제 세금/부가세/정산/원가 구조는 더 복잡합니다. 이 도구는 “빠른 판단”을 위한 근사치입니다.
-            </p>
           </div>
 
         </div>
+      </section>
+    </main>
 
-        <!-- FAQ -->
-        <div class="content" style="margin-top:14px;">
-          <h3>자주 묻는 질문</h3>
-          <div class="faq">
-            <details>
-              <summary>BEP는 어떤 의미인가요?</summary>
-              <p>손익분기점(BEP)은 고정비를 모두 커버하고, 순이익이 0에 가까워지는 ‘최소 매출 수준’을 의미합니다.</p>
-            </details>
-            <details>
-              <summary>변동비율은 어떻게 잡아야 하나요?</summary>
-              <p>재료비·수수료·포장/배달비 등 매출이 늘면 함께 늘어나는 비용들을 월 매출로 나눠 “%”로 잡아보세요.</p>
-            </details>
-            <details>
-              <summary>세율을 매출 대비로 잡는 게 맞나요?</summary>
-              <p>정확한 세금 구조는 업종·과세 방식에 따라 다릅니다. 여기서는 매출 대비 공제율을 단순 입력하는 모델입니다.</p>
-            </details>
-          </div>
-        </div>
+    <!-- ✅ 공통 푸터 주입 -->
+    <footer id="wvFooterMount"></footer>
+  </div>
 
-      </div>
-    </section>
-  </main>
-
-  <!-- ✅ 공통 푸터 주입 -->
-  <footer id="wvFooterMount"></footer>
-
-  <!-- ✅ 공통 app.js (일반 스크립트) -->
-  <script src="/assets/app.js" defer></script>
+  <!-- ✅ 공통 app.js (defer 유지) -->
+  <script src="/assets/app.js?v=20260203" defer></script>
 
   <!-- ✅ BEP 페이지 전용 스크립트 -->
   <script>
@@ -335,7 +339,6 @@
     };
     const pct = (r) => (Math.round(r * 10000) / 100).toLocaleString("ko-KR") + "%";
 
-    // 입력(원) 자동 콤마 + 커서 유지
     function formatCommaKeepCursor(inputEl) {
       const raw = inputEl.value;
       const selStart = inputEl.selectionStart ?? raw.length;
@@ -358,25 +361,19 @@
       inputEl.setSelectionRange(pos, pos);
     }
 
-    // ===== state =====
     let state = {
       fixedCost: 0,
       openDays: 26,
       rVar: 0,
       rTax: 0,
       cmRatio: 0,
-
       targetProfit: 0,
       ownerHours: 0,
-
       bepMonthly: 0,
       bepDaily: 0,
-
       targetMonthly: 0,
       targetDaily: 0,
-
       chartMaxX: 0,
-
       detailMode: "bep",
       customRevenue: 0
     };
@@ -391,7 +388,6 @@
       $("customRevenue").value = "";
     }
 
-    // ===== Chart =====
     let chart = null;
 
     function axisTick(v) {
@@ -804,7 +800,6 @@
       updateChart();
     }
 
-    // Events
     $("segBep").addEventListener("click", () => setSegment("bep"));
     $("segTarget").addEventListener("click", () => setSegment("target"));
     $("segCustom").addEventListener("click", () => setSegment("custom"));
@@ -838,13 +833,11 @@
       $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
 
-    // init
     preset();
     setSegment("bep");
     calc();
   </script>
 
-  <!-- ✅ UI 정돈: 페이지 전용 스타일 -->
   <style>
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
@@ -856,8 +849,7 @@
     .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
     .heroSub{ max-width: 72ch; }
 
-    /* ✅ 헤더 깨짐 방지: 범위 축소 */
-    .site-header{ align-items:flex-start; }
+    /* 헤더 줄바꿈 안정화 */
     nav[aria-label="이동"] a{ white-space: nowrap; }
 
     .cols2{
@@ -877,12 +869,7 @@
     }
     .phLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
     .phLeft h3{ margin:0; font-size: var(--fs-h3); letter-spacing:-.2px; }
-    .phSub{
-      margin:0;
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height:1.45;
-    }
+    .phSub{ margin:0; font-size: 12.5px; color: var(--muted); line-height:1.45; }
 
     .badgeRow{
       display:flex;

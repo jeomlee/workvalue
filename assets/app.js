@@ -719,3 +719,98 @@ function buildComment(res, input) {
     bind();
   };
 })();
+
+
+/* ============================================================================
+  WorkValue 공통 레이아웃(헤더/푸터) 주입
+  - 모든 페이지에서 <header id="wvHeaderMount"></header> 만 두면 공통 네비 생성
+  - 현재 경로 기준 active 자동 처리
+============================================================================ */
+(function () {
+  function wvPath() {
+    try {
+      return (location.pathname || "/").replace(/\/+$/, "") || "/";
+    } catch {
+      return "/";
+    }
+  }
+
+  function isActive(href) {
+    const p = wvPath();
+    const target = (href || "/").replace(/\/+$/, "") || "/";
+    if (target === "/") return p === "/";
+    return p === target;
+  }
+
+  function navLink(href, text) {
+    const active = isActive(href) ? "active" : "";
+    return `<a class="${active}" href="${href}">${text}</a>`;
+  }
+
+  function headerHTML() {
+    return `
+<header class="site-header" id="wvHeader">
+  <div class="container">
+    <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
+      <div class="dot"></div>
+      <div class="t">
+        <strong>WorkValue</strong>
+        <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
+      </div>
+    </a>
+
+    <nav class="nav" aria-label="이동">
+      ${navLink("/", "홈")}
+      ${navLink("/business/bep.html", "자영업 BEP")}
+      ${navLink("/business/labor-cost.html", "인건비 계산")}
+      ${navLink("/business/price-decision.html", "가격 결정")}
+      ${navLink("/employee/hourly.html", "단순 급여 추정")}
+      ${navLink("/employee/salary-net.html", "월급 실수령(추정)")}
+    </nav>
+  </div>
+</header>`;
+  }
+
+  function footerHTML() {
+    return `
+<footer class="site-footer" id="wvFooter">
+  <div class="container">
+    <a href="/contact">문의</a>
+    <span class="dot">·</span>
+    <a href="/terms">이용약관</a>
+    <span class="dot">·</span>
+    <a href="/privacy">개인정보처리방침</a>
+  </div>
+</footer>`;
+  }
+
+  function mount(targetId, html, position = "replace") {
+    const el = document.getElementById(targetId);
+    if (!el) return false;
+
+    if (position === "replace") el.outerHTML = html;
+    else el.innerHTML = html;
+
+    return true;
+  }
+
+  // 외부에서 호출할 엔트리
+  window.wvMountLayout = function () {
+    // 헤더 주입 (권장: wvHeaderMount 사용)
+    // 1) 최신 방식: <header id="wvHeaderMount"></header>
+    const okHeader = mount("wvHeaderMount", headerHTML(), "replace");
+
+    // 2) 예전 fallback: 혹시 <header id="wvHeader">...</header> 가 남아있으면 메뉴만 동기화
+    if (!okHeader) {
+      const legacy = document.getElementById("wvHeader");
+      if (legacy) legacy.outerHTML = headerHTML();
+    }
+
+    // 푸터 주입 (권장: wvFooterMount 사용)
+    const okFooter = mount("wvFooterMount", footerHTML(), "replace");
+    if (!okFooter) {
+      const legacyF = document.getElementById("wvFooter");
+      if (legacyF) legacyF.outerHTML = footerHTML();
+    }
+  };
+})();

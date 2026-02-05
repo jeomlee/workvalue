@@ -24,10 +24,10 @@
 </head>
 
 <body>
-  <div class="container">
-
+  <!-- ✅ 공통 헤더 주입 -->
   <header id="wvHeaderMount"></header>
 
+  <main class="container">
     <section class="card">
       <div class="cardHead hero">
         <div>
@@ -310,18 +310,16 @@
 
       </div>
     </section>
+  </main>
 
+  <!-- ✅ 공통 푸터 주입 -->
   <footer id="wvFooterMount"></footer>
 
-  </div>
+  <!-- ✅ 공통 app.js (일반 스크립트) -->
+  <script src="/assets/app.js" defer></script>
 
-  <script type="module">
-    // 공통 init(있으면 실행)
-    try {
-      const mod = await import("/assets/app.js?v=20260203");
-      if (mod?.initWorkValue) mod.initWorkValue();
-    } catch (_) {}
-
+  <!-- ✅ BEP 페이지 전용 스크립트 -->
+  <script>
     const $ = (id) => document.getElementById(id);
 
     const num = (v, fallback = 0) => {
@@ -418,7 +416,6 @@
       const cost = [];
       const profitFill = [];
       const lossFill = [];
-      const profitLine = []; // optional (not used, but helpful if needed)
 
       for (let i = 0; i <= points; i++) {
         const x = (maxX * i) / points;
@@ -427,9 +424,6 @@
 
         rev.push({ x, y: yRev });
         cost.push({ x, y: yCost });
-
-        const p = yRev - yCost;
-        profitLine.push({ x, y: p });
 
         if (yRev >= yCost) {
           profitFill.push({ x, y: yRev });
@@ -442,7 +436,6 @@
       return { rev, cost, profitFill, lossFill };
     }
 
-    // 수직 라인( Bep / Target ) + 커스텀 포인트 라벨
     const markerPlugin = {
       id: "markerPlugin",
       afterDatasetsDraw(chart, args, opts) {
@@ -475,11 +468,9 @@
           ctx.restore();
         }
 
-        // BEP(민트) / TARGET(주황)
         drawVLine(bepX, "rgba(59,231,176,.85)", "BEP");
         drawVLine(targetX, "rgba(255,180,80,.85)", "TARGET");
 
-        // 커스텀 포인트(흰점) 라벨
         if (customX >= 0) {
           const x = scales.x.getPixelForValue(customX);
           if (x >= chartArea.left && x <= chartArea.right) {
@@ -506,56 +497,11 @@
         type: "scatter",
         data: {
           datasets: [
-            // 손실 면적
-            {
-              label: "손실",
-              data: [],
-              showLine: true,
-              borderWidth: 0,
-              pointRadius: 0,
-              fill: { target: 3 },
-              backgroundColor: "rgba(255, 80, 80, .14)"
-            },
-            // 이익 면적
-            {
-              label: "이익",
-              data: [],
-              showLine: true,
-              borderWidth: 0,
-              pointRadius: 0,
-              fill: { target: 3 },
-              backgroundColor: "rgba(59,231,176,.12)"
-            },
-            // 매출 선
-            {
-              label: "매출",
-              data: [],
-              showLine: true,
-              borderColor: "rgba(76,201,255,.95)",
-              borderWidth: 2,
-              pointRadius: 0,
-              tension: 0.18
-            },
-            // 총비용 선
-            {
-              label: "총비용",
-              data: [],
-              showLine: true,
-              borderColor: "rgba(164,109,255,.80)",
-              borderWidth: 2,
-              pointRadius: 0,
-              tension: 0.18
-            },
-            // 커스텀 포인트(흰 점) - 매출선 위
-            {
-              label: "커스텀 포인트",
-              data: [],
-              showLine: false,
-              borderColor: "rgba(255,255,255,.92)",
-              backgroundColor: "rgba(255,255,255,.92)",
-              pointRadius: 5,
-              pointHoverRadius: 7
-            }
+            { label: "손실", data: [], showLine: true, borderWidth: 0, pointRadius: 0, fill: { target: 3 }, backgroundColor: "rgba(255, 80, 80, .14)" },
+            { label: "이익", data: [], showLine: true, borderWidth: 0, pointRadius: 0, fill: { target: 3 }, backgroundColor: "rgba(59,231,176,.12)" },
+            { label: "매출", data: [], showLine: true, borderColor: "rgba(76,201,255,.95)", borderWidth: 2, pointRadius: 0, tension: 0.18 },
+            { label: "총비용", data: [], showLine: true, borderColor: "rgba(164,109,255,.80)", borderWidth: 2, pointRadius: 0, tension: 0.18 },
+            { label: "커스텀 포인트", data: [], showLine: false, borderColor: "rgba(255,255,255,.92)", backgroundColor: "rgba(255,255,255,.92)", pointRadius: 5, pointHoverRadius: 7 }
           ]
         },
         options: {
@@ -574,8 +520,6 @@
                 label(item) {
                   const x = item.parsed.x;
                   const { varCost, taxCost, totalCost, profit } = calcAtRevenue(x);
-
-                  // 커스텀 포인트일 때도 동일한 정보를 보여줌
                   return [
                     `총비용: ${won(totalCost)}`,
                     `  ├ 고정비: ${won(state.fixedCost)}`,
@@ -588,15 +532,8 @@
             }
           },
           scales: {
-            x: {
-              type: "linear",
-              grid: { color: "rgba(255,255,255,.06)" },
-              ticks: { color: "rgba(255,255,255,.65)", callback: axisTick }
-            },
-            y: {
-              grid: { color: "rgba(255,255,255,.06)" },
-              ticks: { color: "rgba(255,255,255,.65)", callback: axisTick }
-            }
+            x: { type: "linear", grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "rgba(255,255,255,.65)", callback: axisTick } },
+            y: { grid: { color: "rgba(255,255,255,.06)" }, ticks: { color: "rgba(255,255,255,.65)", callback: axisTick } }
           }
         },
         plugins: [markerPlugin]
@@ -607,13 +544,11 @@
       const maxX = Math.max(state.chartMaxX || 0, 1);
       const { rev, cost, profitFill, lossFill } = buildSeries(maxX);
 
-      // 손실(0), 이익(1), 매출(2), 비용(3)
       chart.data.datasets[0].data = lossFill;
       chart.data.datasets[1].data = profitFill;
       chart.data.datasets[2].data = rev;
       chart.data.datasets[3].data = cost;
 
-      // 커스텀 포인트(4) — 매출선 위에 찍기
       const cx = clamp(state.customRevenue || 0, 0, maxX);
       chart.data.datasets[4].data = [{ x: cx, y: cx }];
 
@@ -624,7 +559,6 @@
       chart.update();
     }
 
-    // ===== UI helpers =====
     function setCmBadge(cmRatio) {
       const el = $("cmBadge");
       el.classList.remove("ok","no","warn");
@@ -643,16 +577,16 @@
     function setSummary() {
       const line = $("summaryLine");
       if (!(state.fixedCost > 0) || state.cmRatio <= 0) {
-        line.textContent = "고정비/비율을 입력하면, BEP(월/일)과 비용 구조가 여기에 정리됩니다.";
+        line.textContent = "고정비/비율을 입력하시면, BEP(월/일)과 비용 구조가 여기에 정리됩니다.";
         return;
       }
 
       const extra = (state.targetMonthly > 0)
         ? ` 목표 순이익 <b>${won(state.targetProfit)}</b> 기준 목표 매출은 월 <b>${won(state.targetMonthly)}</b> (일 <b>${won(state.targetDaily)}</b>) 입니다.`
-        : ` 목표 순이익을 입력하면 TARGET도 함께 계산됩니다.`;
+        : ` 목표 순이익을 입력하시면 TARGET도 함께 계산됩니다.`;
 
       line.innerHTML = `
-        고정비 <b>${won(state.fixedCost)}</b>를 커버하려면 공헌이익률 <b>${pct(state.cmRatio)}</b> 기준으로
+        고정비 <b>${won(state.fixedCost)}</b>를 커버하시려면 공헌이익률 <b>${pct(state.cmRatio)}</b> 기준으로
         월 <b>${won(state.bepMonthly)}</b> (일 <b>${won(state.bepDaily)}</b>, ${state.openDays}일 기준) 매출이 필요합니다.
         ${extra}
       `;
@@ -704,7 +638,6 @@
 
       $("customBox").style.display = (mode === "custom") ? "" : "none";
 
-      // 목표가 없는데 목표를 누르면 BEP로 되돌림
       if (mode === "target" && !(state.targetMonthly > 0)) {
         state.detailMode = "bep";
         $("segTarget").classList.remove("active");
@@ -713,7 +646,6 @@
       }
 
       renderDetailByMode();
-      // 커스텀 모드면 차트 커스텀 포인트도 즉시 반영
       if (chart) updateChart();
     }
 
@@ -746,23 +678,22 @@
       }
 
       if (state.detailMode === "bep") {
-        renderDetail(state.bepMonthly, "※ “BEP 기준”은 BEP 매출에서의 비용/이익 구조를 보여줍니다.");
+        renderDetail(state.bepMonthly, "※ “BEP 기준”은 BEP 매출에서의 비용/이익 구조를 보여드립니다.");
         return;
       }
 
       if (state.detailMode === "target") {
         if (state.targetMonthly > 0) {
-          renderDetail(state.targetMonthly, "※ “목표 기준”은 목표 매출(TARGET)에서의 비용/이익 구조를 보여줍니다.");
+          renderDetail(state.targetMonthly, "※ “목표 기준”은 목표 매출(TARGET)에서의 비용/이익 구조를 보여드립니다.");
         } else {
           renderDetail(state.bepMonthly, "※ 목표가 없어 BEP 기준으로 표시합니다.");
         }
         return;
       }
 
-      renderDetail(Math.max(state.customRevenue || 0, 0), "※ “직접 입력”은 입력한 월 매출에서의 구조를 보여줍니다.");
+      renderDetail(Math.max(state.customRevenue || 0, 0), "※ “직접 입력”은 입력하신 월 매출에서의 구조를 보여드립니다.");
     }
 
-    // ===== main calc =====
     function calc() {
       state.fixedCost = Math.max(num($("fixedCost").value, 0), 0);
       state.openDays = clamp(num($("openDays").value, 26), 1, 31);
@@ -779,19 +710,12 @@
       $("outCmHint").textContent = `1 − ${pct(state.rVar)} − ${pct(state.rTax)}`;
       setCmBadge(state.cmRatio);
 
-      // 고정비 미입력
       if (!(state.fixedCost > 0)) {
         $("outBepMonthly").textContent = "-";
         $("outBepDaily").textContent = "-";
         $("outTargetMonthly").textContent = "-";
         $("outTargetDaily").textContent = "-";
         $("outOwnerHourly").textContent = "-";
-
-        $("outBepMonthlyHint").textContent = "공헌이익률 기준 손익분기점";
-        $("outBepDailyHint").textContent = "월 영업일수로 나눈 값";
-        $("outTargetHint").textContent = "목표 순이익 입력 시";
-        $("outTargetDailyHint").textContent = "목표 매출(월)/영업일수";
-        $("outOwnerHourlyHint").textContent = "목표순이익 / 투입시간";
 
         $("chartNote").textContent = "※ 먼저 ‘월 고정비’를 입력해 주세요.";
 
@@ -815,21 +739,9 @@
         return;
       }
 
-      // 공헌이익률 성립 불가
       if (state.cmRatio <= 0) {
         $("outBepMonthly").textContent = "성립 불가";
         $("outBepDaily").textContent = "성립 불가";
-        $("outBepMonthlyHint").textContent = "변동비율+세율이 너무 큽니다";
-        $("outBepDailyHint").textContent = "공헌이익률이 0 이하";
-
-        $("outTargetMonthly").textContent = "성립 불가";
-        $("outTargetDaily").textContent = "성립 불가";
-        $("outTargetHint").textContent = "비율을 낮춰주세요";
-        $("outTargetDailyHint").textContent = "비율을 낮춰주세요";
-
-        $("outOwnerHourly").textContent = "-";
-        $("outOwnerHourlyHint").textContent = "목표순이익/시간 입력 시";
-
         $("chartNote").textContent = "※ 공헌이익률이 0 이하라 BEP가 성립하지 않습니다. 변동비율/세율을 낮춰보세요.";
 
         state.bepMonthly = 0;
@@ -852,7 +764,6 @@
         return;
       }
 
-      // 정상 계산
       state.bepMonthly = state.fixedCost / state.cmRatio;
       state.bepDaily = state.bepMonthly / state.openDays;
 
@@ -867,35 +778,20 @@
 
       $("outBepMonthly").textContent = won(state.bepMonthly);
       $("outBepDaily").textContent = won(state.bepDaily);
-      $("outBepMonthlyHint").textContent = `고정비 ${won(state.fixedCost)} 기준`;
-      $("outBepDailyHint").textContent = `영업일수 ${state.openDays}일 기준`;
 
       $("outTargetMonthly").textContent = (state.targetMonthly > 0) ? won(state.targetMonthly) : "-";
-      $("outTargetHint").textContent = (state.targetMonthly > 0)
-        ? `목표 순이익 ${won(state.targetProfit)} 반영`
-        : "목표 순이익 입력 시";
-
       $("outTargetDaily").textContent = (state.targetDaily > 0) ? won(state.targetDaily) : "-";
-      $("outTargetDailyHint").textContent = (state.targetDaily > 0)
-        ? `영업일수 ${state.openDays}일로 환산`
-        : "목표 순이익 입력 시";
 
       $("outOwnerHourly").textContent = (ownerHourly > 0) ? won(ownerHourly) : "-";
-      $("outOwnerHourlyHint").textContent = (ownerHourly > 0)
-        ? `목표순이익 ${won(state.targetProfit)} ÷ ${state.ownerHours.toLocaleString("ko-KR")}시간`
-        : "목표순이익/투입시간 입력 시";
 
-      // 차트 스케일: 0 ~ max(목표, BEP*1.6)
       state.chartMaxX = Math.max(state.targetMonthly || 0, state.bepMonthly * 1.6);
       $("chartNote").textContent = `※ 차트는 0 ~ ${won(state.chartMaxX)} 구간을 표시합니다.`;
 
-      // 커스텀 값 기본값 세팅(처음엔 BEP 근처로)
       if (!state.customRevenue) {
         state.customRevenue = Math.round(state.bepMonthly);
         $("customRevenue").value = state.customRevenue.toLocaleString("ko-KR");
       }
 
-      // 세그먼트 목표 버튼 활성/비활성
       $("segTarget").disabled = !(state.targetMonthly > 0);
       $("segTarget").classList.toggle("disabled", !(state.targetMonthly > 0));
 
@@ -908,12 +804,11 @@
       updateChart();
     }
 
-    // ===== Events =====
+    // Events
     $("segBep").addEventListener("click", () => setSegment("bep"));
     $("segTarget").addEventListener("click", () => setSegment("target"));
     $("segCustom").addEventListener("click", () => setSegment("custom"));
 
-    // 커스텀 입력
     $("customRevenue").addEventListener("input", (e) => {
       formatCommaKeepCursor(e.target);
       state.customRevenue = Math.max(num(e.target.value, 0), 0);
@@ -923,7 +818,6 @@
     });
     $("customRevenueRange").addEventListener("input", setCustomRevenueFromRange);
 
-    // 버튼
     $("btnCalc").addEventListener("click", calc);
     $("btnReset").addEventListener("click", () => {
       preset();
@@ -935,19 +829,14 @@
       calc();
     });
 
-    // 금액 입력 콤마
     ["fixedCost","targetProfit"].forEach(id => {
       $(id).addEventListener("input", (e) => formatCommaKeepCursor(e.target));
     });
 
-    // 실시간 계산(입력 즉시)
     ["fixedCost","openDays","variableRate","taxRate","targetProfit","ownerHours"].forEach(id=>{
       $(id).addEventListener("input", calc);
       $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
-
-    const y = document.getElementById("y");
-    if (y) y.textContent = String(new Date().getFullYear());
 
     // init
     preset();
@@ -957,7 +846,6 @@
 
   <!-- ✅ UI 정돈: 페이지 전용 스타일 -->
   <style>
-    /* 가독성/깨짐 방지 */
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
       --fs-h3: clamp(15px, 1.2vw, 16px);
@@ -968,10 +856,10 @@
     .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
     .heroSub{ max-width: 72ch; }
 
-    header{ align-items:flex-start; }
+    /* ✅ 헤더 깨짐 방지: 범위 축소 */
+    .site-header{ align-items:flex-start; }
     nav[aria-label="이동"] a{ white-space: nowrap; }
 
-    /* 2열 레이아웃 */
     .cols2{
       display:grid;
       grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
@@ -981,7 +869,6 @@
       .cols2{ grid-template-columns: 1fr; }
     }
 
-    /* panel header */
     .panelHead{
       display:flex;
       align-items:flex-start;
@@ -997,7 +884,6 @@
       line-height:1.45;
     }
 
-    /* badges */
     .badgeRow{
       display:flex;
       gap:8px;
@@ -1026,12 +912,10 @@
     .badgeStatus.warn{ border-color: rgba(255,180,80,.35); background: rgba(255,180,80,.10); }
     .badgeStatus.no{ border-color: rgba(255,80,80,.35); background: rgba(255,80,80,.10); }
 
-    /* KPI */
     .kpi .t{ font-size:12.5px; }
     .kpi .v{ font-size: clamp(20px, 2.2vw, 24px); line-height:1.15; }
     .kpi .h{ font-size:12.5px; line-height:1.4; }
 
-    /* chart wide */
     .chartWrapWide{
       margin-top:14px;
       padding: 14px 14px;
@@ -1090,14 +974,12 @@
       .canvasBoxWide{ height: 310px; }
     }
 
-    /* table */
     .tableWrap{ overflow-x:auto; }
     table{ min-width: 560px; }
     td, th{ vertical-align: top; }
     tbody td{ word-break: keep-all; }
     tbody td:nth-child(3){ color: rgba(255,255,255,.72); }
 
-    /* segmented */
     .segWrap{ display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .seg{
       height:40px;

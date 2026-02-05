@@ -23,100 +23,269 @@
 <body>
   <div class="container">
 
-  <header id="wvHeaderMount"></header>
+    <header id="wvHeaderMount"></header>
 
-    <section class="card">
-      <!-- ✅ 히어로 느낌 -->
-      <div class="cardHead hero">
-        <div>
-          <h1 class="heroTitle">급여·근로·자영업 계산기</h1>
-          <p class="sub heroSub">필요하신 계산기를 선택하시면 바로 입력 후 결과를 확인하실 수 있습니다.</p>
-        </div>
-      </div>
-
-      <div class="cardBody">
-        <div class="cols">
-          <!-- ✅ 급여/근로 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <h3>급여/근로</h3>
-              <span class="pill">직장인 · 알바</span>
-            </div>
-
-            <div class="gridLinks">
-              <a class="linkCard" href="/employee/hourly.html">
-                <div class="lcTitle">실수령 시급 계산기</div>
-                <div class="lcDesc">근무 패턴을 입력하시면 주급·월급을 단순 추정해 드립니다.</div>
-                <div class="lcGo">열기 →</div>
-              </a>
-
-              <a class="linkCard" href="/employee/salary-net.html">
-                <div class="lcTitle">월급 실수령액 계산기(추정)</div>
-                <div class="lcDesc">공제 항목을 나누어 확인하실 수 있습니다.</div>
-                <div class="lcGo">열기 →</div>
-              </a>
-            </div>
-
-            <p class="small">안내: 계산 결과는 이해를 돕기 위한 추정치이며 실제 적용 기준은 조건에 따라 달라질 수 있습니다.</p>
-          </div>
-
-          <!-- ✅ 자영업/사업 -->
-          <div class="content panel" style="margin-top:0;">
-            <div class="panelHead">
-              <h3>자영업/사업</h3>
-              <span class="pill">사장님 · 운영</span>
-            </div>
-
-            <div class="gridLinks">
-              <a class="linkCard" href="/business/bep.html">
-                <div class="lcTitle">자영업 손익분기점(BEP) 계산기</div>
-                <div class="lcDesc">하루 최소 매출, 목표 매출 기준 순이익 및 사장 시급을 확인합니다.</div>
-                <div class="lcGo">열기 →</div>
-              </a>
-
-              <a class="linkCard" href="/business/labor-cost.html">
-                <div class="lcTitle">알바·근로자 인건비 계산기</div>
-                <div class="lcDesc">근로자 실수령과 사장님 총부담을 함께 확인합니다.</div>
-                <div class="lcGo">열기 →</div>
-              </a>
-            </div>
-
-            <p class="small">안내: 세금, 감가상각, 금융비용, 사업장 내부 정산 규정 등은 반영되지 않을 수 있습니다.</p>
+    <main>
+      <section class="card">
+        <div class="cardHead hero">
+          <div>
+            <h1 class="heroTitle">급여·근로·자영업 계산기</h1>
+            <p class="sub heroSub">필요하신 계산기를 선택하시면 바로 입력 후 결과를 확인하실 수 있습니다.</p>
           </div>
         </div>
 
-        <!-- FAQ -->
-        <div class="content" style="margin-top:14px;">
-          <h3>자주 묻는 질문</h3>
-          <div class="faq">
-            <details>
-              <summary>계산 결과가 실제와 다를 수 있나요?</summary>
-              <p>네, 그럴 수 있습니다. 계약 형태, 수당 포함 여부, 보험료 기준, 세액 적용 방식, 업종별 비용 구조에 따라 실제 값은 달라질 수 있습니다.</p>
-            </details>
-            <details>
-              <summary>결과를 어떻게 해석하면 좋을까요?</summary>
-              <p>결과는 참고 기준으로 사용하시고, 중요한 의사결정은 급여명세서/정산 자료/전문가 상담 등으로 추가 확인을 권장드립니다.</p>
-            </details>
+        <div class="cardBody">
+          <div class="cols">
+            <!-- 급여/근로 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <h3>급여/근로</h3>
+                <span class="pill">직장인 · 알바</span>
+              </div>
+
+              <div class="gridLinks">
+                <a class="linkCard" href="/employee/hourly.html">
+                  <div class="lcTitle">단순 급여 추정 계산기</div>
+                  <div class="lcDesc">근무 패턴을 입력하시면 주급·월급을 단순 추정해 드립니다.</div>
+                  <div class="lcGo">열기 →</div>
+                </a>
+
+                <a class="linkCard" href="/employee/salary-net.html">
+                  <div class="lcTitle">월급 실수령액 계산기(추정)</div>
+                  <div class="lcDesc">공제 항목을 나누어 확인하실 수 있습니다.</div>
+                  <div class="lcGo">열기 →</div>
+                </a>
+              </div>
+
+              <div class="noticeSoft">
+                안내: 계산 결과는 이해를 돕기 위한 추정치이며 실제 적용 기준은 조건에 따라 달라질 수 있습니다.
+              </div>
+            </div>
+
+            <!-- 자영업/사업 -->
+            <div class="content panel" style="margin-top:0;">
+              <div class="panelHead">
+                <h3>자영업/사업</h3>
+                <span class="pill">사장님 · 운영</span>
+              </div>
+
+              <div class="gridLinks">
+                <a class="linkCard" href="/business/bep.html">
+                  <div class="lcTitle">자영업 손익분기점(BEP) 계산기</div>
+                  <div class="lcDesc">하루 최소 매출, 목표 매출 기준 순이익 및 사장 시급을 확인합니다.</div>
+                  <div class="lcGo">열기 →</div>
+                </a>
+
+                <a class="linkCard" href="/business/labor-cost.html">
+                  <div class="lcTitle">알바·근로자 인건비 계산기</div>
+                  <div class="lcDesc">근로자 실수령과 사장님 총부담을 함께 확인합니다.</div>
+                  <div class="lcGo">열기 →</div>
+                </a>
+              </div>
+
+              <div class="noticeSoft">
+                안내: 세금, 감가상각, 금융비용, 사업장 내부 정산 규정 등은 반영되지 않을 수 있습니다.
+              </div>
+            </div>
           </div>
+
+          <!-- FAQ -->
+          <div class="content" style="margin-top:14px;">
+            <h3>자주 묻는 질문</h3>
+            <div class="faq">
+              <details>
+                <summary>계산 결과가 실제와 다를 수 있나요?</summary>
+                <p>
+                  네, 그럴 수 있습니다. 계약 형태, 수당 포함 여부, 보험료 기준, 세액 적용 방식,
+                  업종별 비용 구조에 따라 실제 값은 달라질 수 있습니다.
+                </p>
+              </details>
+              <details>
+                <summary>결과를 어떻게 해석하면 좋을까요?</summary>
+                <p>
+                  결과는 참고 기준으로 사용하시고, 중요한 의사결정은 급여명세서/정산 자료/전문가 상담 등으로
+                  추가 확인을 권장드립니다.
+                </p>
+              </details>
+            </div>
+          </div>
+
+          <!-- 미니 CTA(선택) -->
+          <div class="ctaBox" style="margin-top:14px;">
+            <div>
+              <div class="ctaTitle">가장 많이 쓰는 조합</div>
+              <div class="ctaDesc">먼저 “단순 급여 추정”으로 감을 잡고, “실수령(추정)”에서 공제를 맞춰보세요.</div>
+            </div>
+            <a class="ctaBtn" href="/employee/hourly.html">바로 시작</a>
+          </div>
+
         </div>
-      </div>
-    </section>
+      </section>
+    </main>
 
-    <footer>
-      <div class="links">
-        <a href="/about.html">소개</a>
-        <a href="/privacy.html">개인정보처리방침</a>
-        <a href="/terms.html">이용약관</a>
-        <a href="/contact.html">문의</a>
-      </div>
-      <p class="small">© <span id="y"></span> WorkValue</p>
-    </footer>
-
+    <footer id="wvFooterMount"></footer>
   </div>
 
   <script type="module">
-    import { initWorkValue } from "/assets/app.js?v=20260203";
-    initWorkValue();
+    // 공통 init(있으면 실행)
+    try {
+      const mod = await import("/assets/app.js?v=20260203");
+      if (mod?.initWorkValue) mod.initWorkValue();
+    } catch (_) {}
+
+    // footer year (공통 footer가 y를 쓰는 경우 대비)
+    const y = document.getElementById("y");
+    if (y) y.textContent = String(new Date().getFullYear());
   </script>
+
+  <!-- 페이지 전용 스타일: 정돈 + 깨짐 방지 -->
+  <style>
+    :root{
+      --fs-hero: clamp(20px, 2.2vw, 28px);
+      --fs-h3: clamp(15px, 1.2vw, 16px);
+      --fs-body: clamp(13.5px, 1.05vw, 14.5px);
+      --lh: 1.55;
+    }
+    body{ font-size: var(--fs-body); line-height: var(--lh); }
+    .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
+    .heroSub{ max-width: 78ch; }
+
+    .cols{
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap:14px;
+    }
+    @media (max-width: 980px){
+      .cols{ grid-template-columns: 1fr; }
+    }
+
+    .panelHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 10px;
+    }
+    .panelHead h3{ margin:0; font-size: var(--fs-h3); letter-spacing:-.2px; }
+
+    .gridLinks{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+
+    .linkCard{
+      display:block;
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      text-decoration:none;
+      transition: transform .08s ease, opacity .08s ease, border-color .08s ease;
+    }
+    .linkCard:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.16);
+      opacity: .98;
+    }
+
+    .lcTitle{
+      font-weight: 900;
+      letter-spacing: -.2px;
+      color: rgba(255,255,255,.92);
+      margin-bottom: 4px;
+    }
+    .lcDesc{
+      color: rgba(255,255,255,.70);
+      font-size: 12.8px;
+      line-height: 1.45;
+      margin-bottom: 10px;
+      max-width: 72ch;
+    }
+    .lcGo{
+      font-weight: 900;
+      letter-spacing: -.2px;
+      color: rgba(76,201,255,.92);
+      font-size: 13px;
+    }
+
+    .noticeSoft{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.72);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
+
+    .faq details{
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.16);
+      border-radius: 14px;
+      padding: 10px 12px;
+      margin-top: 10px;
+    }
+    .faq summary{
+      cursor:pointer;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      color: rgba(255,255,255,.90);
+      list-style: none;
+    }
+    .faq summary::-webkit-details-marker{ display:none; }
+    .faq details p{
+      margin: 8px 0 0 0;
+      color: rgba(255,255,255,.70);
+      font-size: 12.8px;
+      line-height: 1.45;
+    }
+
+    .ctaBox{
+      padding: 14px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .ctaTitle{
+      font-weight: 900;
+      letter-spacing: -.3px;
+      font-size: 14px;
+      color: rgba(255,255,255,.92);
+      margin-bottom: 2px;
+    }
+    .ctaDesc{
+      font-size: 12.5px;
+      color: rgba(255,255,255,.68);
+      line-height: 1.35;
+    }
+    .ctaBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      height: 40px;
+      padding: 0 14px;
+      border-radius: 14px;
+      font-weight: 900;
+      letter-spacing: -.2px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(135deg, rgba(76,201,255,.95), rgba(59,231,176,.95));
+      color: rgba(0,0,0,.75);
+      white-space: nowrap;
+      text-decoration:none;
+    }
+    .ctaBtn:hover{ opacity: .92; }
+
+    @media (max-width:720px){
+      .ctaBox{ align-items: stretch; }
+      .ctaBtn{ width: 100%; }
+    }
+  </style>
 </body>
 </html>

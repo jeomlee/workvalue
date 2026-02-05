@@ -13,8 +13,7 @@
 
 <body>
   <div class="container">
-
-  <header id="wvHeaderMount"></header>
+    <header id="wvHeaderMount"></header>
 
     <section class="card">
       <div class="cardHead hero">
@@ -25,8 +24,8 @@
       </div>
 
       <div class="cardBody">
-
         <div class="cols2">
+
           <!-- 입력 -->
           <div class="content panel" style="margin-top:0;">
             <div class="panelHead">
@@ -278,13 +277,13 @@
               </div>
               <a class="ctaBtn" href="/employee/salary-net.html">월급 실수령(추정)으로 이동</a>
             </div>
-
           </div>
+
         </div>
       </div>
     </section>
 
-  <footer id="wvFooterMount"></footer>
+    <footer id="wvFooterMount"></footer>
   </div>
 
   <script type="module">
@@ -296,11 +295,9 @@
 
     const $ = (id) => document.getElementById(id);
 
-    // ✅ 강화된 숫자 파서: blur 시점에 "원", 공백, ₩ 등이 섞여도 0으로 떨어지지 않게
+    // ✅ 안정 파서: blur/change에 "원", 공백, ₩ 등이 섞여도 0으로 떨어지지 않게
     const num = (v, fallback = 0) => {
-      const s = String(v ?? "")
-        .replace(/[^\d.\-]/g, "")   // 숫자, 점, 마이너스만 남김
-        .trim();
+      const s = String(v ?? "").replace(/[^\d.\-]/g, "").trim();
       if (!s) return fallback;
       const n = Number(s);
       return Number.isFinite(n) ? n : fallback;
@@ -310,8 +307,10 @@
     const won = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
 
     // ===== 상수 =====
-    const MIN_WAGE = 10320;        // ✅ 최저시급(기본값)
-    const WEEKS_PER_MONTH = 4.345; // 월 평균 주수
+    const MIN_WAGE = 10320;
+    const WEEKS_PER_MONTH = 4.345;
+
+    // “가산분만” 추가
     const EXTRA_OT = 0.5;
     const EXTRA_NIGHT = 0.5;
     const EXTRA_HOLI = 1.0;
@@ -325,7 +324,6 @@
       if (!digitsOnly) { inputEl.value = ""; return; }
 
       const formatted = Number(digitsOnly).toLocaleString("ko-KR");
-
       const leftRaw = raw.slice(0, selStart);
       const leftDigits = leftRaw.replace(/[^\d]/g, "").length;
 
@@ -340,10 +338,47 @@
       inputEl.setSelectionRange(pos, pos);
     }
 
-    // ✅ blur/change 안전 포맷: 숫자만 남겨 콤마로 정규화
+    // ✅ blur/change에서 숫자 정규화(시급 0되는 이슈 차단)
     function formatMoneyOnBlur(inputEl) {
       const digitsOnly = String(inputEl.value ?? "").replace(/[^\d]/g, "");
       inputEl.value = digitsOnly ? Number(digitsOnly).toLocaleString("ko-KR") : "";
+    }
+
+    function setBadge(el, text, kind) {
+      el.textContent = text;
+      el.classList.remove("ok","no","off","warn");
+      if (kind) el.classList.add(kind);
+    }
+
+    function calcHolidayHours(weeklyBaseHours) {
+      return clamp(weeklyBaseHours / 5, 0, 8);
+    }
+
+    function updateAssumptions({ breakMin, weeklyBaseHours, includeHoliday, eligible, holidayHours, otOn, nightOn, holiOn }) {
+      const weeklyCond = weeklyBaseHours >= 15 ? "주 15시간 이상(가정)" : "주 15시간 미만(가정)";
+      const holidayText = !includeHoliday ? "미포함" : (eligible ? `포함(근사 ${holidayHours.toFixed(2)}h)` : "조건 미달");
+
+      $("assumptionsBodyH").innerHTML = `
+        <tr><td>휴게시간</td><td><b>${breakMin}분</b></td><td>근무시간에서 차감</td></tr>
+        <tr><td>월 평균 주수</td><td><b>${WEEKS_PER_MONTH}</b></td><td>주급×4.345</td></tr>
+        <tr><td>주휴 조건</td><td><b>${weeklyCond}</b></td><td>${holidayText}</td></tr>
+        <tr><td>주휴시간</td><td><b>${holidayHours > 0 ? holidayHours.toFixed(2)+"시간" : "-"}</b></td><td>min(8, 주기본/5)</td></tr>
+        <tr><td>초과 가산</td><td><b>${otOn ? "+0.5배(가산분)" : "미적용"}</b></td><td>중복 방지: 가산분만 추가</td></tr>
+        <tr><td>야간 가산</td><td><b>${nightOn ? "+0.5배(가산분)" : "미적용"}</b></td><td>야간 시간 입력 시</td></tr>
+        <tr><td>휴일 가산</td><td><b>${holiOn ? "+1.0배(가산분)" : "미적용"}</b></td><td>휴일 시간 입력 시</td></tr>
+        <tr><td>공제</td><td><b>미반영</b></td><td>세금/보험 제외</td></tr>
+      `;
+    }
+
+    function updateBreakdown({ weeklyBaseHours, overtimeHours, basePay, premiumSum, holidayPay, weeklyPay }) {
+      $("breakdownBodyH").innerHTML = `
+        <tr><td>주 기본시간</td><td><b>${weeklyBaseHours.toFixed(2)}시간</b></td><td>유급시간×주근무일수</td></tr>
+        <tr><td>초과근로시간</td><td><b>${overtimeHours.toFixed(2)}시간</b></td><td>추가된 시간</td></tr>
+        <tr><td>주 기본급(1.0배)</td><td><b>${won(basePay)}</b></td><td>기본시간+초과시간</td></tr>
+        <tr><td>가산분(추가)</td><td><b>${premiumSum > 0 ? won(premiumSum) : "-"}</b></td><td>옵션 적용 시</td></tr>
+        <tr><td>주휴수당(선택)</td><td><b>${holidayPay > 0 ? won(holidayPay) : "-"}</b></td><td>주 15시간 이상</td></tr>
+        <tr><td><b>주급 합계</b></td><td><b>${won(weeklyPay)}</b></td><td>기본급+가산+주휴</td></tr>
+      `;
     }
 
     function preset() {
@@ -362,44 +397,6 @@
 
       $("holidayHoursWeek").value = "0";
       $("holidayPremiumOn").checked = false;
-    }
-
-    function setBadge(el, text, kind /* ok|no|off|warn */) {
-      el.textContent = text;
-      el.classList.remove("ok","no","off","warn");
-      if (kind) el.classList.add(kind);
-    }
-
-    function calcHolidayHours(weeklyBaseHours) {
-      // 주휴시간 근사: (주 소정근로시간/5), 최대 8시간
-      return clamp(weeklyBaseHours / 5, 0, 8);
-    }
-
-    function updateAssumptions({ breakMin, weeklyBaseHours, includeHoliday, eligible, holidayHours, otOn, nightOn, holiOn }) {
-      const weeklyCond = weeklyBaseHours >= 15 ? "주 15시간 이상(가정)" : "주 15시간 미만(가정)";
-      const holidayText = !includeHoliday ? "미포함" : (eligible ? `포함(근사 ${holidayHours.toFixed(2)}h)` : "조건 미달");
-
-      $("assumptionsBodyH").innerHTML = `
-        <tr><td>휴게시간</td><td><b>${breakMin}분</b></td><td>근무시간에서 차감</td></tr>
-        <tr><td>월 평균 주수</td><td><b>${WEEKS_PER_MONTH}</b></td><td>주급×4.345</td></tr>
-        <tr><td>주휴 조건</td><td><b>${weeklyCond}</b></td><td>${holidayText}</td></tr>
-        <tr><td>주휴시간</td><td><b>${holidayHours > 0 ? holidayHours.toFixed(2)+"시간" : "-"}</b></td><td>min(8, 주기본/5) 근사</td></tr>
-        <tr><td>초과 가산</td><td><b>${otOn ? "+0.5배(가산분)" : "미적용"}</b></td><td>중복 방지: 가산분만 추가</td></tr>
-        <tr><td>야간 가산</td><td><b>${nightOn ? "+0.5배(가산분)" : "미적용"}</b></td><td>야간 시간 입력 시</td></tr>
-        <tr><td>휴일 가산</td><td><b>${holiOn ? "+1.0배(가산분)" : "미적용"}</b></td><td>휴일 시간 입력 시</td></tr>
-        <tr><td>공제</td><td><b>미반영</b></td><td>세금/보험 제외</td></tr>
-      `;
-    }
-
-    function updateBreakdown({ weeklyBaseHours, overtimeHours, basePay, premiumSum, holidayPay, weeklyPay }) {
-      $("breakdownBodyH").innerHTML = `
-        <tr><td>주 기본시간</td><td><b>${weeklyBaseHours.toFixed(2)}시간</b></td><td>유급시간×주근무일수</td></tr>
-        <tr><td>초과근로시간</td><td><b>${overtimeHours.toFixed(2)}시간</b></td><td>추가된 시간</td></tr>
-        <tr><td>주 기본급(1.0배)</td><td><b>${won(basePay)}</b></td><td>기본시간+초과시간</td></tr>
-        <tr><td>가산분(추가)</td><td><b>${premiumSum > 0 ? won(premiumSum) : "-"}</b></td><td>옵션 적용 시</td></tr>
-        <tr><td>주휴수당(선택)</td><td><b>${holidayPay > 0 ? won(holidayPay) : "-"}</b></td><td>조건 충족 시</td></tr>
-        <tr><td><b>주급 합계</b></td><td><b>${won(weeklyPay)}</b></td><td>기본급+가산+주휴</td></tr>
-      `;
     }
 
     function calc() {
@@ -430,10 +427,10 @@
       const holidayHours = (includeHoliday && eligible) ? calcHolidayHours(weeklyBaseHours) : 0;
       const holidayPay = hourly * holidayHours;
 
-      // 기본급(1.0배): 주 기본시간 + 초과시간
+      // 기본급(1.0배): 주 기본시간 + 초과시간(기본급 포함 가정)
       const basePay = hourly * (weeklyBaseHours + overtimeHours);
 
-      // 가산분만 추가 (중복 방지)
+      // 가산분만 추가
       const premiumOT = otOn ? hourly * overtimeHours * EXTRA_OT : 0;
       const premiumNight = nightOn ? hourly * nightHours * EXTRA_NIGHT : 0;
       const premiumHoli = holiOn ? hourly * holiHours * EXTRA_HOLI : 0;
@@ -456,12 +453,11 @@
       else if (eligible) setBadge(holidayBadge, "주휴: 가능", "ok");
       else setBadge(holidayBadge, "주휴: 조건 미달", "no");
 
-      // 입력 상태 배지(필수값)
       const inputBadge = $("inputBadge");
       const okInputs = (hourly > 0 && paidHoursDay > 0 && daysPerWeek > 0);
       setBadge(inputBadge, okInputs ? "입력: 정상" : "입력: 부족", okInputs ? "ok" : "warn");
 
-      // 경고(야간/휴일 시간이 과도할 때)
+      // 경고
       const warnLine = $("warnLine");
       const totalWorkish = weeklyBaseHours + overtimeHours;
       const suspicious = (nightHours + holiHours) > (totalWorkish + 0.0001);
@@ -471,58 +467,45 @@
       updateAssumptions({ breakMin, weeklyBaseHours, includeHoliday, eligible, holidayHours, otOn, nightOn, holiOn });
     }
 
+    // footer year
+    const y = document.getElementById("y");
+    if (y) y.textContent = String(new Date().getFullYear());
+
+    const mw = document.getElementById("minWageText");
+    if (mw) mw.textContent = MIN_WAGE.toLocaleString("ko-KR") + "원";
+
     // 이벤트
     $("btnCalcH").addEventListener("click", calc);
     $("btnResetH").addEventListener("click", () => { preset(); calc(); });
 
-    // Enter 계산
-    [
-      "hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH",
-      "overtimeWeekH","nightHoursWeek","holidayHoursWeek"
-    ].forEach(id=>{
-      $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
-    });
-
-    // 토글 즉시 반영
+    // 체크박스 즉시
     ["includeHolidayH","overtimePremiumH","nightPremiumOn","holidayPremiumOn"].forEach(id=>{
       $(id).addEventListener("change", calc);
     });
 
-    // ✅ 시급 자동 콤마 + 즉시 계산
-    $("hourlyWage").addEventListener("input", (e) => {
-      formatCommaKeepCursor(e.target);
-      calc();
-    });
-    // ✅ blur/change 때도 계산 0으로 떨어지는 이슈 방지
-    $("hourlyWage").addEventListener("blur", (e) => {
-      formatMoneyOnBlur(e.target);
-      calc();
-    });
-    $("hourlyWage").addEventListener("change", (e) => {
-      formatMoneyOnBlur(e.target);
-      calc();
+    // Enter 계산
+    ["hourlyWage","hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","nightHoursWeek","holidayHoursWeek"].forEach(id=>{
+      $(id).addEventListener("keydown", (e) => { if (e.key === "Enter") calc(); });
     });
 
-    // 나머지 입력값 바뀌면 자동 계산
+    // ✅ 시급: input(커서 유지 콤마) + blur/change(정규화) + 매번 calc
+    $("hourlyWage").addEventListener("input", (e) => { formatCommaKeepCursor(e.target); calc(); });
+    $("hourlyWage").addEventListener("blur", (e) => { formatMoneyOnBlur(e.target); calc(); });
+    $("hourlyWage").addEventListener("change", (e) => { formatMoneyOnBlur(e.target); calc(); });
+
+    // 나머지 입력은 그냥 calc
     ["hoursPerDayH","daysPerWeekH","breakMinH","overtimeWeekH","nightHoursWeek","holidayHoursWeek"].forEach(id=>{
       $(id).addEventListener("input", calc);
       $(id).addEventListener("blur", calc);
       $(id).addEventListener("change", calc);
     });
 
-    // footer year
-    const y = document.getElementById("y");
-    if (y) y.textContent = String(new Date().getFullYear());
-
-    // 상단 최저임금 문구
-    const mw = document.getElementById("minWageText");
-    if (mw) mw.textContent = MIN_WAGE.toLocaleString("ko-KR") + "원";
-
+    // init
     preset();
     calc();
   </script>
 
-  <!-- 페이지 전용 스타일: 제품급 정돈(깨짐 방지 + 가독성) -->
+  <!-- ✅ 페이지 전용 스타일(깨짐 방지 + 가독성) -->
   <style>
     :root{
       --fs-hero: clamp(20px, 2.2vw, 28px);
@@ -534,7 +517,6 @@
 
     .heroTitle{ font-size: var(--fs-hero); letter-spacing: -.4px; margin:0; }
     .heroSub{ max-width: 78ch; }
-
     nav[aria-label="이동"] a{ white-space: nowrap; }
 
     .cols2{
@@ -555,17 +537,8 @@
     }
     .phLeft{ display:flex; flex-direction:column; gap:4px; min-width:0; }
     .phLeft h3{ margin:0; font-size: var(--fs-h3); letter-spacing:-.2px; }
-    .phSub{
-      margin:0;
-      font-size: 12.5px;
-      color: var(--muted);
-      line-height:1.45;
-    }
-    .ghostHead{
-      padding:0 !important;
-      border:0 !important;
-      background:none !important;
-    }
+    .phSub{ margin:0; font-size: 12.5px; color: var(--muted); line-height:1.45; }
+    .ghostHead{ padding:0 !important; border:0 !important; background:none !important; }
 
     .kpi .t{ font-size:12.5px; }
     .kpi .v{ font-size: clamp(20px, 2.2vw, 24px); line-height:1.15; }
@@ -639,24 +612,10 @@
       color: rgba(255,255,255,.86);
       white-space: nowrap;
     }
-    .badgeStatus.ok{
-      border-color: rgba(59,231,176,.35);
-      background: rgba(59,231,176,.10);
-    }
-    .badgeStatus.no{
-      border-color: rgba(255, 180, 80, .35);
-      background: rgba(255, 180, 80, .10);
-    }
-    .badgeStatus.off{
-      border-color: rgba(255,255,255,.12);
-      background: rgba(0,0,0,.14);
-      color: rgba(255,255,255,.70);
-    }
-    .badgeStatus.warn{
-      border-color: rgba(255, 180, 80, .35);
-      background: rgba(255, 180, 80, .10);
-      color: rgba(255,255,255,.88);
-    }
+    .badgeStatus.ok{ border-color: rgba(59,231,176,.35); background: rgba(59,231,176,.10); }
+    .badgeStatus.no{ border-color: rgba(255, 180, 80, .35); background: rgba(255, 180, 80, .10); }
+    .badgeStatus.off{ border-color: rgba(255,255,255,.12); background: rgba(0,0,0,.14); color: rgba(255,255,255,.70); }
+    .badgeStatus.warn{ border-color: rgba(255, 180, 80, .35); background: rgba(255, 180, 80, .10); color: rgba(255,255,255,.88); }
 
     .ctaBox{
       margin-top: 14px;

@@ -201,7 +201,6 @@
               </div>
             </div>
 
-            <!-- ✅ KPI (월) -->
             <div class="kpi">
               <div class="box">
                 <p class="t">월 실수령(추정)</p>
@@ -225,7 +224,6 @@
               </div>
             </div>
 
-            <!-- ✅ KPI (연간 환산) -->
             <div class="kpi" style="margin-top:10px;">
               <div class="box">
                 <p class="t">연 실수령(환산)</p>
@@ -312,7 +310,7 @@
       </div>
     </section>
 
-  <footer id="wvFooterMount"></footer>
+    <footer id="wvFooterMount"></footer>
   </div>
 
   <script type="module">
@@ -324,15 +322,20 @@
 
     const $ = (id) => document.getElementById(id);
 
+    // ✅ 강화 파서: 콤마/원/₩/공백 섞여도 안전
     const num = (v, fallback = 0) => {
-      const s = String(v ?? "").replace(/,/g, "").trim();
+      const s = String(v ?? "")
+        .replace(/[^\d.\-]/g, "")
+        .trim();
+      if (!s) return fallback;
       const n = Number(s);
       return Number.isFinite(n) ? n : fallback;
     };
+
     const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
     const won = (n) => Math.round(n).toLocaleString("ko-KR") + "원";
 
-    // 콤마 포맷(커서 보존)
+    // ===== 콤마 포맷(커서 보존) =====
     function formatCommaKeepCursor(inputEl) {
       const raw = inputEl.value;
       const selStart = inputEl.selectionStart ?? raw.length;
@@ -341,6 +344,7 @@
       if (!digitsOnly) { inputEl.value = ""; return; }
 
       const formatted = Number(digitsOnly).toLocaleString("ko-KR");
+
       const leftRaw = raw.slice(0, selStart);
       const leftDigits = leftRaw.replace(/[^\d]/g, "").length;
 
@@ -353,6 +357,12 @@
         pos++;
       }
       inputEl.setSelectionRange(pos, pos);
+    }
+
+    // ✅ blur/change 정규화(숫자만 남김 → 콤마)
+    function formatMoneyOnBlur(inputEl) {
+      const digitsOnly = String(inputEl.value ?? "").replace(/[^\d]/g, "");
+      inputEl.value = digitsOnly ? Number(digitsOnly).toLocaleString("ko-KR") : "";
     }
 
     function setBadge(el, text, kind /* ok|no|off|warn */) {
@@ -375,7 +385,7 @@
       if (syncing) return;
       syncing = true;
       const annual = clamp(num($("annualPay").value, 0), 0, 999999999999);
-      const gross = Math.floor(annual / 12); // 정수원 단위
+      const gross = Math.floor(annual / 12);
       $("grossPay").value = annual > 0 ? gross.toLocaleString("ko-KR") : "";
       syncing = false;
     }
@@ -423,7 +433,6 @@
         warnLine.textContent = "비과세가 세전 월급을 초과해서, 비과세를 세전 월급과 동일하게 조정했어요.";
       }
 
-      // 기준액(단순): 세전 - 비과세
       const base = Math.max(gross - nonTax, 0);
 
       // 보험 요율
@@ -461,13 +470,13 @@
       const deduct = ins + tax + other;
       const net = Math.max(gross - deduct, 0);
 
-      // ✅ 연간 환산 (월 기준 × 12)
+      // 연 환산(×12)
       const netY = net * 12;
       const deductY = deduct * 12;
       const insY = ins * 12;
       const taxY = tax * 12;
 
-      // KPI (월)
+      // KPI(월)
       $("kpiNet").textContent = (gross > 0 ? won(net) : "-");
       $("kpiDeduct").textContent = (gross > 0 ? won(deduct) : "-");
       $("kpiIns").textContent = (gross > 0 ? won(ins) : "-");
@@ -476,13 +485,13 @@
       $("kpiIncomeTax").textContent = (gross > 0 ? (incomeTax > 0 ? won(incomeTax) : "-") : "-");
       $("kpiIncomeTaxHint").textContent = incomeTaxHint || "-";
 
-      // KPI (연)
+      // KPI(연)
       $("kpiNetY").textContent = (gross > 0 ? won(netY) : "-");
       $("kpiDeductY").textContent = (gross > 0 ? won(deductY) : "-");
       $("kpiInsY").textContent = (gross > 0 ? won(insY) : "-");
       $("kpiTaxY").textContent = (gross > 0 ? won(taxY) : "-");
 
-      // 입력 상태 배지
+      // 배지
       const inputBadge = $("inputBadge");
       const okInputs = (gross > 0);
       setBadge(inputBadge, okInputs ? "입력: 정상" : "입력: 부족", okInputs ? "ok" : "warn");
@@ -518,38 +527,53 @@
 
     // 버튼
     $("btnCalc").addEventListener("click", calc);
-    $("btnReset").addEventListener("click", () => { preset(); setTaxModeUI(); calc(); });
+    $("btnReset").addEventListener("click", () => {
+      preset();
+      setTaxModeUI();
+      syncMonthlyFromAnnual();
+      syncAnnualFromMonthly();
+      calc();
+    });
 
     // 라디오 변경
     $("taxModeDirect").addEventListener("change", () => { setTaxModeUI(); calc(); });
     $("taxModeRate").addEventListener("change", () => { setTaxModeUI(); calc(); });
 
-    // ✅ 연봉/월급 입력 이벤트(콤마 + 연동 + 계산)
-    $("annualPay").addEventListener("input", (e) => {
-      formatCommaKeepCursor(e.target);
-      syncMonthlyFromAnnual();
-      calc();
-    });
-    $("grossPay").addEventListener("input", (e) => {
-      formatCommaKeepCursor(e.target);
-      syncAnnualFromMonthly();
-      calc();
-    });
-
-    // 콤마 자동(원 단위 입력)
-    ["nonTaxable","incomeTax","otherDeductions"].forEach(id=>{
-      $(id).addEventListener("input", (e) => {
+    // ===== 입력 이벤트: input(커서 유지 콤마) + blur/change(정규화) =====
+    function bindMoneyInput(id, onAfter = null) {
+      const el = $(id);
+      el.addEventListener("input", (e) => {
         formatCommaKeepCursor(e.target);
+        if (onAfter) onAfter("input");
         calc();
       });
-    });
+      el.addEventListener("blur", (e) => {
+        formatMoneyOnBlur(e.target);
+        if (onAfter) onAfter("blur");
+        calc();
+      });
+      el.addEventListener("change", (e) => {
+        formatMoneyOnBlur(e.target);
+        if (onAfter) onAfter("change");
+        calc();
+      });
+    }
 
-    // 숫자 입력 변경 시 자동 계산
+    // 연봉/월급 연동
+    bindMoneyInput("annualPay", () => syncMonthlyFromAnnual());
+    bindMoneyInput("grossPay", () => syncAnnualFromMonthly());
+
+    // 금액 입력
+    ["nonTaxable","incomeTax","otherDeductions"].forEach(id => bindMoneyInput(id));
+
+    // 퍼센트 입력은 정규화(콤마 불필요) + calc
     [
       "effectiveTaxRate","localTaxRate",
       "pensionRate","healthRate","careRate","employmentRate"
     ].forEach(id=>{
       $(id).addEventListener("input", calc);
+      $(id).addEventListener("blur", calc);
+      $(id).addEventListener("change", calc);
     });
 
     // Enter로 계산
@@ -564,6 +588,7 @@
     const y = document.getElementById("y");
     if (y) y.textContent = String(new Date().getFullYear());
 
+    // init
     preset();
     setTaxModeUI();
     syncMonthlyFromAnnual();

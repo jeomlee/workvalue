@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WorkValue | 가격 변경(인상/인하) 손익 영향 계산기</title>
+  <meta name="description" content="메뉴 가격을 올리거나 내릴 때, 판매량 변화(수요 하락/상승)를 가정하여 월 손익 변화와 손익분기 판매량을 계산합니다." />
+  <meta name="robots" content="index,follow" />
+  <link rel="canonical" href="https://workvalue.kr/business/price-decision.html" />
+  <link rel="stylesheet" href="/assets/styles.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/" aria-label="WorkValue 홈으로 이동">
+      <div class="dot"></div>
+      <div class="t">
+        <strong>WorkValue</strong>
+        <span>급여·근로·자영업 계산을 빠르게 확인하실 수 있습니다</span>
+      </div>
+    </a>
+
+    <nav class="nav" aria-label="이동">
+      <a href="/">홈</a>
+      <a href="/business/bep.html">자영업 BEP</a>
+      <a href="/business/labor-cost.html">인건비 계산</a>
+      <a class="active" href="/business/price-decision.html">가격 결정</a>
+      <a href="/employee/hourly.html">단순 급여 추정</a>
+      <a href="/employee/salary-net.html">월급 실수령(추정)</a>
+    </nav>
+  </div>
+</header>
+
+
+  <main class="container">
+    <section class="page-head">
+      <h1>가격 변경(인상/인하) 손익 영향 계산기</h1>
+      <p class="desc">
+        가격을 변경했을 때 얼마나 남는지 빠르게 계산해드립니다.
+        판매량이 얼마나 변할지(%)를 가정하시면, 월 손익 변화와 손익분기 판매량을 함께 확인하실 수 있습니다.
+      </p>
+    </section>
+
+    <section class="grid">
+      <!-- 입력 카드 -->
+      <div class="card">
+        <h2 class="card-title">입력</h2>
+
+        <div class="form">
+          <div class="row">
+            <label for="pd_price_now">현재 판매가(1개)</label>
+            <input id="pd_price_now" type="number" inputmode="numeric" placeholder="예: 6000" />
+            <small class="hint">VAT 포함/미포함은 운영 방식에 맞게 일관되게 입력해 주시면 됩니다.</small>
+          </div>
+
+          <div class="row">
+            <label for="pd_price_new">변경 후 판매가(1개)</label>
+            <input id="pd_price_new" type="number" inputmode="numeric" placeholder="예: 6500" />
+          </div>
+
+          <div class="row">
+            <label for="pd_var_cost">변동비(원가+포장+수수료 등, 1개당)</label>
+            <input id="pd_var_cost" type="number" inputmode="numeric" placeholder="예: 2500" />
+            <small class="hint">배달앱 수수료를 ‘원’으로 환산하여 포함하시면 더 정확합니다.</small>
+          </div>
+
+          <div class="row">
+            <label for="pd_qty_now">현재 월 판매량(개)</label>
+            <input id="pd_qty_now" type="number" inputmode="numeric" placeholder="예: 1200" />
+          </div>
+
+          <div class="row">
+            <label for="pd_qty_change_pct">가격 변경 시 판매량 변화(%)</label>
+            <input id="pd_qty_change_pct" type="number" inputmode="numeric" placeholder="예: -8 (8% 감소)" />
+            <small class="hint">인상 시에는 보통 음수(-), 인하 시에는 양수(+)로 입력해 주시면 됩니다.</small>
+          </div>
+
+          <div class="row">
+            <label for="pd_fixed_cost">월 고정비(임대료/인건비/기타)</label>
+            <input id="pd_fixed_cost" type="number" inputmode="numeric" placeholder="예: 4500000" />
+          </div>
+
+          <div class="actions">
+            <button class="btn primary" id="pd_calc_btn" type="button">계산하기</button>
+            <button class="btn" id="pd_reset_btn" type="button">초기화</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결과 카드 -->
+      <div class="card">
+        <h2 class="card-title">결과</h2>
+
+        <div class="result-grid">
+          <div class="kpi">
+            <div class="kpi-label">현재 월 공헌이익</div>
+            <div class="kpi-value" id="pd_kpi_cm_now">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">변경 후 월 공헌이익(가정 반영)</div>
+            <div class="kpi-value" id="pd_kpi_cm_new">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">월 손익 변화(Δ)</div>
+            <div class="kpi-value" id="pd_kpi_delta">-</div>
+          </div>
+
+          <div class="kpi">
+            <div class="kpi-label">현재 영업이익(고정비 반영)</div>
+            <div class="kpi-value" id="pd_kpi_op_now">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">변경 후 영업이익(가정 반영)</div>
+            <div class="kpi-value" id="pd_kpi_op_new">-</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">손익분기 판매량(변경 후)</div>
+            <div class="kpi-value" id="pd_kpi_bep_qty">-</div>
+          </div>
+        </div>
+
+        <div class="callout" id="pd_comment">값을 입력하신 뒤 계산해 주세요.</div>
+
+        <div class="chart-wrap">
+          <canvas id="pd_chart" height="180"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;">
+      <h2 class="card-title">다른 계산기도 함께 확인해 보세요</h2>
+      <div class="link-grid">
+        <a class="link-card" href="/business/labor-cost.html">알바/근로자 인건비 계산기</a>
+        <a class="link-card" href="/business/bep.html">손익분기점(BEP) 계산기</a>
+        <a class="link-card" href="/business/bep.html#tax">세금/마진 반영 BEP</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <a href="/contact">문의</a>
+      <span class="dot">·</span>
+      <a href="/terms">이용약관</a>
+      <span class="dot">·</span>
+      <a href="/privacy">개인정보처리방침</a>
+    </div>
+  </footer>
+
+  <script src="/assets/app.js"></script>
+  <script>
+    if (window.initPriceDecision) window.initPriceDecision();
+  </script>
+</body>
+</html>

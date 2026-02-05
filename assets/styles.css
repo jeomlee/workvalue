@@ -467,3 +467,30 @@ nav[aria-label="이동"] a:hover{
   .legendPills{ justify-content:flex-start; }
   .canvasBox{ height: 260px; }
 }
+
+
+/* price-decision page helpers (없으면만 추가) */
+.page-head { margin: 18px 0 14px; }
+.page-head .desc { opacity: .8; line-height: 1.6; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 960px){ .grid { grid-template-columns: 1fr; } }
+
+.form .row { display: grid; gap: 8px; margin: 12px 0; }
+.form label { font-weight: 600; }
+.form input { width: 100%; }
+
+.actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+
+.result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 960px){ .result-grid { grid-template-columns: 1fr; } }
+
+.kpi { padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); }
+.kpi-label { opacity: .75; font-size: 13px; }
+.kpi-value { font-size: 20px; font-weight: 800; margin-top: 6px; }
+
+.callout { margin-top: 12px; padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.12); opacity: .9; white-space: pre-line; }
+
+.chart-wrap { margin-top: 12px; height: 240px; }
+.link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 960px){ .link-grid { grid-template-columns: 1fr; } }
+.link-card { display: block; padding: 12px; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); text-decoration: none; }

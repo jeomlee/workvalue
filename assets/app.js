@@ -503,3 +503,219 @@ export function initWorkValue() {
     run();
   }
 }
+
+
+/* ============================================================================
+  가격 변경(인상/할인) 손익 영향 계산기: calcPriceDecision
+  - 현재/변경후 공헌이익, 영업이익, 손익 변화, 변경 후 BEP 판매량
+============================================================================ */
+
+(function () {
+  function safeText(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function fmtQty(n) {
+    const x = Math.round(Number.isFinite(n) ? n : 0);
+    return x.toLocaleString("ko-KR") + "개";
+  }
+
+  function signWon(n) {
+    const v = Math.round(num(n, 0));
+    const s = (v >= 0 ? "+" : "-") + Math.abs(v).toLocaleString("ko-KR") + "원";
+    return s;
+  }
+
+  function calcPriceDecision(input) {
+    const priceNow = num(input.priceNow, 0);
+    const priceNew = num(input.priceNew, 0);
+    const varCost = num(input.varCost, 0);
+    const qtyNow = num(input.qtyNow, 0);
+    const qtyChangePct = num(input.qtyChangePct, 0); // 예: -8
+    const fixedCost = num(input.fixedCost, 0);
+
+    // 방어
+    const qtyNew = Math.max(0, qtyNow * (1 + qtyChangePct / 100));
+    const cmPerNow = priceNow - varCost; // 공헌이익/개
+    const cmPerNew = priceNew - varCost;
+
+    const cmNow = cmPerNow * qtyNow;
+    const cmNew = cmPerNew * qtyNew;
+
+    const opNow = cmNow - fixedCost;
+    const opNew = cmNew - fixedCost;
+
+    const delta = opNew - opNow;
+
+    const bepQtyNew = cmPerNew > 0 ? fixedCost / cmPerNew : Infinity;
+
+    return {
+      qtyNew,
+      cmPerNow,
+      cmPerNew,
+      cmNow,
+      cmNew,
+      opNow,
+      opNew,
+      delta,
+      bepQtyNew,
+    };
+  }
+
+function buildComment(res, input) {
+  const priceDiff = num(input.priceNew, 0) - num(input.priceNow, 0);
+  const qtyChange = res.qtyNew - num(input.qtyNow, 0);
+
+  if (!Number.isFinite(res.delta)) {
+    return "입력하신 값을 다시 한 번 확인해 주시기 바랍니다.";
+  }
+
+  if (res.cmPerNew <= 0) {
+    return "변경 후 판매가가 변동비보다 낮습니다. 이 구조에서는 판매량이 늘어날수록 손실이 커질 수 있습니다.";
+  }
+
+  if (res.delta > 0) {
+    return `가정하신 조건 기준으로는 가격 ${
+      priceDiff >= 0 ? "인상" : "인하"
+    }이 유리한 선택으로 보입니다.
+월 손익이 약 ${signWon(res.delta)} 개선됩니다.
+(판매량 변화: ${Math.round(qtyChange).toLocaleString("ko-KR")}개)`;
+  }
+
+  if (res.delta < 0) {
+    return `가정하신 조건 기준으로는 가격 ${
+      priceDiff >= 0 ? "인상" : "인하"
+    }이 불리한 선택으로 보입니다.
+월 손익이 약 ${signWon(res.delta)} 감소합니다.
+(판매량 변화: ${Math.round(qtyChange).toLocaleString("ko-KR")}개)`;
+  }
+
+  return "가정하신 조건 기준으로는 손익 변화가 거의 없습니다. 판매량 변화율(%)을 조정하여 다시 계산해 보시기 바랍니다.";
+}
+
+
+  // 차트 1개: 현재 vs 변경후(공헌이익/영업이익)
+  let _pdChart = null;
+  function renderChart(cmNow, cmNew, opNow, opNew) {
+    const ctx = document.getElementById("pd_chart");
+    if (!ctx || typeof Chart === "undefined") return;
+
+    const data = {
+      labels: ["현재", "변경 후"],
+      datasets: [
+        { label: "월 공헌이익", data: [cmNow, cmNew] },
+        { label: "월 영업이익", data: [opNow, opNew] },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: true },
+        tooltip: {
+          callbacks: {
+            label: function (c) {
+              const v = c.parsed.y;
+              return `${c.dataset.label}: ${won(v)}`;
+            },
+          },
+        },
+      },
+      scales: {
+        y: {
+          ticks: {
+            callback: function (v) {
+              // 너무 길어지면 보기 안 좋아서 “원”만
+              return Number(v).toLocaleString("ko-KR");
+            },
+          },
+        },
+      },
+    };
+
+    if (_pdChart) _pdChart.destroy();
+    _pdChart = new Chart(ctx, { type: "bar", data, options });
+  }
+
+  function bind() {
+    const btn = document.getElementById("pd_calc_btn");
+    const reset = document.getElementById("pd_reset_btn");
+
+    function read() {
+      return {
+        priceNow: document.getElementById("pd_price_now")?.value,
+        priceNew: document.getElementById("pd_price_new")?.value,
+        varCost: document.getElementById("pd_var_cost")?.value,
+        qtyNow: document.getElementById("pd_qty_now")?.value,
+        qtyChangePct: document.getElementById("pd_qty_change_pct")?.value,
+        fixedCost: document.getElementById("pd_fixed_cost")?.value,
+      };
+    }
+
+    function render() {
+      const input = read();
+      const res = calcPriceDecision(input);
+
+      safeText("pd_kpi_cm_now", won(res.cmNow));
+      safeText("pd_kpi_cm_new", won(res.cmNew));
+      safeText("pd_kpi_delta", signWon(res.delta));
+      safeText("pd_kpi_op_now", won(res.opNow));
+      safeText("pd_kpi_op_new", won(res.opNew));
+
+      const bepText = Number.isFinite(res.bepQtyNew)
+        ? fmtQty(res.bepQtyNew)
+        : "불가(공헌이익≤0)";
+      safeText("pd_kpi_bep_qty", bepText);
+
+      safeText("pd_comment", buildComment(res, input));
+
+      renderChart(res.cmNow, res.cmNew, res.opNow, res.opNew);
+    }
+
+    function doReset() {
+      const ids = [
+        "pd_price_now",
+        "pd_price_new",
+        "pd_var_cost",
+        "pd_qty_now",
+        "pd_qty_change_pct",
+        "pd_fixed_cost",
+      ];
+      ids.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+
+      safeText("pd_kpi_cm_now", "-");
+      safeText("pd_kpi_cm_new", "-");
+      safeText("pd_kpi_delta", "-");
+      safeText("pd_kpi_op_now", "-");
+      safeText("pd_kpi_op_new", "-");
+      safeText("pd_kpi_bep_qty", "-");
+      safeText("pd_comment", "값을 넣고 계산해줘.");
+
+      if (_pdChart) {
+        _pdChart.destroy();
+        _pdChart = null;
+      }
+    }
+
+    if (btn) btn.addEventListener("click", render);
+    if (reset) reset.addEventListener("click", doReset);
+
+    // 입력할 때 바로 반영(원하면 주석 해제)
+    // ["pd_price_now","pd_price_new","pd_var_cost","pd_qty_now","pd_qty_change_pct","pd_fixed_cost"].forEach((id)=>{
+    //   const el = document.getElementById(id);
+    //   if (el) el.addEventListener("input", render);
+    // });
+  }
+
+  // 외부에서 호출
+  window.initPriceDecision = function () {
+    // 페이지에 요소가 없으면 스킵
+    if (!document.getElementById("pd_calc_btn")) return;
+    bind();
+  };
+})();
